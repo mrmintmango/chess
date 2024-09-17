@@ -53,6 +53,7 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+        // Make a ChessMovesCalculator and use it to get the collection of valid moves depending on piece type and board location.
         return new ArrayList<ChessMove>();
     }
 }
