@@ -10,7 +10,7 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    private ChessPiece[][] squares = new ChessPiece[8][8];
+    private ChessPiece[][] squares = new ChessPiece[9][9];
     public ChessBoard() {
         
     }
@@ -41,7 +41,52 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+        for (int row = 1; row <= 8; row++) {
+            for (int column = 1; column <= 8; column++) {
+                //Resets all Spaces
+                if (squares[row][column] != null) {
+                    squares[row][column] = null;
+                }
+                //Adds White Pieces
+                if (row == 1 && (column == 1 || column == 8)) {
+                    addPiece(new ChessPosition(row,column),new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
+                }
+                if (row == 1 && (column == 2 || column == 7)) {
+                    addPiece(new ChessPosition(row,column),new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT));
+                }
+                if (row == 1 && (column == 3 || column == 6)) {
+                    addPiece(new ChessPosition(row,column),new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP));
+                }
+                if (row == 1 && column == 4) {
+                    addPiece(new ChessPosition(row,column),new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN));
+                }
+                if (row == 1 && column == 5) {
+                    addPiece(new ChessPosition(row,column),new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING));
+                }
+                if (row == 2) {
+                    addPiece(new ChessPosition(row,column),new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
+                }
+                //Adds Black Pieces
+                if (row == 8 && (column == 1 || column == 8)) {
+                    addPiece(new ChessPosition(row,column),new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));
+                }
+                if (row == 8 && (column == 2 || column == 7)) {
+                    addPiece(new ChessPosition(row,column),new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT));
+                }
+                if (row == 8 && (column == 3 || column == 6)) {
+                    addPiece(new ChessPosition(row,column),new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP));
+                }
+                if (row == 8 && column == 4) {
+                    addPiece(new ChessPosition(row,column),new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN));
+                }
+                if (row == 8 && column == 5) {
+                    addPiece(new ChessPosition(row,column),new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING));
+                }
+                if (row == 7) {
+                    addPiece(new ChessPosition(row,column),new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
+                }
+            }
+        }
     }
 
     @Override
