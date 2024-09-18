@@ -13,7 +13,7 @@ public class ChessMovesCalculator {
         teamColor = board.getPiece(myPosition).getTeamColor();
 
         if (board.getPiece(myPosition).getPieceType() == ChessPiece.PieceType.KING){
-            kingMovesCalculator kingCalc = new kingMovesCalculator();
+            kingMovesCalculator kingCalc = new kingMovesCalculator(teamColor);
             return kingCalc.kingMoves(board, myPosition);
         }
         if (board.getPiece(myPosition).getPieceType() == ChessPiece.PieceType.QUEEN){
