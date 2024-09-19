@@ -25,9 +25,8 @@ public class ChessMovesCalculator {
             return bishopCalc.bishopMoves(board, myPosition);
         }
         if (board.getPiece(myPosition).getPieceType() == ChessPiece.PieceType.ROOK){
-            rookMovesCalculator rookCalc = new rookMovesCalculator();
-            return null;
-            //return kingCalc.kingMoves(board, myPosition);
+            rookMovesCalculator rookCalc = new rookMovesCalculator(teamColor);
+            return rookCalc.rookMoves(board, myPosition);
         }
         if (board.getPiece(myPosition).getPieceType() == ChessPiece.PieceType.KNIGHT){
             knightMovesCalculator knightCalc = new knightMovesCalculator(teamColor);
