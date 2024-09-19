@@ -47,6 +47,12 @@ public class pawnMovesCalculator extends ChessMovesCalculator {
                 if (board.getPiece(oneDown) == null){
                     ChessMove e = new ChessMove(myPosition, oneDown, ChessPiece.PieceType.QUEEN);
                     moves.add(e);
+                    ChessMove i = new ChessMove(myPosition, oneDown, ChessPiece.PieceType.ROOK);
+                    moves.add(i);
+                    ChessMove k = new ChessMove(myPosition, oneDown, ChessPiece.PieceType.KNIGHT);
+                    moves.add(k);
+                    ChessMove l = new ChessMove(myPosition, oneDown, ChessPiece.PieceType.BISHOP);
+                    moves.add(l);
                 }
             }
             //Attack code!!
@@ -59,6 +65,12 @@ public class pawnMovesCalculator extends ChessMovesCalculator {
                 else if (board.getPiece(atkLeft) != null && board.getPiece(atkLeft).getTeamColor() == ChessGame.TeamColor.WHITE && myPosition.getRow() == 2) {
                     ChessMove e = new ChessMove(myPosition, atkLeft, ChessPiece.PieceType.QUEEN);
                     moves.add(e);
+                    ChessMove i = new ChessMove(myPosition, atkLeft, ChessPiece.PieceType.ROOK);
+                    moves.add(i);
+                    ChessMove k = new ChessMove(myPosition, atkLeft, ChessPiece.PieceType.KNIGHT);
+                    moves.add(k);
+                    ChessMove l = new ChessMove(myPosition, atkLeft, ChessPiece.PieceType.BISHOP);
+                    moves.add(l);
                 }
             }
             if (myPosition.getColumn() < 8) {
@@ -70,6 +82,12 @@ public class pawnMovesCalculator extends ChessMovesCalculator {
                 else if (board.getPiece(atkRight) != null && board.getPiece(atkRight).getTeamColor() == ChessGame.TeamColor.WHITE && myPosition.getRow() == 2) {
                     ChessMove e = new ChessMove(myPosition, atkRight, ChessPiece.PieceType.QUEEN);
                     moves.add(e);
+                    ChessMove i = new ChessMove(myPosition, atkRight, ChessPiece.PieceType.ROOK);
+                    moves.add(i);
+                    ChessMove k = new ChessMove(myPosition, atkRight, ChessPiece.PieceType.KNIGHT);
+                    moves.add(k);
+                    ChessMove l = new ChessMove(myPosition, atkRight, ChessPiece.PieceType.BISHOP);
+                    moves.add(l);
                 }
             }
         }
@@ -103,6 +121,12 @@ public class pawnMovesCalculator extends ChessMovesCalculator {
                 if (board.getPiece(oneUp) == null){
                     ChessMove e = new ChessMove(myPosition, oneUp, ChessPiece.PieceType.QUEEN);
                     moves.add(e);
+                    ChessMove i = new ChessMove(myPosition, oneUp, ChessPiece.PieceType.ROOK);
+                    moves.add(i);
+                    ChessMove k = new ChessMove(myPosition, oneUp, ChessPiece.PieceType.KNIGHT);
+                    moves.add(k);
+                    ChessMove l = new ChessMove(myPosition, oneUp, ChessPiece.PieceType.BISHOP);
+                    moves.add(l);
                 }
             }
             //Attack code!!
@@ -115,6 +139,12 @@ public class pawnMovesCalculator extends ChessMovesCalculator {
                 else if (board.getPiece(atkLeft) != null && board.getPiece(atkLeft).getTeamColor() == ChessGame.TeamColor.BLACK && myPosition.getRow() == 7) {
                     ChessMove e = new ChessMove(myPosition, atkLeft, ChessPiece.PieceType.QUEEN);
                     moves.add(e);
+                    ChessMove i = new ChessMove(myPosition, atkLeft, ChessPiece.PieceType.ROOK);
+                    moves.add(i);
+                    ChessMove k = new ChessMove(myPosition, atkLeft, ChessPiece.PieceType.KNIGHT);
+                    moves.add(k);
+                    ChessMove l = new ChessMove(myPosition, atkLeft, ChessPiece.PieceType.BISHOP);
+                    moves.add(l);
                 }
             }
             if (myPosition.getColumn() < 8) {
@@ -126,6 +156,12 @@ public class pawnMovesCalculator extends ChessMovesCalculator {
                 else if (board.getPiece(atkRight) != null && board.getPiece(atkRight).getTeamColor() == ChessGame.TeamColor.BLACK && myPosition.getRow() == 7) {
                     ChessMove e = new ChessMove(myPosition, atkRight, ChessPiece.PieceType.QUEEN);
                     moves.add(e);
+                    ChessMove i = new ChessMove(myPosition, atkRight, ChessPiece.PieceType.ROOK);
+                    moves.add(i);
+                    ChessMove k = new ChessMove(myPosition, atkRight, ChessPiece.PieceType.KNIGHT);
+                    moves.add(k);
+                    ChessMove l = new ChessMove(myPosition, atkRight, ChessPiece.PieceType.BISHOP);
+                    moves.add(l);
                 }
             }
         }
