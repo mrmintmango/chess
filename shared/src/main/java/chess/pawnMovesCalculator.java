@@ -34,7 +34,7 @@ public class pawnMovesCalculator extends ChessMovesCalculator {
                     moves.add(e);
                 }
             }
-            if (myPosition.getRow() < 7 && myPosition.getRow() != 2) {
+            if (myPosition.getRow() < 7 && myPosition.getRow() != 2) { //has moved at least once and isn't in promotion zone
                 ChessPosition oneDown = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn());
                 if (board.getPiece(oneDown) == null){
                     ChessMove e = new ChessMove(myPosition, oneDown,null);
