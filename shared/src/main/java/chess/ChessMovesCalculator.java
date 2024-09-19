@@ -31,9 +31,8 @@ public class ChessMovesCalculator {
             //return kingCalc.kingMoves(board, myPosition);
         }
         if (board.getPiece(myPosition).getPieceType() == ChessPiece.PieceType.KNIGHT){
-            knightMovesCalculator knightCalc = new knightMovesCalculator();
-            return null;
-            //return kingCalc.kingMoves(board, myPosition);
+            knightMovesCalculator knightCalc = new knightMovesCalculator(teamColor);
+            return knightCalc.knightMoves(board, myPosition);
         }
         if (board.getPiece(myPosition).getPieceType() == ChessPiece.PieceType.PAWN){
             pawnMovesCalculator pawnCalc = new pawnMovesCalculator();
