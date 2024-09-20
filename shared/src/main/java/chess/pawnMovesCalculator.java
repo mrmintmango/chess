@@ -11,13 +11,7 @@ public class pawnMovesCalculator extends ChessMovesCalculator {
     }
 
     public Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition) {
-        moves = new ArrayList<ChessMove>();
-
-        //Check how many spaces are up, down, and to the sides.
-        int up = 8-myPosition.getRow();
-        int down = myPosition.getRow()-1;
-        int left = myPosition.getColumn()-1;
-        int right = 8-myPosition.getColumn();
+        moves = new ArrayList<>();
 
         //Black pawns can only move down
         if (teamColor == ChessGame.TeamColor.BLACK) {
@@ -27,36 +21,33 @@ public class pawnMovesCalculator extends ChessMovesCalculator {
             if (myPosition.getRow() < 7 && myPosition.getRow() != 2) { //has moved at least once and isn't in promotion zone
                 ChessPosition oneDown = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn());
                 if (board.getPiece(oneDown) == null){
-                    ChessMove e = new ChessMove(myPosition, oneDown,null);
-                    moves.add(e);
+                    addMove(myPosition,oneDown);
                 }
             }
             //In promotion Zone
             if (myPosition.getRow() == 2) {
                 ChessPosition oneDown = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn());
                 if (board.getPiece(oneDown) == null){
-                    promotionMove(myPosition,oneDown,board);
+                    promotionMove(myPosition,oneDown);
                 }
             }
             //Attack code!!
             if (myPosition.getColumn() > 1) {
                 ChessPosition atkLeft = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()-1);
                 if (board.getPiece(atkLeft) != null && board.getPiece(atkLeft).getTeamColor() == ChessGame.TeamColor.WHITE && myPosition.getRow() != 2) {
-                    ChessMove e = new ChessMove(myPosition, atkLeft,null);
-                    moves.add(e);
+                    addMove(myPosition,atkLeft);
                 }
                 else if (board.getPiece(atkLeft) != null && board.getPiece(atkLeft).getTeamColor() == ChessGame.TeamColor.WHITE && myPosition.getRow() == 2) {
-                    promotionMove(myPosition,atkLeft,board);
+                    promotionMove(myPosition,atkLeft);
                 }
             }
             if (myPosition.getColumn() < 8) {
                 ChessPosition atkRight = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()+1);
                 if (board.getPiece(atkRight) != null && board.getPiece(atkRight).getTeamColor() == ChessGame.TeamColor.WHITE && myPosition.getRow() != 2) {
-                    ChessMove e = new ChessMove(myPosition, atkRight,null);
-                    moves.add(e);
+                    addMove(myPosition,atkRight);
                 }
                 else if (board.getPiece(atkRight) != null && board.getPiece(atkRight).getTeamColor() == ChessGame.TeamColor.WHITE && myPosition.getRow() == 2) {
-                    promotionMove(myPosition,atkRight,board);
+                    promotionMove(myPosition,atkRight);
                 }
             }
         }
@@ -69,36 +60,33 @@ public class pawnMovesCalculator extends ChessMovesCalculator {
             if (myPosition.getRow() > 2 && myPosition.getRow() != 7) {
                 ChessPosition oneUp = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn());
                 if (board.getPiece(oneUp) == null){
-                    ChessMove e = new ChessMove(myPosition, oneUp,null);
-                    moves.add(e);
+                    addMove(myPosition,oneUp);
                 }
             }
             //In promotion Zone
             if (myPosition.getRow() == 7) {
                 ChessPosition oneUp = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn());
                 if (board.getPiece(oneUp) == null){
-                    promotionMove(myPosition,oneUp,board);
+                    promotionMove(myPosition,oneUp);
                 }
             }
             //Attack code!!
             if (myPosition.getColumn() > 1) {
                 ChessPosition atkLeft = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()-1);
                 if (board.getPiece(atkLeft) != null && board.getPiece(atkLeft).getTeamColor() == ChessGame.TeamColor.BLACK && myPosition.getRow() != 7) {
-                    ChessMove e = new ChessMove(myPosition, atkLeft,null);
-                    moves.add(e);
+                    addMove(myPosition,atkLeft);
                 }
                 else if (board.getPiece(atkLeft) != null && board.getPiece(atkLeft).getTeamColor() == ChessGame.TeamColor.BLACK && myPosition.getRow() == 7) {
-                    promotionMove(myPosition,atkLeft,board);
+                    promotionMove(myPosition,atkLeft);
                 }
             }
             if (myPosition.getColumn() < 8) {
                 ChessPosition atkRight = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()+1);
                 if (board.getPiece(atkRight) != null && board.getPiece(atkRight).getTeamColor() == ChessGame.TeamColor.BLACK && myPosition.getRow() != 7) {
-                    ChessMove e = new ChessMove(myPosition, atkRight,null);
-                    moves.add(e);
+                    addMove(myPosition,atkRight);
                 }
                 else if (board.getPiece(atkRight) != null && board.getPiece(atkRight).getTeamColor() == ChessGame.TeamColor.BLACK && myPosition.getRow() == 7) {
-                    promotionMove(myPosition,atkRight,board);
+                    promotionMove(myPosition,atkRight);
                 }
             }
         }
@@ -108,7 +96,7 @@ public class pawnMovesCalculator extends ChessMovesCalculator {
 
     public void startingMove(int wb, ChessPosition myPosition, ChessBoard board) {
         ChessPosition twoMove = new ChessPosition(myPosition.getRow()+(wb*2), myPosition.getColumn());
-        ChessPosition oneMove = new ChessPosition(myPosition.getRow()+(wb*1), myPosition.getColumn());
+        ChessPosition oneMove = new ChessPosition(myPosition.getRow()+(wb), myPosition.getColumn());
         if (board.getPiece(twoMove) == null && board.getPiece(oneMove) == null){
             ChessMove e = new ChessMove(myPosition, twoMove,null);
             moves.add(e);
@@ -121,7 +109,7 @@ public class pawnMovesCalculator extends ChessMovesCalculator {
         }
     }
 
-    public void promotionMove(ChessPosition myPosition, ChessPosition move, ChessBoard board) {
+    public void promotionMove(ChessPosition myPosition, ChessPosition move) {
         ChessMove e = new ChessMove(myPosition, move, ChessPiece.PieceType.QUEEN);
         moves.add(e);
         ChessMove i = new ChessMove(myPosition, move, ChessPiece.PieceType.ROOK);
@@ -130,5 +118,10 @@ public class pawnMovesCalculator extends ChessMovesCalculator {
         moves.add(k);
         ChessMove l = new ChessMove(myPosition, move, ChessPiece.PieceType.BISHOP);
         moves.add(l);
+    }
+
+    public void addMove(ChessPosition myPosition, ChessPosition move) {
+        ChessMove e = new ChessMove(myPosition, move,null);
+        moves.add(e);
     }
 }

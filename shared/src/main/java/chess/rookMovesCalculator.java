@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class rookMovesCalculator extends ChessMovesCalculator {
+    Collection<ChessMove> moves;
     public rookMovesCalculator(ChessGame.TeamColor teamColor) {
         super();
         this.teamColor = teamColor;
     }
 
     public Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> moves = new ArrayList<ChessMove>();
+        moves = new ArrayList<>();
 
         //Check how many spaces are up, down, and to the sides.
         int up = 8-myPosition.getRow();
@@ -19,8 +20,23 @@ public class rookMovesCalculator extends ChessMovesCalculator {
         int right = 8-myPosition.getColumn();
 
         //check up
-        for (int i = 1; i <= up; i++) {
-            ChessPosition oneUp = new ChessPosition(myPosition.getRow()+i, myPosition.getColumn());
+        addMove(up,myPosition,board,1);
+
+        //check down
+        addMove(down,myPosition,board,2);
+
+        //check left
+        addMove(left,myPosition,board,3);
+
+        //check Right
+        addMove(right,myPosition,board,4);
+
+        return moves;
+    }
+
+    public void addMove(int iter, ChessPosition myPosition, ChessBoard board, int direction) {
+        for (int i = 1; i <= iter; i++) {
+            ChessPosition oneUp = cPos(myPosition, i, direction);
             if (board.getPiece(oneUp) == null){
                 ChessMove e = new ChessMove(myPosition, oneUp,null);
                 moves.add(e);
@@ -34,60 +50,22 @@ public class rookMovesCalculator extends ChessMovesCalculator {
                 break;
             }
         }
+    }
 
-        //check down
-        for (int i = 1; i <= down; i++) {
-            ChessPosition oneDown = new ChessPosition(myPosition.getRow()-i, myPosition.getColumn());
-            if (board.getPiece(oneDown) == null){
-                ChessMove e = new ChessMove(myPosition, oneDown,null);
-                moves.add(e);
-            }
-            if (board.getPiece(oneDown) != null && board.getPiece(oneDown).getTeamColor() != teamColor) {
-                ChessMove e = new ChessMove(myPosition, oneDown,null);
-                moves.add(e);
-                break;
-            }
-            if (board.getPiece(oneDown) != null && board.getPiece(oneDown).getTeamColor() == teamColor) {
-                break;
-            }
+    public ChessPosition cPos(ChessPosition myPosition, int iter, int direction) {
+        if (direction == 1){
+            return new ChessPosition(myPosition.getRow()+iter, myPosition.getColumn());
         }
-
-        //check left
-        for (int i = 1; i <= left; i++) {
-            ChessPosition oneLeft = new ChessPosition(myPosition.getRow(), myPosition.getColumn()-i);
-            if (board.getPiece(oneLeft) == null){
-                ChessMove e = new ChessMove(myPosition, oneLeft,null);
-                moves.add(e);
-            }
-            if (board.getPiece(oneLeft) != null && board.getPiece(oneLeft).getTeamColor() != teamColor) {
-                ChessMove e = new ChessMove(myPosition, oneLeft,null);
-                moves.add(e);
-                break;
-            }
-            if (board.getPiece(oneLeft) != null && board.getPiece(oneLeft).getTeamColor() == teamColor) {
-                break;
-            }
+        else if (direction == 2){
+            return new ChessPosition(myPosition.getRow()-iter, myPosition.getColumn());
         }
-
-        //check Right
-        for (int i = 1; i <= right; i++) {
-            ChessPosition oneRight = new ChessPosition(myPosition.getRow(), myPosition.getColumn()+i);
-            if (board.getPiece(oneRight) == null){
-                ChessMove e = new ChessMove(myPosition, oneRight,null);
-                moves.add(e);
-            }
-            if (board.getPiece(oneRight) != null && board.getPiece(oneRight).getTeamColor() != teamColor) {
-                ChessMove e = new ChessMove(myPosition, oneRight,null);
-                moves.add(e);
-                break;
-            }
-            if (board.getPiece(oneRight) != null && board.getPiece(oneRight).getTeamColor() == teamColor) {
-                break;
-            }
+        else if (direction == 3){
+            return new ChessPosition(myPosition.getRow(), myPosition.getColumn()-iter);
         }
-
-
-        return moves;
+        else if (direction == 4){
+            return new ChessPosition(myPosition.getRow(), myPosition.getColumn()+iter);
+        }
+        else return null;
     }
 
 }

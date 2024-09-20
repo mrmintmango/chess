@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class queenMovesCalculator extends ChessMovesCalculator {
+    Collection<ChessMove> moves;
     public queenMovesCalculator(ChessGame.TeamColor teamColor) {
         super();
         this.teamColor = teamColor;
     }
 
     public Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> moves = new ArrayList<ChessMove>();
+        moves = new ArrayList<>();
 
         //Check how many spaces are up, down, and to the sides.
         int up = 8-myPosition.getRow();
@@ -18,9 +19,75 @@ public class queenMovesCalculator extends ChessMovesCalculator {
         int left = myPosition.getColumn()-1;
         int right = 8-myPosition.getColumn();
 
+        //Check up right move if bishop is closer to the top
+        if (up < right) {
+            addMoves(up,1,1,myPosition,board);
+        }
+        //Check up right move if bishop is closer to the right
+        if (up >= right) {
+            addMoves(right,1,1,myPosition,board);
+        }
+        //Check up left move if bishop is closer to the top
+        if (up < left) {
+            addMoves(up,1,-1,myPosition,board);
+        }
+        //Check up left move if bishop is closer to the left
+        if (left <= up) {
+            addMoves(left,1,-1,myPosition,board);
+        }
+        //Check down left move if bishop is closer to the bottom
+        if (down < left) {
+            addMoves(down,-1,-1,myPosition,board);
+        }
+        //Check down left move if bishop is closer to the left
+        if (left <= down) {
+            addMoves(left,-1,-1,myPosition,board);
+        }
+        //Check down right move if bishop is closer to the bottom
+        if (down < right) {
+            addMoves(down,-1,1,myPosition,board);
+        }
+        //Check down right move if bishop is closer to the right
+        if (right <= down) {
+            addMoves(right,-1,1,myPosition,board);
+        }
+
         //check up
-        for (int i = 1; i <= up; i++) {
-            ChessPosition oneUp = new ChessPosition(myPosition.getRow()+i, myPosition.getColumn());
+        addRMove(up,myPosition,board,1);
+
+        //check down
+        addRMove(down,myPosition,board,2);
+
+        //check left
+        addRMove(left,myPosition,board,3);
+
+        //check Right
+        addRMove(right,myPosition,board,4);
+
+        return moves;
+    }
+
+    public void addMoves(int iter, int row, int col, ChessPosition myPosition, ChessBoard board){
+        for (int i = 1; i <= iter; i++) {
+            ChessPosition move = new ChessPosition(myPosition.getRow()+(row*i), myPosition.getColumn()+(col*i));
+            if (board.getPiece(move) == null){
+                ChessMove e = new ChessMove(myPosition, move,null);
+                moves.add(e);
+            }
+            else if (board.getPiece(move).getTeamColor() != this.teamColor) {
+                ChessMove e = new ChessMove(myPosition, move,null);
+                moves.add(e);
+                break;
+            }
+            else if (board.getPiece(move).getTeamColor() == this.teamColor) {
+                break;
+            }
+        }
+    }
+
+    public void addRMove(int iter, ChessPosition myPosition, ChessBoard board, int direction) {
+        for (int i = 1; i <= iter; i++) {
+            ChessPosition oneUp = cPos(myPosition, i, direction);
             if (board.getPiece(oneUp) == null){
                 ChessMove e = new ChessMove(myPosition, oneUp,null);
                 moves.add(e);
@@ -34,210 +101,22 @@ public class queenMovesCalculator extends ChessMovesCalculator {
                 break;
             }
         }
+    }
 
-        //check down
-        for (int i = 1; i <= down; i++) {
-            ChessPosition oneDown = new ChessPosition(myPosition.getRow()-i, myPosition.getColumn());
-            if (board.getPiece(oneDown) == null){
-                ChessMove e = new ChessMove(myPosition, oneDown,null);
-                moves.add(e);
-            }
-            if (board.getPiece(oneDown) != null && board.getPiece(oneDown).getTeamColor() != teamColor) {
-                ChessMove e = new ChessMove(myPosition, oneDown,null);
-                moves.add(e);
-                break;
-            }
-            if (board.getPiece(oneDown) != null && board.getPiece(oneDown).getTeamColor() == teamColor) {
-                break;
-            }
+    public ChessPosition cPos(ChessPosition myPosition, int iter, int direction) {
+        if (direction == 1){
+            return new ChessPosition(myPosition.getRow()+iter, myPosition.getColumn());
         }
-
-        //check left
-        for (int i = 1; i <= left; i++) {
-            ChessPosition oneLeft = new ChessPosition(myPosition.getRow(), myPosition.getColumn()-i);
-            if (board.getPiece(oneLeft) == null){
-                ChessMove e = new ChessMove(myPosition, oneLeft,null);
-                moves.add(e);
-            }
-            if (board.getPiece(oneLeft) != null && board.getPiece(oneLeft).getTeamColor() != teamColor) {
-                ChessMove e = new ChessMove(myPosition, oneLeft,null);
-                moves.add(e);
-                break;
-            }
-            if (board.getPiece(oneLeft) != null && board.getPiece(oneLeft).getTeamColor() == teamColor) {
-                break;
-            }
+        else if (direction == 2){
+            return new ChessPosition(myPosition.getRow()-iter, myPosition.getColumn());
         }
-
-        //check Right
-        for (int i = 1; i <= right; i++) {
-            ChessPosition oneRight = new ChessPosition(myPosition.getRow(), myPosition.getColumn()+i);
-            if (board.getPiece(oneRight) == null){
-                ChessMove e = new ChessMove(myPosition, oneRight,null);
-                moves.add(e);
-            }
-            if (board.getPiece(oneRight) != null && board.getPiece(oneRight).getTeamColor() != teamColor) {
-                ChessMove e = new ChessMove(myPosition, oneRight,null);
-                moves.add(e);
-                break;
-            }
-            if (board.getPiece(oneRight) != null && board.getPiece(oneRight).getTeamColor() == teamColor) {
-                break;
-            }
+        else if (direction == 3){
+            return new ChessPosition(myPosition.getRow(), myPosition.getColumn()-iter);
         }
-
-        //Basically Copied the Bishop Move code below:
-
-        //Check up right move if bishop is closer to the top
-        if (up < right) {
-            for (int i = 1; i <= up; i++) {
-                ChessPosition oneUpRight = new ChessPosition(myPosition.getRow()+i, myPosition.getColumn()+i);
-                if (board.getPiece(oneUpRight) == null){
-                    ChessMove e = new ChessMove(myPosition, oneUpRight,null);
-                    moves.add(e);
-                }
-                else if (board.getPiece(oneUpRight).getTeamColor() != this.teamColor) {
-                    ChessMove e = new ChessMove(myPosition, oneUpRight,null);
-                    moves.add(e);
-                    break;
-                }
-                else if (board.getPiece(oneUpRight).getTeamColor() == this.teamColor) {
-                    break;
-                }
-            }
+        else if (direction == 4){
+            return new ChessPosition(myPosition.getRow(), myPosition.getColumn()+iter);
         }
-        //Check up right move if bishop is closer to the right
-        if (up >= right) {
-            for (int i = 1; i <= right; i++) {
-                ChessPosition oneUpRight = new ChessPosition(myPosition.getRow()+i, myPosition.getColumn()+i);
-                if (board.getPiece(oneUpRight) == null){
-                    ChessMove e = new ChessMove(myPosition, oneUpRight,null);
-                    moves.add(e);
-                }
-                else if (board.getPiece(oneUpRight).getTeamColor() != this.teamColor) {
-                    ChessMove e = new ChessMove(myPosition, oneUpRight,null);
-                    moves.add(e);
-                    break;
-                }
-                else if (board.getPiece(oneUpRight).getTeamColor() == this.teamColor) {
-                    break;
-                }
-            }
-        }
-
-        //Check up left move if bishop is closer to the top
-        if (up < left) {
-            for (int i = 1; i <= up; i++) {
-                ChessPosition oneUpLeft = new ChessPosition(myPosition.getRow()+i, myPosition.getColumn()-i);
-                if (board.getPiece(oneUpLeft) == null){
-                    ChessMove e = new ChessMove(myPosition, oneUpLeft,null);
-                    moves.add(e);
-                }
-                else if (board.getPiece(oneUpLeft).getTeamColor() != this.teamColor) {
-                    ChessMove e = new ChessMove(myPosition, oneUpLeft,null);
-                    moves.add(e);
-                    break;
-                }
-                else if (board.getPiece(oneUpLeft).getTeamColor() == this.teamColor) {
-                    break;
-                }
-            }
-        }
-        //Check up left move if bishop is closer to the left
-        if (left <= up) {
-            for (int i = 1; i <= left; i++) {
-                ChessPosition oneUpLeft = new ChessPosition(myPosition.getRow()+i, myPosition.getColumn()-i);
-                if (board.getPiece(oneUpLeft) == null){
-                    ChessMove e = new ChessMove(myPosition, oneUpLeft,null);
-                    moves.add(e);
-                }
-                else if (board.getPiece(oneUpLeft).getTeamColor() != this.teamColor) {
-                    ChessMove e = new ChessMove(myPosition, oneUpLeft,null);
-                    moves.add(e);
-                    break;
-                }
-                else if (board.getPiece(oneUpLeft).getTeamColor() == this.teamColor) {
-                    break;
-                }
-            }
-        }
-
-        //Check down left move if bishop is closer to the bottom
-        if (down < left) {
-            for (int i = 1; i <= down; i++) {
-                ChessPosition oneDownLeft = new ChessPosition(myPosition.getRow()-i, myPosition.getColumn()-i);
-                if (board.getPiece(oneDownLeft) == null){
-                    ChessMove e = new ChessMove(myPosition, oneDownLeft,null);
-                    moves.add(e);
-                }
-                else if (board.getPiece(oneDownLeft).getTeamColor() != this.teamColor) {
-                    ChessMove e = new ChessMove(myPosition, oneDownLeft,null);
-                    moves.add(e);
-                    break;
-                }
-                else if (board.getPiece(oneDownLeft).getTeamColor() == this.teamColor) {
-                    break;
-                }
-            }
-        }
-        //Check down left move if bishop is closer to the left
-        if (left <= down) {
-            for (int i = 1; i <= left; i++) {
-                ChessPosition oneDownLeft = new ChessPosition(myPosition.getRow()-i, myPosition.getColumn()-i);
-                if (board.getPiece(oneDownLeft) == null){
-                    ChessMove e = new ChessMove(myPosition, oneDownLeft,null);
-                    moves.add(e);
-                }
-                else if (board.getPiece(oneDownLeft).getTeamColor() != this.teamColor) {
-                    ChessMove e = new ChessMove(myPosition, oneDownLeft,null);
-                    moves.add(e);
-                    break;
-                }
-                else if (board.getPiece(oneDownLeft).getTeamColor() == this.teamColor) {
-                    break;
-                }
-            }
-        }
-
-        //Check down right move if bishop is closer to the bottom
-        if (down < right) {
-            for (int i = 1; i <= down; i++) {
-                ChessPosition oneDownRight = new ChessPosition(myPosition.getRow()-i, myPosition.getColumn()+i);
-                if (board.getPiece(oneDownRight) == null){
-                    ChessMove e = new ChessMove(myPosition, oneDownRight,null);
-                    moves.add(e);
-                }
-                else if (board.getPiece(oneDownRight).getTeamColor() != this.teamColor) {
-                    ChessMove e = new ChessMove(myPosition, oneDownRight,null);
-                    moves.add(e);
-                    break;
-                }
-                else if (board.getPiece(oneDownRight).getTeamColor() == this.teamColor) {
-                    break;
-                }
-            }
-        }
-        //Check down right move if bishop is closer to the right
-        if (right <= down) {
-            for (int i = 1; i <= right; i++) {
-                ChessPosition oneDownRight = new ChessPosition(myPosition.getRow()-i, myPosition.getColumn()+i);
-                if (board.getPiece(oneDownRight) == null){
-                    ChessMove e = new ChessMove(myPosition, oneDownRight,null);
-                    moves.add(e);
-                }
-                else if (board.getPiece(oneDownRight).getTeamColor() != this.teamColor) {
-                    ChessMove e = new ChessMove(myPosition, oneDownRight,null);
-                    moves.add(e);
-                    break;
-                }
-                else if (board.getPiece(oneDownRight).getTeamColor() == this.teamColor) {
-                    break;
-                }
-            }
-        }
-
-
-        return moves;
+        else return null;
     }
 
 }
