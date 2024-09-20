@@ -57,8 +57,6 @@ public class ChessPiece {
         // Make a ChessMovesCalculator and use it to get the collection of valid moves depending on piece type and board location.
         ChessMovesCalculator chessMovesCalculator = new ChessMovesCalculator();
         return chessMovesCalculator.pieceMoves(board,myPosition);
-
-        //return new ArrayList<ChessMove>();
     }
 
     @Override

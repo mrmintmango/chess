@@ -6,7 +6,6 @@ import java.util.Collection;
 public class ChessMovesCalculator {
     public ChessGame.TeamColor teamColor;
     public ChessMovesCalculator() {
-
     }
 
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
