@@ -12,7 +12,7 @@ public class kingMovesCalculator extends ChessMovesCalculator {
     }
 
     public Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition) {
-        moves = new ArrayList<ChessMove>();
+        moves = new ArrayList<>();
 
         //Check up move
         if (myPosition.getRow() != 8) {
