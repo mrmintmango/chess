@@ -79,7 +79,20 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        for (int row = 1; row <= 8; row++) { //revert to 0 and 7
+            for (int column = 1; column <= 8; column++) {
+                ChessPosition testPosition = new ChessPosition(row,column);
+                if (theBoard.getPiece(testPosition) != null && theBoard.getPiece(new ChessPosition(row,column)).getTeamColor() != teamColor){
+                    Collection<ChessMove> moves = validMoves(testPosition);
+                    for (ChessMove move : moves) {
+                        if(theBoard.getPiece(move.getEndPosition()) != null && theBoard.getPiece(move.getEndPosition()).getPieceType() == ChessPiece.PieceType.KING && theBoard.getPiece(move.getEndPosition()).getTeamColor() == teamColor){
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -109,7 +122,9 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        theBoard.resetBoard();
+        theBoard = board;
+        //this function doesn't actually reset the board.
+        //theBoard.resetBoard();
     }
 
     /**
