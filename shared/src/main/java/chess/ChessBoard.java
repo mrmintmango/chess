@@ -14,6 +14,8 @@ public class ChessBoard {
     public ChessBoard() {
     }
 
+    //make a couple methods that move pieces around
+
     /**
      * Adds a chess piece to the chessboard
      *

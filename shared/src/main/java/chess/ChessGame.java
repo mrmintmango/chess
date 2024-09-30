@@ -9,12 +9,11 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessGame {
-    ChessGame.TeamColor teamColor;
+    TeamColor teamColor;
     ChessBoard theBoard;
 
     public ChessGame() {
         teamColor = TeamColor.WHITE;
-
     }
 
     /**
@@ -60,6 +59,10 @@ public class ChessGame {
         else {
             return theBoard.getPiece(startPosition).pieceMoves(theBoard,startPosition);
         }
+
+        //get rid of any moves that will leave the king in check
+        // do this by duplicating the board (cloning), and checking if the move is in check
+        //make sure its a deep copy not a shallow copy
     }
 
     /**
@@ -69,7 +72,24 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPiece piece = theBoard.getPiece(move.getStartPosition());
+        if (piece == null){
+            throw new InvalidMoveException("No piece detected");
+        }
+        if (piece.getTeamColor() != getTeamTurn()){
+            throw new InvalidMoveException("Not your turn");
+        }
+        boolean valid = false;
+        Collection<ChessMove> moves = validMoves(move.getStartPosition());
+        // use collection.contains
+        for (ChessMove checkMove : moves) {
+            if (move == checkMove){
+                valid = true;
+            }
+        }
+        if (valid){
+
+        }
     }
 
     /**
@@ -82,8 +102,9 @@ public class ChessGame {
         for (int row = 1; row <= 8; row++) { //revert to 0 and 7
             for (int column = 1; column <= 8; column++) {
                 ChessPosition testPosition = new ChessPosition(row,column);
-                if (theBoard.getPiece(testPosition) != null && theBoard.getPiece(new ChessPosition(row,column)).getTeamColor() != teamColor){
-                    Collection<ChessMove> moves = validMoves(testPosition);
+                ChessPiece piece = theBoard.getPiece(testPosition);
+                if (piece != null && theBoard.getPiece(new ChessPosition(row,column)).getTeamColor() != teamColor){
+                    Collection<ChessMove> moves = piece.pieceMoves(theBoard,testPosition);
                     for (ChessMove move : moves) {
                         if(theBoard.getPiece(move.getEndPosition()) != null && theBoard.getPiece(move.getEndPosition()).getPieceType() == ChessPiece.PieceType.KING && theBoard.getPiece(move.getEndPosition()).getTeamColor() == teamColor){
                             return true;
@@ -123,8 +144,6 @@ public class ChessGame {
      */
     public void setBoard(ChessBoard board) {
         theBoard = board;
-        //this function doesn't actually reset the board.
-        //theBoard.resetBoard();
     }
 
     /**
