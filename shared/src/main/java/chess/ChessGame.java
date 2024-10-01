@@ -81,14 +81,14 @@ public class ChessGame {
         }
         boolean valid = false;
         Collection<ChessMove> moves = validMoves(move.getStartPosition());
-        // use collection.contains
-        for (ChessMove checkMove : moves) {
-            if (move == checkMove){
-                valid = true;
-            }
+        if (moves.contains(move)){
+            valid = true;
         }
         if (valid){
-
+            theBoard.movePiece(move);
+        }
+        else {
+            throw new InvalidMoveException("Not a valid move");
         }
     }
 
