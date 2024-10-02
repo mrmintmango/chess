@@ -15,10 +15,10 @@ public class ChessBoard implements Cloneable{
 
     }
 
-    //makes this class cloneable
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    public ChessBoard(ChessBoard copy){
+        squares = copy.squares.clone();
     }
+
     /**
      * Adds a chess piece to the chessboard
      *
@@ -99,8 +99,11 @@ public class ChessBoard implements Cloneable{
 
     public void movePiece(ChessMove move) {
         ChessPiece piece = getPiece(move.getStartPosition());
-        removePiece(move.getStartPosition());
+        if(move.getEndPosition() != null){
+            removePiece(move.getEndPosition());
+        }
         addPiece(move.getEndPosition(), piece);
+        removePiece(move.getStartPosition());
     }
 
     @Override

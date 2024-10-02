@@ -61,20 +61,14 @@ public class ChessGame {
         else {
             Collection<ChessMove> basicMoves = theBoard.getPiece(startPosition).pieceMoves(theBoard,startPosition);
             for (ChessMove i : basicMoves){
-                try {
-                    ChessBoard boardClone = (ChessBoard)theBoard.clone();
-                    boardClone.movePiece(i);
-                    //if()
-                    //fix this right nowww!
-
-                } catch (CloneNotSupportedException e) {
-                    throw new RuntimeException(e);
+                ChessBoard copyBoard = new ChessBoard(theBoard);
+                copyBoard.movePiece(i);
+                if (!isInCheck(teamColor,copyBoard)){
+                    valids.add(i);
                 }
-
             }
         }
-
-        return null;
+        return valids;
         //get rid of any moves that will leave the king in check
         // do this by duplicating the board (cloning), and checking if the move is in check
         //make sure it's a deep copy not a shallow copy
@@ -114,14 +108,18 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
+        return isInCheck(teamColor,theBoard);
+    }
+
+    public boolean isInCheck(TeamColor teamColor, ChessBoard board) {
         for (int row = 1; row <= 8; row++) { //revert to 0 and 7
             for (int column = 1; column <= 8; column++) {
                 ChessPosition testPosition = new ChessPosition(row,column);
-                ChessPiece piece = theBoard.getPiece(testPosition);
-                if (piece != null && theBoard.getPiece(new ChessPosition(row,column)).getTeamColor() != teamColor){
-                    Collection<ChessMove> moves = piece.pieceMoves(theBoard,testPosition);
+                ChessPiece piece = board.getPiece(testPosition);
+                if (piece != null && board.getPiece(new ChessPosition(row,column)).getTeamColor() != teamColor){
+                    Collection<ChessMove> moves = piece.pieceMoves(board,testPosition);
                     for (ChessMove move : moves) {
-                        ChessPiece victim = theBoard.getPiece(move.getEndPosition());
+                        ChessPiece victim = board.getPiece(move.getEndPosition());
                         if(victim != null && victim.getPieceType() == ChessPiece.PieceType.KING && victim.getTeamColor() == teamColor){
                             return true;
                         }
