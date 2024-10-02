@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -53,16 +54,30 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+        Collection<ChessMove> valids = new ArrayList<ChessMove>();
         if (theBoard.getPiece(startPosition) == null){
             return null;
         }
         else {
-            return theBoard.getPiece(startPosition).pieceMoves(theBoard,startPosition);
+            Collection<ChessMove> basicMoves = theBoard.getPiece(startPosition).pieceMoves(theBoard,startPosition);
+            for (ChessMove i : basicMoves){
+                try {
+                    ChessBoard boardClone = (ChessBoard)theBoard.clone();
+                    boardClone.movePiece(i);
+                    //if()
+                    //fix this right nowww!
+
+                } catch (CloneNotSupportedException e) {
+                    throw new RuntimeException(e);
+                }
+
+            }
         }
 
+        return null;
         //get rid of any moves that will leave the king in check
         // do this by duplicating the board (cloning), and checking if the move is in check
-        //make sure its a deep copy not a shallow copy
+        //make sure it's a deep copy not a shallow copy
     }
 
     /**
@@ -106,7 +121,8 @@ public class ChessGame {
                 if (piece != null && theBoard.getPiece(new ChessPosition(row,column)).getTeamColor() != teamColor){
                     Collection<ChessMove> moves = piece.pieceMoves(theBoard,testPosition);
                     for (ChessMove move : moves) {
-                        if(theBoard.getPiece(move.getEndPosition()) != null && theBoard.getPiece(move.getEndPosition()).getPieceType() == ChessPiece.PieceType.KING && theBoard.getPiece(move.getEndPosition()).getTeamColor() == teamColor){
+                        ChessPiece victim = theBoard.getPiece(move.getEndPosition());
+                        if(victim != null && victim.getPieceType() == ChessPiece.PieceType.KING && victim.getTeamColor() == teamColor){
                             return true;
                         }
                     }

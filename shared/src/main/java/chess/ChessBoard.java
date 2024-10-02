@@ -9,11 +9,16 @@ import java.util.Objects;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessBoard {
+public class ChessBoard implements Cloneable{
     private ChessPiece[][] squares = new ChessPiece[8][8];
     public ChessBoard() {
+
     }
 
+    //makes this class cloneable
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
     /**
      * Adds a chess piece to the chessboard
      *
