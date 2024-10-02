@@ -55,6 +55,7 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         Collection<ChessMove> valids = new ArrayList<ChessMove>();
+        ChessGame.TeamColor color = theBoard.getPiece(startPosition).getTeamColor();
         if (theBoard.getPiece(startPosition) == null){
             return null;
         }
@@ -63,7 +64,7 @@ public class ChessGame {
             for (ChessMove i : basicMoves){
                 ChessBoard copyBoard = new ChessBoard(theBoard);
                 copyBoard.movePiece(i);
-                if (!isInCheck(teamColor,copyBoard)){
+                if (!isInCheck(color,copyBoard)){
                     valids.add(i);
                 }
             }
@@ -99,6 +100,7 @@ public class ChessGame {
         else {
             throw new InvalidMoveException("Not a valid move");
         }
+        setTeamTurn(teamColor);
     }
 
     /**
@@ -116,9 +118,8 @@ public class ChessGame {
             for (int column = 1; column <= 8; column++) {
                 ChessPosition testPosition = new ChessPosition(row,column);
                 ChessPiece piece = board.getPiece(testPosition);
-                if (piece != null && board.getPiece(new ChessPosition(row,column)).getTeamColor() != teamColor){
-                    Collection<ChessMove> moves = piece.pieceMoves(board,testPosition);
-                    for (ChessMove move : moves) {
+                if (piece != null && piece.getTeamColor() != teamColor){
+                    for (ChessMove move : piece.pieceMoves(board,testPosition)) {
                         ChessPiece victim = board.getPiece(move.getEndPosition());
                         if(victim != null && victim.getPieceType() == ChessPiece.PieceType.KING && victim.getTeamColor() == teamColor){
                             return true;
