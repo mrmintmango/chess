@@ -23,10 +23,10 @@ public class UserDAO {
     }
 
     public boolean userFound(String username) {
-        if (userDataMap.containsKey(username)) {
-            return true;
-        } else {
-            return false;
-        }
+        return userDataMap.containsKey(username);
+    }
+
+    public void registerUser(UserData user) {
+        userDataMap.put(user.username(), user);
     }
 }

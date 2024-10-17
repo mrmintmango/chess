@@ -9,8 +9,8 @@ public class AuthDAO {
     Map<String, AuthData> authDataMap = new HashMap<>();
 
     // Auth Data Methods:
-    public void createAuth(String authToken, String username) {
-        authDataMap.put(username, new AuthData(authToken, username));
+    public void createAuth(String authToken, AuthData auth) {
+        authDataMap.put(authToken, auth);
     }
 
     public AuthData getAuth(String authToken) throws DataAccessException {
@@ -29,6 +29,10 @@ public class AuthDAO {
         else{
             throw new DataAccessException("AuthToken doesn't exist");
         }
+    }
+
+    public boolean authFound(String authToken) {
+        return authDataMap.containsKey(authToken);
     }
 
 }
