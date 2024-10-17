@@ -22,4 +22,11 @@ public class UserDAO {
         }
     }
 
+    public boolean userFound(String username) {
+        if (userDataMap.containsKey(username)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

@@ -9,7 +9,7 @@ public class AuthDAO {
     Map<String, AuthData> authDataMap = new HashMap<>();
 
     // Auth Data Methods:
-    void createAuth(String authToken, String username) {
+    public void createAuth(String authToken, String username) {
         authDataMap.put(username, new AuthData(authToken, username));
     }
 

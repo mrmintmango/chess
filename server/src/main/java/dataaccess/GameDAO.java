@@ -12,12 +12,11 @@ public class GameDAO {
 
     // Game Data Methods:
     void createGame(int gameID, String white, String black, String gameName, ChessGame game) {
-        String ID = "" + gameID;
-        gameDataMap.put(ID, new GameData(gameID, white, black, gameName, game));
+        gameDataMap.put(gameIDtoString(gameID), new GameData(gameID, white, black, gameName, game));
     }
 
     public GameData getGame(int gameID) throws DataAccessException {
-        String ID = "" + gameID;
+        String ID = gameIDtoString(gameID);
         if (gameDataMap.containsKey(ID)){
             return gameDataMap.get(ID);
         }
@@ -38,9 +37,12 @@ public class GameDAO {
     void updateGame(int gameID) {
         //Updates a chess game. It should replace the chess game string corresponding to a given gameID.
         // This is used when players join a game or when a move is made.
-        String ID = "" + gameID;
 
-        String what = gameDataMap.get(ID).blackUsername();
+
+        String what = gameDataMap.get(gameIDtoString(gameID)).blackUsername();
     }
 
+    public String gameIDtoString(int gameID) {
+        return "" + gameID;
+    }
 }
