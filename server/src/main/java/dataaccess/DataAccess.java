@@ -24,19 +24,4 @@ public class DataAccess {
         userDataMap.clear();
     }
 
-    // User Data Methods:
-    void createUser(String username, String password, String email) {
-        userDataMap.put(username, new UserData(username, password, email));
-    }
-
-    // Game Data Methods:
-    void createGame(int gameID, String white, String black, String gameName, ChessGame game) {
-        gameDataMap.put(gameName, new GameData(gameID, white, black, gameName, game));
-    }
-
-    // Auth Data Methods:
-    void createAuth(String authToken, String username) {
-        authDataMap.put(username, new AuthData(authToken, username));
-    }
-
 }
