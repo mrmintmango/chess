@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+
 public class GameServiceTests {
     private GameService gameService;
 
@@ -40,5 +42,10 @@ public class GameServiceTests {
     }
 
     @Test
-    public void ListGamesTest() {}
+    public void ListGamesTest() {
+        ArrayList<GameData> expected = new ArrayList<>();
+        ArrayList<GameData> actual = gameService.ListGames();
+        
+        Assertions.assertEquals(expected, actual);
+    }
 }

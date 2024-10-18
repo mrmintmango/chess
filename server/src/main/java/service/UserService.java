@@ -12,16 +12,16 @@ import java.util.UUID;
 public class UserService extends ParentService {
 
 
-    public AuthData register(UserData user) {
+    public AuthData register(UserData user) throws DataAccessException{
         //first check if the username is already taken
-        if (userDAO.userFound(user.username())){
+        if (!userDAO.userFound(user.username())){
             String authToken = UUID.randomUUID().toString(); //creates a new authToken
             AuthData authData = new AuthData(authToken, user.username()); //creates new authData with token and username from user
             authDAO.createAuth(authToken, authData); //places the new authData into the authData store
             userDAO.registerUser(user);
             return authData;
         }
-        return null;
+        else throw new DataAccessException("Username already taken");
     }
 
     public AuthData login(UserData user) throws DataAccessException {
