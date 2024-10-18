@@ -42,5 +42,6 @@ public class GameService extends ParentService {
                 }
             }
         }
+        else throw new DataAccessException("Auth Token not found");
     }
 }

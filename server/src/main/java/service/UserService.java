@@ -32,13 +32,15 @@ public class UserService extends ParentService {
                 authDAO.createAuth(authToken, authData); //places the new authData into the authData store
                 return authData;
             }
+            else throw new DataAccessException("Incorrect Password");
         }
-        return null;
+        else throw new DataAccessException("Username not found");
     }
 
     public void logout(AuthData auth) throws DataAccessException {
         if (authDAO.authFound(auth.authToken())){
             authDAO.deleteAuth(auth.authToken());
         }
+        else throw new DataAccessException("Auth not found");
     }
 }
