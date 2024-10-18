@@ -1,6 +1,9 @@
 package service;
 
 import chess.ChessGame;
+import dataaccess.AuthDAO;
+import dataaccess.GameDAO;
+import dataaccess.UserDAO;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -14,7 +17,10 @@ public class ParentServiceTests {
 
     @BeforeEach
     public void setUp() {
-        parentService = new ParentService();
+        AuthDAO authDAO = new AuthDAO();
+        GameDAO gameDAO = new GameDAO();
+        UserDAO userDAO = new UserDAO();
+        parentService = new ParentService(authDAO, gameDAO, userDAO);
     }
 
     @Test
@@ -23,15 +29,15 @@ public class ParentServiceTests {
         GameData gameData = new GameData(5, "white", "black", "gameName", game);
         AuthData authData = new AuthData("authToken", "username");
         UserData userData = new UserData("username", "password", "email@gmail@yahoo");
-        parentService.dataAccess.userDataMap.put("username", userData);
-        parentService.dataAccess.gameDataMap.put(5, gameData);
-        parentService.dataAccess.authDataMap.put("username", authData);
+        parentService.AddUser("username", userData);
+        parentService.AddGame(5, gameData);
+        parentService.AddAuth("username", authData);
 
         parentService.ClearApplication();
 
-        Assertions.assertEquals(0, parentService.dataAccess.authDataMap.size());
-        Assertions.assertEquals(0, parentService.dataAccess.gameDataMap.size());
-        Assertions.assertEquals(0, parentService.dataAccess.userDataMap.size());
+        Assertions.assertEquals(0, parentService.authSize());
+        Assertions.assertEquals(0, parentService.gameSize());
+        Assertions.assertEquals(0, parentService.userSize());
     }
 
 }

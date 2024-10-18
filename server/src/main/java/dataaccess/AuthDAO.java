@@ -5,7 +5,12 @@ import model.AuthData;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AuthDAO extends DataAccess{
+public class AuthDAO {
+    public Map<String, AuthData> authDataMap = new HashMap<>();
+
+    public void clear() {
+        authDataMap.clear();
+    }
 
     // Auth Data Methods:
     public void createAuth(String authToken, AuthData auth) {

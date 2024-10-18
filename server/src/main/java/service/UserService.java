@@ -2,6 +2,7 @@ package service;
 
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
+import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import model.AuthData;
 import model.UserData;
@@ -9,8 +10,16 @@ import model.UserData;
 import java.util.Objects;
 import java.util.UUID;
 
-public class UserService extends ParentService {
+public class UserService {
+    private final AuthDAO authDAO;
+    //private final GameDAO gameDAO;
+    private final UserDAO userDAO;
 
+    public UserService(AuthDAO authDAO, GameDAO gameDAO, UserDAO userDAO){
+        this.authDAO = authDAO;
+        //this.gameDAO = gameDAO;
+        this.userDAO = userDAO;
+    }
 
     public AuthData register(UserData user) throws DataAccessException{
         //first check if the username is already taken

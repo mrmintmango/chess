@@ -5,7 +5,12 @@ import model.UserData;
 import java.util.HashMap;
 import java.util.Map;
 
-public class UserDAO extends DataAccess{
+public class UserDAO {
+    public Map<String, UserData> userDataMap = new HashMap<>();
+
+    public void clear() {
+        userDataMap.clear();
+    }
 
     // User Data Methods:
     void createUser(String username, String password, String email) {

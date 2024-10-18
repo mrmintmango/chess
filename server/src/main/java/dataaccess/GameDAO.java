@@ -7,7 +7,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GameDAO extends DataAccess{
+public class GameDAO {
+    public Map<Integer, GameData> gameDataMap = new HashMap<>();
+
+    public void clear() {
+        gameDataMap.clear();
+    }
 
     // Game Data Methods:
     public void createGame(int gameID, String white, String black, String gameName, ChessGame game) {
