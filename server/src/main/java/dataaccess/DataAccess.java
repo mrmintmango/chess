@@ -11,14 +11,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DataAccess {
-    Map<String, AuthData> authDataMap = new HashMap<>();
-    Map<String, GameData> gameDataMap = new HashMap<>();
-    Map<String, UserData> userDataMap = new HashMap<>();
+    public Map<String, AuthData> authDataMap = new HashMap<>();
+    public Map<Integer, GameData> gameDataMap = new HashMap<>();
+    public Map<String, UserData> userDataMap = new HashMap<>();
     public DataAccess() {
 
     }
 
-    void clear() {
+    public void clear() {
         authDataMap.clear();
         gameDataMap.clear();
         userDataMap.clear();

@@ -9,9 +9,8 @@ import model.UserData;
 import java.util.Objects;
 import java.util.UUID;
 
-public class UserService {
-    UserDAO userDAO = new UserDAO();
-    AuthDAO authDAO = new AuthDAO();
+public class UserService extends ParentService {
+
 
     public AuthData register(UserData user) {
         //first check if the username is already taken
