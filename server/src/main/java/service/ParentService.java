@@ -30,23 +30,23 @@ public class ParentService {
 
     //FOR TESTING
 
-    // public void AddAuth(String authToken, AuthData auth) {
-    //     memoryAuthDAO.authDataMap.put(authToken, auth);
-    // }
-    // public void AddGame(int gameID, GameData game) {
-    //     memoryGameDAO.gameDataMap.put(gameID, game);
-    // }
-    // public void AddUser(String username, UserData user) {
-    //     memoryUserDAO.userDataMap.put(username, user);
-    // }
-    //
-    // public int authSize() {
-    //     return memoryAuthDAO.authDataMap.size();
-    // }
-    // public int userSize() {
-    //     return memoryUserDAO.userDataMap.size();
-    // }
-    // public int gameSize() {
-    //     return memoryGameDAO.gameDataMap.size();
-    // }
+     public void AddAuth(String authToken, AuthData auth) {
+        memoryAuthDAO.createAuth(authToken,auth);
+     }
+     public void AddGame(int gameID, GameData game) {
+        memoryGameDAO.putGame(gameID, game);
+     }
+     public void AddUser(String username, UserData user) {
+        memoryUserDAO.putUser(username, user);
+     }
+
+     public int authSize() {
+         return memoryAuthDAO.getAuthSize();
+     }
+     public int userSize() {
+         return memoryUserDAO.getUserSize();
+     }
+     public int gameSize() {
+         return memoryGameDAO.getGameSize();
+     }
 }

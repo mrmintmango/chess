@@ -25,7 +25,7 @@ public class UserService {
             memoryUserDAO.registerUser(user);
             return authData;
         }
-        else throw new DataAccessException("Username already taken");
+        else throw new DataAccessException("already taken");
     }
 
     public AuthData login(UserData user) throws DataAccessException {
@@ -38,14 +38,14 @@ public class UserService {
             }
             else throw new DataAccessException("Incorrect Password");
         }
-        else throw new DataAccessException("Username not found");
+        else throw new DataAccessException("unauthorized");
     }
 
     public void logout(String authToken) throws DataAccessException {
         if (memoryAuthDAO.authFound(authToken)){
             memoryAuthDAO.deleteAuth(authToken);
         }
-        else throw new DataAccessException("Auth not found");
+        else throw new DataAccessException("unauthorized");
     }
 
     //Methods for testing purposes.

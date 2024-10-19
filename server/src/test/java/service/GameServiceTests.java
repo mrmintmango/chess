@@ -54,8 +54,9 @@ public class GameServiceTests {
         AuthData authData = new AuthData("testToken", "authUsername");
         gameService.createAuth("testToken", authData);
         gameService.CreateGame(request);
-        JoinGameRequest joinReq = new JoinGameRequest("testToken","WHITE", 0);
-        gameService.JoinGame(joinReq);
+        JoinGameRequest joinReq = new JoinGameRequest("WHITE", 0);
+        String authToken = "testToken";
+        gameService.JoinGame(authToken, joinReq);
 
         Assertions.assertEquals("authUsername", gameService.getGame(0).whiteUsername());
     }
@@ -65,8 +66,9 @@ public class GameServiceTests {
         AuthData authData = new AuthData("testToken", "authUsername");
         gameService.createAuth("testToken", authData);
         gameService.CreateGame(request);
-        JoinGameRequest joinReq = new JoinGameRequest("testToken","BLACK", 0);
-        gameService.JoinGame(joinReq);
+        JoinGameRequest joinReq = new JoinGameRequest("BLACK", 0);
+        String authToken = "testToken";
+        gameService.JoinGame(authToken, joinReq);
 
         Assertions.assertEquals("authUsername", gameService.getGame(0).blackUsername());
     }
@@ -74,10 +76,11 @@ public class GameServiceTests {
     @Test
     public void JoinGameFailTest() throws DataAccessException {
         boolean thrown = false;
-        JoinGameRequest joinReq = new JoinGameRequest("testToken","WHITE", 0);
+        JoinGameRequest joinReq = new JoinGameRequest("WHITE", 0);
+        String authToken = "testToken";
 
         try {
-            gameService.JoinGame(joinReq);
+            gameService.JoinGame(authToken, joinReq);
         }
         catch (DataAccessException e) {
             thrown = true;

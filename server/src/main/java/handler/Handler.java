@@ -127,7 +127,7 @@ public class Handler {
         else if (e.getMessage().equals("bad request")) {
             res.status(400);
         }
-        else if (e.getMessage().equals("Other Error")) {
+        else {
             res.status(500);
         }
         res.body(body);

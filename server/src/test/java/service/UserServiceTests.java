@@ -102,7 +102,7 @@ public class UserServiceTests {
         AuthData authData = new AuthData("token", "username");
         userService.putAuth("token", authData);
 
-        userService.logout(authData);
+        userService.logout(authData.authToken());
 
         Assertions.assertEquals(0, userService.getAuthSize());
     }
@@ -115,7 +115,7 @@ public class UserServiceTests {
         AuthData wrong = new AuthData("shmoken", "username");
 
         try {
-            userService.logout(wrong);
+            userService.logout(wrong.authToken());
         }
         catch (DataAccessException e) {
             thrown = true;

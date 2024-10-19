@@ -56,4 +56,8 @@ public class MemoryGameDAO implements GameDAOI{
         gameDataMap.put(gameID, game);
     }
 
+    public int getGameSize() {
+        return gameDataMap.size();
+    }
+
 }

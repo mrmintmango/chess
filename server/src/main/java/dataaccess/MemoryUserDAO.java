@@ -38,4 +38,8 @@ public class MemoryUserDAO implements UserDAOI{
         userDataMap.put(name, user);
     }
 
+    public int getUserSize() {
+        return userDataMap.size();
+    }
+
 }

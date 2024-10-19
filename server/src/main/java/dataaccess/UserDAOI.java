@@ -14,6 +14,8 @@ public interface UserDAOI {
 
     public void putUser(String name, UserData user);
 
+    public int getUserSize();
+
     default void registerUser(UserData user) {
 
     }

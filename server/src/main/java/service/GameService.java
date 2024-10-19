@@ -24,9 +24,7 @@ public class GameService {
         if (memoryAuthDAO.authFound(authToken)){
             return memoryGameDAO.listGames();
         }
-        else throw new DataAccessException("Auth Token not found");
-
-
+        else throw new DataAccessException("unauthorized");
     }
 
     //double check how to get the gameID
@@ -37,7 +35,7 @@ public class GameService {
             increment++;
             return game;
         }
-        else throw new DataAccessException("Auth Token not found");
+        else throw new DataAccessException("unauthorized");
     }
 
     public void JoinGame(String authToken, JoinGameRequest request) throws DataAccessException {
@@ -46,16 +44,23 @@ public class GameService {
         if (memoryAuthDAO.authFound(authToken)){
             String username = memoryAuthDAO.getAuth(authToken).username();
             if (memoryGameDAO.findGame(gameID)) {
-                if (Objects.equals(request.playerColor(), "BLACK"))
+                if (Objects.equals(request.playerColor(), "BLACK") && memoryGameDAO.getGame(gameID).blackUsername() == null)
                 {
                     memoryGameDAO.updateGame(gameID, username, false);
                 }
-                else  {
+                else if (Objects.equals(request.playerColor(), "WHITE") && memoryGameDAO.getGame(gameID).whiteUsername() == null) {
                     memoryGameDAO.updateGame(gameID, username, true);
                 }
+                else if (Objects.equals(request.playerColor(), "WHITE") && !(memoryGameDAO.getGame(gameID).whiteUsername() == null)) {
+                    throw new DataAccessException("already taken");
+                }
+                else if (Objects.equals(request.playerColor(), "BLACK") && !(memoryGameDAO.getGame(gameID).blackUsername() == null)) {
+                    throw new DataAccessException("already taken");
+                }
             }
+            else throw new DataAccessException("bad request");
         }
-        else throw new DataAccessException("Auth Token not found");
+        else throw new DataAccessException("unauthorized");
     }
 
     public void createAuth(String name, AuthData auth) {

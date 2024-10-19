@@ -1,9 +1,7 @@
 package service;
 
 import chess.ChessGame;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryGameDAO;
-import dataaccess.MemoryUserDAO;
+import dataaccess.*;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -17,9 +15,9 @@ public class ParentServiceTests {
 
     @BeforeEach
     public void setUp() {
-        MemoryAuthDAO memoryAuthDAO = new MemoryAuthDAO();
-        MemoryGameDAO memoryGameDAO = new MemoryGameDAO();
-        MemoryUserDAO memoryUserDAO = new MemoryUserDAO();
+        AuthDAOI memoryAuthDAO = new MemoryAuthDAO();
+        GameDAOI memoryGameDAO = new MemoryGameDAO();
+        UserDAOI memoryUserDAO = new MemoryUserDAO();
         parentService = new ParentService(memoryAuthDAO, memoryGameDAO, memoryUserDAO);
     }
 

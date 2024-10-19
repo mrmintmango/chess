@@ -19,6 +19,8 @@ public interface GameDAOI {
 
     public void putGame(int gameID, GameData game);
 
+    public int getGameSize();
+
     default void updateGame(int gameID, String username, boolean bw) {
 
     }
