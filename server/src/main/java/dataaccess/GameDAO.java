@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GameDAO {
+public class GameDAO implements GameDAOI{
     public Map<Integer, GameData> gameDataMap = new HashMap<>();
 
     public void clear() {

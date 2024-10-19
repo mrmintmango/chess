@@ -5,7 +5,7 @@ import model.UserData;
 import java.util.HashMap;
 import java.util.Map;
 
-public class UserDAO {
+public class UserDAO implements UserDAOI{
     public Map<String, UserData> userDataMap = new HashMap<>();
 
     public void clear() {
@@ -13,7 +13,7 @@ public class UserDAO {
     }
 
     // User Data Methods:
-    void createUser(String username, String password, String email) {
+    public void createUser(String username, String password, String email) {
         userDataMap.put(username, new UserData(username, password, email));
     }
 
