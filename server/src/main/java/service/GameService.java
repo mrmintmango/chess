@@ -40,8 +40,7 @@ public class GameService {
         else throw new DataAccessException("Auth Token not found");
     }
 
-    public void JoinGame(JoinGameRequest request) throws DataAccessException {
-        String authToken = request.authToken();
+    public void JoinGame(String authToken, JoinGameRequest request) throws DataAccessException {
         int gameID = request.gameID();
 
         if (memoryAuthDAO.authFound(authToken)){

@@ -41,9 +41,9 @@ public class UserService {
         else throw new DataAccessException("Username not found");
     }
 
-    public void logout(AuthData auth) throws DataAccessException {
-        if (memoryAuthDAO.authFound(auth.authToken())){
-            memoryAuthDAO.deleteAuth(auth.authToken());
+    public void logout(String authToken) throws DataAccessException {
+        if (memoryAuthDAO.authFound(authToken)){
+            memoryAuthDAO.deleteAuth(authToken);
         }
         else throw new DataAccessException("Auth not found");
     }
