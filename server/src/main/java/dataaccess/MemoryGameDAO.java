@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GameDAO implements GameDAOI{
+public class MemoryGameDAO implements GameDAOI{
     public Map<Integer, GameData> gameDataMap = new HashMap<>();
 
     public void clear() {
@@ -50,6 +50,10 @@ public class GameDAO implements GameDAOI{
 
     public boolean findGame(int gameID) {
         return gameDataMap.containsKey(gameID);
+    }
+
+    public void putGame(int gameID, GameData game) {
+        gameDataMap.put(gameID, game);
     }
 
 }

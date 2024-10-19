@@ -1,47 +1,52 @@
 package service;
 
-import dataaccess.AuthDAO;
-import dataaccess.GameDAO;
-import dataaccess.UserDAO;
+import dataaccess.*;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
 
 public class ParentService {
 
-    private final AuthDAO authDAO;
-    private final GameDAO gameDAO;
-    private final UserDAO userDAO;
+    private final AuthDAOI memoryAuthDAO;
+    private final GameDAOI memoryGameDAO;
+    private final UserDAOI memoryUserDAO;
 
-    public ParentService(AuthDAO authDAO, GameDAO gameDAO, UserDAO userDAO) {
-        this.authDAO = authDAO;
-        this.gameDAO = gameDAO;
-        this.userDAO = userDAO;
+    public ParentService(AuthDAOI memoryAuthDAO, GameDAOI memoryGameDAO, UserDAOI memoryUserDAO) {
+        this.memoryGameDAO = memoryGameDAO;
+        this.memoryAuthDAO = memoryAuthDAO;
+        this.memoryUserDAO = memoryUserDAO;
+
+        //this.memoryAuthDAO = (MemoryAuthDAO) memoryAuthDAO;
+        //this.memoryGameDAO = (MemoryGameDAO) memoryGameDAO;
+        //this.memoryUserDAO = (MemoryUserDAO) memoryUserDAO;
+        //change all to interfaces
     }
 
     public void ClearApplication() {
-        authDAO.clear();
-        gameDAO.clear();
-        userDAO.clear();
+        memoryAuthDAO.clear();
+        memoryGameDAO.clear();
+        memoryUserDAO.clear();
     }
 
-    public void AddAuth(String authToken, AuthData auth) {
-        authDAO.authDataMap.put(authToken, auth);
-    }
-    public void AddGame(int gameID, GameData game) {
-        gameDAO.gameDataMap.put(gameID, game);
-    }
-    public void AddUser(String username, UserData user) {
-        userDAO.userDataMap.put(username, user);
-    }
+    //FOR TESTING
 
-    public int authSize() {
-        return authDAO.authDataMap.size();
-    }
-    public int userSize() {
-        return userDAO.userDataMap.size();
-    }
-    public int gameSize() {
-        return gameDAO.gameDataMap.size();
-    }
+    // public void AddAuth(String authToken, AuthData auth) {
+    //     memoryAuthDAO.authDataMap.put(authToken, auth);
+    // }
+    // public void AddGame(int gameID, GameData game) {
+    //     memoryGameDAO.gameDataMap.put(gameID, game);
+    // }
+    // public void AddUser(String username, UserData user) {
+    //     memoryUserDAO.userDataMap.put(username, user);
+    // }
+    //
+    // public int authSize() {
+    //     return memoryAuthDAO.authDataMap.size();
+    // }
+    // public int userSize() {
+    //     return memoryUserDAO.userDataMap.size();
+    // }
+    // public int gameSize() {
+    //     return memoryGameDAO.gameDataMap.size();
+    // }
 }

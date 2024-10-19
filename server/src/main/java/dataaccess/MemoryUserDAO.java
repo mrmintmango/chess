@@ -5,7 +5,7 @@ import model.UserData;
 import java.util.HashMap;
 import java.util.Map;
 
-public class UserDAO implements UserDAOI{
+public class MemoryUserDAO implements UserDAOI{
     public Map<String, UserData> userDataMap = new HashMap<>();
 
     public void clear() {
@@ -33,4 +33,9 @@ public class UserDAO implements UserDAOI{
     public void registerUser(UserData user) {
         userDataMap.put(user.username(), user);
     }
+
+    public void putUser(String name, UserData user) {
+        userDataMap.put(name, user);
+    }
+
 }

@@ -5,7 +5,7 @@ import model.AuthData;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AuthDAO implements AuthDAOI {
+public class MemoryAuthDAO implements AuthDAOI {
     public Map<String, AuthData> authDataMap = new HashMap<>();
 
     public void clear() {
@@ -37,6 +37,14 @@ public class AuthDAO implements AuthDAOI {
 
     public boolean authFound(String authToken) {
         return authDataMap.containsKey(authToken);
+    }
+
+    public void putAuth(String name, AuthData auth) {
+        authDataMap.put(name, auth);
+    }
+
+    public int getAuthSize() {
+        return authDataMap.size();
     }
 
 }

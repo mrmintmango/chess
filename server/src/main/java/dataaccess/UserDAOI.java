@@ -4,11 +4,17 @@ import model.UserData;
 
 public interface UserDAOI {
 
-    public void clear();
+    void clear();
 
-    public void createUser(String username, String password, String email);
+    void createUser(String username, String password, String email);
 
-    public UserData getUser(String username) throws DataAccessException;
+    UserData getUser(String username) throws DataAccessException;
 
-    public void registerUser(UserData user);
+    public boolean userFound(String username);
+
+    public void putUser(String name, UserData user);
+
+    default void registerUser(UserData user) {
+
+    }
 }

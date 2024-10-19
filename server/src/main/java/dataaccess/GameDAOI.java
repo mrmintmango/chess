@@ -7,13 +7,19 @@ import java.util.ArrayList;
 
 public interface GameDAOI {
 
-    public void clear();
+    void clear();
 
-    public void createGame(int gameID, String white, String black, String gameName, ChessGame game);
+    void createGame(int gameID, String white, String black, String gameName, ChessGame game);
 
-    public GameData getGame(int gameID) throws DataAccessException;
+    GameData getGame(int gameID) throws DataAccessException;
 
-    public ArrayList<GameData> listGames();
+    ArrayList<GameData> listGames();
 
-    public void updateGame(int gameID, String username, boolean bw);
+    public boolean findGame(int gameID);
+
+    public void putGame(int gameID, GameData game);
+
+    default void updateGame(int gameID, String username, boolean bw) {
+
+    }
 }

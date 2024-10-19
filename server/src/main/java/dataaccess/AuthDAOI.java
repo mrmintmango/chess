@@ -2,13 +2,22 @@ package dataaccess;
 
 import model.AuthData;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public interface AuthDAOI {
 
-    public void clear();
+    void clear();
 
-    public void createAuth(String authToken, AuthData auth);
+    void createAuth(String authToken, AuthData auth);
 
-    public AuthData getAuth(String authToken) throws DataAccessException;
+    AuthData getAuth(String authToken) throws DataAccessException;
 
-    public void deleteAuth(String authToken) throws DataAccessException;
+    void deleteAuth(String authToken) throws DataAccessException;
+
+    public boolean authFound(String authToken);
+
+    public int getAuthSize();
+
+    public void putAuth(String name, AuthData auth);
 }

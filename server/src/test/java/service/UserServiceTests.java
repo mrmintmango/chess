@@ -1,7 +1,9 @@
 package service;
 
-
 import dataaccess.DataAccessException;
+import dataaccess.MemoryAuthDAO;
+import dataaccess.MemoryGameDAO;
+import dataaccess.MemoryUserDAO;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
@@ -13,7 +15,9 @@ public class UserServiceTests {
 
     @BeforeEach
     public void setUserService() {
-        userService = new UserService();
+        MemoryUserDAO userDAO = new MemoryUserDAO();
+        MemoryAuthDAO authDAO = new MemoryAuthDAO();
+        userService = new UserService(authDAO, userDAO);
     }
 
     @Test
@@ -21,7 +25,7 @@ public class UserServiceTests {
         UserData user = new UserData("username", "password", "email@gmail.com");
         userService.register(user);
 
-        Assertions.assertEquals(user, userService.userDAO.getUser("username"));
+        Assertions.assertEquals(user, userService.getUser("username"));
     }
 
     @Test
@@ -44,8 +48,8 @@ public class UserServiceTests {
     public void LoginTest() throws DataAccessException {
         UserData user1 = new UserData("user1", "pass", "fake email");
         UserData user2 = new UserData("user2", "password", "fake-email");
-        userService.userDAO.userDataMap.put("user1",user1);
-        userService.userDAO.userDataMap.put("user2",user2);
+        userService.putUser("user1",user1);
+        userService.putUser("user2",user2);
 
         AuthData expected = new AuthData("random", "user1");
         AuthData actual = userService.login(user1);
@@ -57,8 +61,8 @@ public class UserServiceTests {
         boolean thrown = false;
         UserData user1 = new UserData("user1", "pass", "fake email");
         UserData user2 = new UserData("user2", "password", "fake-email");
-        userService.userDAO.userDataMap.put("user1",user1);
-        userService.userDAO.userDataMap.put("user2",user2);
+        userService.putUser("user1",user1);
+        userService.putUser("user2",user2);
         UserData wrong = new UserData("user1", "word", "fake email");
 
         AuthData expected = new AuthData("random", "user1");
@@ -77,8 +81,8 @@ public class UserServiceTests {
         boolean thrown = false;
         UserData user1 = new UserData("user1", "pass", "fake email");
         UserData user2 = new UserData("user2", "password", "fake-email");
-        userService.userDAO.userDataMap.put("user1",user1);
-        userService.userDAO.userDataMap.put("user2",user2);
+        userService.putUser("user1",user1);
+        userService.putUser("user2",user2);
         UserData wrong = new UserData("user10", "pass", "fake email");
 
         AuthData expected = new AuthData("random", "user1");
@@ -96,18 +100,18 @@ public class UserServiceTests {
     @Test
     public void logoutTest() throws DataAccessException {
         AuthData authData = new AuthData("token", "username");
-        userService.authDAO.authDataMap.put("token", authData);
+        userService.putAuth("token", authData);
 
         userService.logout(authData);
 
-        Assertions.assertEquals(0, userService.authDAO.authDataMap.size());
+        Assertions.assertEquals(0, userService.getAuthSize());
     }
 
     @Test
     public void logoutFailTest() throws DataAccessException {
         boolean thrown = false;
         AuthData authData = new AuthData("token", "username");
-        userService.authDAO.authDataMap.put("token", authData);
+        userService.putAuth("token", authData);
         AuthData wrong = new AuthData("shmoken", "username");
 
         try {
