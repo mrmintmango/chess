@@ -15,11 +15,6 @@ public class ParentService {
         this.memoryGameDAO = memoryGameDAO;
         this.memoryAuthDAO = memoryAuthDAO;
         this.memoryUserDAO = memoryUserDAO;
-
-        //this.memoryAuthDAO = (MemoryAuthDAO) memoryAuthDAO;
-        //this.memoryGameDAO = (MemoryGameDAO) memoryGameDAO;
-        //this.memoryUserDAO = (MemoryUserDAO) memoryUserDAO;
-        //change all to interfaces
     }
 
     public void ClearApplication() {

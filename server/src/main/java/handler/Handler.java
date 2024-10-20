@@ -28,8 +28,8 @@ public class Handler {
     public Object ClearApplication(Request req, Response res) {
         try {
             parentService.ClearApplication();
-            res.body(null);
-            return null;
+            res.body("{}");
+            return "{}";
         } catch (Exception e) {
             return ExceptionCatcher(e, req, res);
         }
@@ -66,8 +66,10 @@ public class Handler {
         try {
             String authToken = req.headers("authorization");
             userService.logout(authToken);
-            res.body(gson.toJson(null));
-            return gson.toJson(null);
+            res.body("{}");
+            return "{}";
+            //res.body(gson.toJson(null));
+            //return gson.toJson(null);
         }
         catch (Exception e) {
             return ExceptionCatcher(e, req, res);
@@ -108,8 +110,10 @@ public class Handler {
             String authToken = req.headers("authorization");
             JoinGameRequest request = gson.fromJson(req.body(), JoinGameRequest.class);
             gameService.JoinGame(authToken, request);
-            res.body(gson.toJson(null));
-            return gson.toJson(null);
+            res.body("{}");
+            return "{}";
+            //res.body(gson.toJson(null));
+            //return gson.toJson(null);
         } catch (Exception e) {
             return ExceptionCatcher(e, req, res);
         }

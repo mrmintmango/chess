@@ -29,8 +29,9 @@ public class GameService {
 
     //double check how to get the gameID
     public ChessGame CreateGame(CreateGameRequest request) throws DataAccessException {
+        ChessGame game;
         if (memoryAuthDAO.authFound(request.authToken())){
-            ChessGame game = new ChessGame();
+            game = new ChessGame();
             memoryGameDAO.createGame(increment, null, null, request.gameName(), game);
             increment++;
             return game;
