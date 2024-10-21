@@ -28,7 +28,7 @@ public class UserServiceTests {
     }
 
     @Test
-    public void registerTakenUsername() throws DataAccessException {
+    public void registerTakenUsername() {
         boolean thrown = false;
         try {
             UserData user1 = new UserData("username", "password", "email@gmail.com");
@@ -56,7 +56,7 @@ public class UserServiceTests {
     }
 
     @Test
-    public void LoginFailPasswordTest() throws DataAccessException {
+    public void LoginFailPasswordTest() {
         boolean thrown = false;
         UserData user1 = new UserData("user1", "pass", "fake email");
         UserData user2 = new UserData("user2", "password", "fake-email");
@@ -64,7 +64,6 @@ public class UserServiceTests {
         userService.putUser("user2",user2);
         UserData wrong = new UserData("user1", "word", "fake email");
 
-        //AuthData expected = new AuthData("random", "user1");
         try {
             AuthData actual = userService.login(wrong);
         }
@@ -76,7 +75,7 @@ public class UserServiceTests {
     }
 
     @Test
-    public void LoginFailUsernameTest() throws DataAccessException {
+    public void LoginFailUsernameTest() {
         boolean thrown = false;
         UserData user1 = new UserData("user1", "pass", "fake email");
         UserData user2 = new UserData("user2", "password", "fake-email");
@@ -107,7 +106,7 @@ public class UserServiceTests {
     }
 
     @Test
-    public void logoutFailTest() throws DataAccessException {
+    public void logoutFailTest() {
         boolean thrown = false;
         AuthData authData = new AuthData("token", "username");
         userService.putAuth("token", authData);
