@@ -3,9 +3,9 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class pawnMovesCalculator extends ChessMovesCalculator {
+public class PawnMovesCalculator extends ChessMovesCalculator {
     Collection<ChessMove> moves;
-    public pawnMovesCalculator(ChessGame.TeamColor teamColor) {
+    public PawnMovesCalculator(ChessGame.TeamColor teamColor) {
         super();
         this.teamColor = teamColor;
     }

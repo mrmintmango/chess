@@ -3,9 +3,9 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class rookMovesCalculator extends ChessMovesCalculator {
+public class RookMovesCalculator extends ChessMovesCalculator {
     Collection<ChessMove> moves;
-    public rookMovesCalculator(ChessGame.TeamColor teamColor) {
+    public RookMovesCalculator(ChessGame.TeamColor teamColor) {
         super();
         this.teamColor = teamColor;
     }

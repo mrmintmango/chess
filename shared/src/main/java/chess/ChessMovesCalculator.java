@@ -1,6 +1,5 @@
 package chess;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 public class ChessMovesCalculator {
@@ -12,27 +11,27 @@ public class ChessMovesCalculator {
         teamColor = board.getPiece(myPosition).getTeamColor();
 
         if (board.getPiece(myPosition).getPieceType() == ChessPiece.PieceType.KING){
-            kingMovesCalculator kingCalc = new kingMovesCalculator(teamColor);
+            KingMovesCalculator kingCalc = new KingMovesCalculator(teamColor);
             return kingCalc.kingMoves(board, myPosition);
         }
         if (board.getPiece(myPosition).getPieceType() == ChessPiece.PieceType.QUEEN){
-            queenMovesCalculator queenCalc = new queenMovesCalculator(teamColor);
+            QueenMovesCalculator queenCalc = new QueenMovesCalculator(teamColor);
             return queenCalc.queenMoves(board, myPosition);
         }
         if (board.getPiece(myPosition).getPieceType() == ChessPiece.PieceType.BISHOP){
-            bishopMovesCalculator bishopCalc = new bishopMovesCalculator(teamColor);
+            BishopMovesCalculator bishopCalc = new BishopMovesCalculator(teamColor);
             return bishopCalc.bishopMoves(board, myPosition);
         }
         if (board.getPiece(myPosition).getPieceType() == ChessPiece.PieceType.ROOK){
-            rookMovesCalculator rookCalc = new rookMovesCalculator(teamColor);
+            RookMovesCalculator rookCalc = new RookMovesCalculator(teamColor);
             return rookCalc.rookMoves(board, myPosition);
         }
         if (board.getPiece(myPosition).getPieceType() == ChessPiece.PieceType.KNIGHT){
-            knightMovesCalculator knightCalc = new knightMovesCalculator(teamColor);
+            KnightMovesCalculator knightCalc = new KnightMovesCalculator(teamColor);
             return knightCalc.knightMoves(board, myPosition);
         }
         if (board.getPiece(myPosition).getPieceType() == ChessPiece.PieceType.PAWN){
-            pawnMovesCalculator pawnCalc = new pawnMovesCalculator(teamColor);
+            PawnMovesCalculator pawnCalc = new PawnMovesCalculator(teamColor);
             return pawnCalc.pawnMoves(board, myPosition);
         }
 
