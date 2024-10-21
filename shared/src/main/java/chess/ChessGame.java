@@ -156,11 +156,6 @@ public class ChessGame {
             }
         }
         return checkMate;
-        //Collection<ChessMove> empty = new ArrayList<ChessMove>();
-        //if (validMoves(kingPos).isEmpty() && isInCheck(teamColor)){
-        //    return true;
-        //}
-        //return false;
     }
 
     /**

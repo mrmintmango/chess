@@ -88,7 +88,7 @@ public class QueenMovesCalculator extends ChessMovesCalculator {
     public void addRMove(int iter, ChessPosition myPosition, ChessBoard board, int direction) {
         for (int i = 1; i <= iter; i++) {
             ChessPosition oneUp = cPos(myPosition, i, direction);
-            if (board.getPiece(oneUp) == null){
+            if (board.getPiece(oneUp) == null) {
                 ChessMove e = new ChessMove(myPosition, oneUp,null);
                 moves.add(e);
             }
@@ -116,7 +116,9 @@ public class QueenMovesCalculator extends ChessMovesCalculator {
         else if (direction == 4){
             return new ChessPosition(myPosition.getRow(), myPosition.getColumn()+iter);
         }
-        else return null;
+        else {
+            return null;
+        }
     }
 
 }
