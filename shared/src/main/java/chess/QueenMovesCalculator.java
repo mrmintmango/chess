@@ -3,6 +3,8 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static chess.RookMovesCalculator.getChessPositionRook;
+
 public class QueenMovesCalculator extends ChessMovesCalculator {
     Collection<ChessMove> moves;
     public QueenMovesCalculator(ChessGame.TeamColor teamColor) {

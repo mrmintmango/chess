@@ -57,18 +57,22 @@ public class BishopMovesCalculator extends ChessMovesCalculator {
     }
 
     public void addMoves(int iter, int row, int col, ChessPosition myPosition, ChessBoard board){
+        bishopMoves(iter, row, col, myPosition, board, moves, this.teamColor);
+    }
+
+    static void bishopMoves(int iter, int row, int col, ChessPosition myPosition, ChessBoard board, Collection<ChessMove> moves, ChessGame.TeamColor teamColor) {
         for (int i = 1; i <= iter; i++) {
             ChessPosition move = new ChessPosition(myPosition.getRow()+(row*i), myPosition.getColumn()+(col*i));
             if (board.getPiece(move) == null){
                 ChessMove e = new ChessMove(myPosition, move,null);
                 moves.add(e);
             }
-            else if (board.getPiece(move).getTeamColor() != this.teamColor) {
+            else if (board.getPiece(move).getTeamColor() != teamColor) {
                 ChessMove e = new ChessMove(myPosition, move,null);
                 moves.add(e);
                 break;
             }
-            else if (board.getPiece(move).getTeamColor() == this.teamColor) {
+            else if (board.getPiece(move).getTeamColor() == teamColor) {
                 break;
             }
         }
