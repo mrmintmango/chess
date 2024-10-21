@@ -60,7 +60,8 @@ public class BishopMovesCalculator extends ChessMovesCalculator {
         diagonalMoves(iter, row, col, myPosition, board, moves, this.teamColor);
     }
 
-    static void diagonalMoves(int iter, int row, int col, ChessPosition myPosition, ChessBoard board, Collection<ChessMove> moves, ChessGame.TeamColor teamColor) {
+    static void diagonalMoves(int iter, int row, int col, ChessPosition myPosition,
+                              ChessBoard board, Collection<ChessMove> moves, ChessGame.TeamColor teamColor) {
         for (int i = 1; i <= iter; i++) {
             ChessPosition move = new ChessPosition(myPosition.getRow()+(row*i), myPosition.getColumn()+(col*i));
             if (board.getPiece(move) == null){

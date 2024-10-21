@@ -117,17 +117,27 @@ public class ChessGame {
     }
 
     public boolean isInCheck(TeamColor teamColor, ChessBoard board) {
+        boolean answer = false;
+        outerloop:
         for (int row = 1; row <= 8; row++) { //revert to 0 and 7
             for (int column = 1; column <= 8; column++) {
-                ChessPosition testPosition = new ChessPosition(row,column);
-                ChessPiece piece = board.getPiece(testPosition);
-                if (piece != null && piece.getTeamColor() != teamColor){
-                    for (ChessMove move : piece.pieceMoves(board,testPosition)) {
-                        ChessPiece victim = board.getPiece(move.getEndPosition());
-                        if(victim != null && victim.getPieceType() == ChessPiece.PieceType.KING && victim.getTeamColor() == teamColor){
-                            return true;
-                        }
-                    }
+                answer = innerCheck(teamColor, board, row, column);
+                if (answer) {
+                    break outerloop;
+                }
+            }
+        }
+        return answer;
+    }
+
+    public boolean innerCheck (TeamColor teamColor, ChessBoard board, int row, int column) {
+        ChessPosition testPosition = new ChessPosition(row,column);
+        ChessPiece piece = board.getPiece(testPosition);
+        if (piece != null && piece.getTeamColor() != teamColor){
+            for (ChessMove move : piece.pieceMoves(board,testPosition)) {
+                ChessPiece victim = board.getPiece(move.getEndPosition());
+                if(victim != null && victim.getPieceType() == ChessPiece.PieceType.KING && victim.getTeamColor() == teamColor){
+                    return true;
                 }
             }
         }
