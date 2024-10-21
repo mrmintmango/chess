@@ -9,7 +9,7 @@ public interface GameDAOI {
 
     void clear();
 
-    void createGame(int gameID, String white, String black, String gameName, ChessGame game);
+    public void createGame(int gameID, GameData gameData);
 
     GameData getGame(int gameID) throws DataAccessException;
 

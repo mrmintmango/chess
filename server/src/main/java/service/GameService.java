@@ -13,7 +13,7 @@ import java.util.Objects;
 public class GameService {
     private final AuthDAOI memoryAuthDAO;
     private final GameDAOI memoryGameDAO;
-    public int increment = 0;
+    public int increment = 1111;
 
     public GameService(AuthDAOI memoryAuthDAO, GameDAOI memoryGameDAO){
         this.memoryAuthDAO = memoryAuthDAO;
@@ -28,13 +28,14 @@ public class GameService {
     }
 
     //double check how to get the gameID
-    public ChessGame CreateGame(CreateGameRequest request) throws DataAccessException {
+    public GameData CreateGame(CreateGameRequest request) throws DataAccessException {
         ChessGame game;
         if (memoryAuthDAO.authFound(request.authToken())){
             game = new ChessGame();
-            memoryGameDAO.createGame(increment, null, null, request.gameName(), game);
+            GameData gameData = new GameData(increment, null, null, request.gameName(), game);
+            memoryGameDAO.createGame(increment, gameData);
             increment++;
-            return game;
+            return gameData;
         }
         else throw new DataAccessException("unauthorized");
     }

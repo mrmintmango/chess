@@ -17,15 +17,17 @@ public class UserService {
     }
 
     public AuthData register(UserData user) throws DataAccessException{
-        //first check if the username is already taken
-        if (!memoryUserDAO.userFound(user.username())){
-            String authToken = UUID.randomUUID().toString(); //creates a new authToken
-            AuthData authData = new AuthData(authToken, user.username()); //creates new authData with token and username from user
-            memoryAuthDAO.createAuth(authToken, authData); //places the new authData into the authData store
-            memoryUserDAO.registerUser(user);
-            return authData;
+        if (user.username() != null && user.password() != null) {
+            if (!memoryUserDAO.userFound(user.username())){
+                String authToken = UUID.randomUUID().toString(); //creates a new authToken
+                AuthData authData = new AuthData(authToken, user.username()); //creates new authData with token and username from user
+                memoryAuthDAO.createAuth(authToken, authData); //places the new authData into the authData store
+                memoryUserDAO.registerUser(user);
+                return authData;
+            }
+            else throw new DataAccessException("already taken");
         }
-        else throw new DataAccessException("already taken");
+        else throw new DataAccessException("bad request");
     }
 
     public AuthData login(UserData user) throws DataAccessException {
@@ -36,7 +38,7 @@ public class UserService {
                 memoryAuthDAO.createAuth(authToken, authData); //places the new authData into the authData store
                 return authData;
             }
-            else throw new DataAccessException("Incorrect Password");
+            else throw new DataAccessException("Incorrect Password"); //Add int to identify error
         }
         else throw new DataAccessException("unauthorized");
     }

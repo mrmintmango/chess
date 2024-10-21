@@ -15,8 +15,8 @@ public class MemoryGameDAO implements GameDAOI{
     }
 
     // Game Data Methods:
-    public void createGame(int gameID, String white, String black, String gameName, ChessGame game) {
-        gameDataMap.put(gameID, new GameData(gameID, white, black, gameName, game));
+    public void createGame(int gameID, GameData gameData) {
+        gameDataMap.put(gameID, gameData);
     }
 
     public GameData getGame(int gameID) throws DataAccessException {

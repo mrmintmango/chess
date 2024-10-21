@@ -81,9 +81,9 @@ public class Handler {
         try {
             String authToken = req.headers("authorization");
             ArrayList<GameData> list = gameService.ListGames(authToken);
-            String body = "games" + gson.toJson(list);
-            res.body(body);
-            return body;
+            ListGamesResponse response = new ListGamesResponse("games: ", list);
+            res.body(gson.toJson(response));
+            return gson.toJson(response);
         }
         catch (Exception e) {
             return ExceptionCatcher(e, req, res);
@@ -95,10 +95,10 @@ public class Handler {
         try {
             String authToken = req.headers("authorization");
             CreateGameRequest request = new CreateGameRequest(authToken, req.body());
-            ChessGame game = gameService.CreateGame(request);
-            String body = gson.toJson(game);
-            res.body(body);
-            return body;
+            GameData game = gameService.CreateGame(request);
+            CreateGameResponse response = new CreateGameResponse(game.gameID());
+            res.body(gson.toJson(response));
+            return gson.toJson(response);
         } catch (Exception e) {
             return ExceptionCatcher(e, req, res);
         }
@@ -112,8 +112,6 @@ public class Handler {
             gameService.JoinGame(authToken, request);
             res.body("{}");
             return "{}";
-            //res.body(gson.toJson(null));
-            //return gson.toJson(null);
         } catch (Exception e) {
             return ExceptionCatcher(e, req, res);
         }
@@ -127,6 +125,9 @@ public class Handler {
         }
         else if (e.getMessage().equals("already taken")) {
             res.status(403);
+        }
+        else if (e.getMessage().equals("Incorrect Password")) {
+            res.status(401);
         }
         else if (e.getMessage().equals("bad request")) {
             res.status(400);
