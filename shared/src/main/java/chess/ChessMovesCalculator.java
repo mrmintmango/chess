@@ -1,6 +1,5 @@
 package chess;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 public class ChessMovesCalculator {
@@ -21,7 +20,7 @@ public class ChessMovesCalculator {
         }
         if (board.getPiece(myPosition).getPieceType() == ChessPiece.PieceType.BISHOP){
             BishopMovesCalculator bishopCalc = new BishopMovesCalculator(teamColor);
-            return bishopCalc.bishopMoves(board, myPosition);
+            return bishopCalc.diagonalMoves(board, myPosition);
         }
         if (board.getPiece(myPosition).getPieceType() == ChessPiece.PieceType.ROOK){
             RookMovesCalculator rookCalc = new RookMovesCalculator(teamColor);
@@ -38,47 +37,6 @@ public class ChessMovesCalculator {
 
         return null;
     }
-
-    public ArrayList<ChessMove> addDPadMove(int iter, ChessPosition myPosition, ChessBoard board, int direction) {
-        ArrayList<ChessMove> moves = new ArrayList<>();
-        for (int i = 1; i <= iter; i++) {
-            ChessPosition oneUp = cPos(myPosition, i, direction);
-            if (board.getPiece(oneUp) == null){
-                ChessMove e = new ChessMove(myPosition, oneUp,null);
-                moves.add(e);
-            }
-            if (board.getPiece(oneUp) != null && board.getPiece(oneUp).getTeamColor() != teamColor) {
-                ChessMove e = new ChessMove(myPosition, oneUp,null);
-                moves.add(e);
-                break;
-            }
-            if (board.getPiece(oneUp) != null && board.getPiece(oneUp).getTeamColor() == teamColor) {
-                break;
-            }
-        }
-        return moves;
-    }
-
-    public ChessPosition cPos(ChessPosition myPosition, int iter, int direction) {
-        return getChessPositionRook(myPosition, iter, direction);
-    }
-
-    static ChessPosition getChessPositionRook(ChessPosition myPosition, int iter, int direction) {
-        if (direction == 1){
-            return new ChessPosition(myPosition.getRow()+iter, myPosition.getColumn());
-        }
-        else if (direction == 2){
-            return new ChessPosition(myPosition.getRow()-iter, myPosition.getColumn());
-        }
-        else if (direction == 3){
-            return new ChessPosition(myPosition.getRow(), myPosition.getColumn()-iter);
-        }
-        else if (direction == 4){
-            return new ChessPosition(myPosition.getRow(), myPosition.getColumn()+iter);
-        }
-        else return null;
-    }
-
 }
 
 

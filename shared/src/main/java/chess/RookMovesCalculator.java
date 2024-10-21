@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class RookMovesCalculator extends ChessMovesCalculator {
+    ChessGame.TeamColor teamColor;
     Collection<ChessMove> moves;
     public RookMovesCalculator(ChessGame.TeamColor teamColor) {
         super();
@@ -65,7 +66,9 @@ public class RookMovesCalculator extends ChessMovesCalculator {
         else if (direction == 4){
             return new ChessPosition(myPosition.getRow(), myPosition.getColumn()+iter);
         }
-        else return null;
+        else {
+            return null;
+        }
     }
 
 }
