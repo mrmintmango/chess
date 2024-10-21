@@ -24,7 +24,9 @@ public class GameService {
         if (memoryAuthDAO.authFound(authToken)){
             return memoryGameDAO.listGames();
         }
-        else throw new DataAccessException("unauthorized");
+        else {
+            throw new DataAccessException("unauthorized");
+        }
     }
 
     //double check how to get the gameID
@@ -38,9 +40,13 @@ public class GameService {
                 increment++;
                 return gameData;
             }
-            else throw new DataAccessException("unauthorized");
+            else {
+                throw new DataAccessException("unauthorized");
+            }
         }
-        else throw new DataAccessException("bad request");
+        else {
+            throw new DataAccessException("bad request");
+        }
     }
 
     public void joinGame(String authToken, JoinGameRequest request) throws DataAccessException {
@@ -63,11 +69,17 @@ public class GameService {
                         throw new DataAccessException("already taken");
                     }
                 }
-                else throw new DataAccessException("bad request");
+                else {
+                    throw new DataAccessException("bad request");
+                }
             }
-            else throw new DataAccessException("unauthorized");
+            else {
+                throw new DataAccessException("unauthorized");
+            }
         }
-        else throw new DataAccessException("bad request");
+        else {
+            throw new DataAccessException("bad request");
+        }
     }
 
     public void createAuth(String name, AuthData auth) {

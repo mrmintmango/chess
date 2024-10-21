@@ -20,13 +20,6 @@ public class QueenMovesCalculator {
         moves = new ArrayList<>();
 
         moves.addAll(bcalc.diagonalMoves(board, myPosition));
-
-        //Check how many spaces are up, down, and to the sides.
-        int up = 8 - myPosition.getRow();
-        int down = myPosition.getRow() - 1;
-        int left = myPosition.getColumn() - 1;
-        int right = 8 - myPosition.getColumn();
-
         moves.addAll(rcalc.rookMoves(board, myPosition));
 
         return moves;
