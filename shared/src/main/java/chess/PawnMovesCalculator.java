@@ -7,7 +7,7 @@ public class PawnMovesCalculator extends ChessMovesCalculator {
     Collection<ChessMove> moves;
     public PawnMovesCalculator(ChessGame.TeamColor teamColor) {
         super();
-        this.teamColor = teamColor;
+        ChessMovesCalculator.teamColor = teamColor;
     }
 
     public Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition) {
@@ -34,21 +34,11 @@ public class PawnMovesCalculator extends ChessMovesCalculator {
             //Attack code!!
             if (myPosition.getColumn() > 1) {
                 ChessPosition atkLeft = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()-1);
-                if (board.getPiece(atkLeft) != null && board.getPiece(atkLeft).getTeamColor() == ChessGame.TeamColor.WHITE && myPosition.getRow() != 2) {
-                    addMove(myPosition,atkLeft);
-                }
-                else if (board.getPiece(atkLeft) != null && board.getPiece(atkLeft).getTeamColor() == ChessGame.TeamColor.WHITE && myPosition.getRow() == 2) {
-                    promotionMove(myPosition,atkLeft);
-                }
+                pawnBoard(board, myPosition, atkLeft);
             }
             if (myPosition.getColumn() < 8) {
                 ChessPosition atkRight = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()+1);
-                if (board.getPiece(atkRight) != null && board.getPiece(atkRight).getTeamColor() == ChessGame.TeamColor.WHITE && myPosition.getRow() != 2) {
-                    addMove(myPosition,atkRight);
-                }
-                else if (board.getPiece(atkRight) != null && board.getPiece(atkRight).getTeamColor() == ChessGame.TeamColor.WHITE && myPosition.getRow() == 2) {
-                    promotionMove(myPosition,atkRight);
-                }
+                pawnBoard(board, myPosition, atkRight);
             }
         }
 
@@ -73,25 +63,35 @@ public class PawnMovesCalculator extends ChessMovesCalculator {
             //Attack code!!
             if (myPosition.getColumn() > 1) {
                 ChessPosition atkLeft = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()-1);
-                if (board.getPiece(atkLeft) != null && board.getPiece(atkLeft).getTeamColor() == ChessGame.TeamColor.BLACK && myPosition.getRow() != 7) {
-                    addMove(myPosition,atkLeft);
-                }
-                else if (board.getPiece(atkLeft) != null && board.getPiece(atkLeft).getTeamColor() == ChessGame.TeamColor.BLACK && myPosition.getRow() == 7) {
-                    promotionMove(myPosition,atkLeft);
-                }
+                pawnAttack(board, myPosition, atkLeft);
             }
             if (myPosition.getColumn() < 8) {
                 ChessPosition atkRight = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()+1);
-                if (board.getPiece(atkRight) != null && board.getPiece(atkRight).getTeamColor() == ChessGame.TeamColor.BLACK && myPosition.getRow() != 7) {
-                    addMove(myPosition,atkRight);
-                }
-                else if (board.getPiece(atkRight) != null && board.getPiece(atkRight).getTeamColor() == ChessGame.TeamColor.BLACK && myPosition.getRow() == 7) {
-                    promotionMove(myPosition,atkRight);
-                }
+                pawnAttack(board, myPosition, atkRight);
             }
         }
 
         return moves;
+    }
+
+    private void pawnAttack(ChessBoard board, ChessPosition myPosition, ChessPosition atkLeft) {
+        ChessPiece pieceL = board.getPiece(atkLeft);
+        if (pieceL != null && pieceL.getTeamColor() == ChessGame.TeamColor.BLACK && myPosition.getRow() != 7) {
+            addMove(myPosition,atkLeft);
+        }
+        else if (pieceL != null && pieceL.getTeamColor() == ChessGame.TeamColor.BLACK && myPosition.getRow() == 7) {
+            promotionMove(myPosition,atkLeft);
+        }
+    }
+
+    private void pawnBoard(ChessBoard board, ChessPosition myPosition, ChessPosition atkLeft) {
+        ChessPiece pieceL = board.getPiece(atkLeft);
+        if (pieceL != null && pieceL.getTeamColor() == ChessGame.TeamColor.WHITE && myPosition.getRow() != 2) {
+            addMove(myPosition,atkLeft);
+        }
+        else if (pieceL != null && pieceL.getTeamColor() == ChessGame.TeamColor.WHITE && myPosition.getRow() == 2) {
+            promotionMove(myPosition,atkLeft);
+        }
     }
 
     public void startingMove(int wb, ChessPosition myPosition, ChessBoard board) {

@@ -51,7 +51,7 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        Collection<ChessMove> valids = new ArrayList<ChessMove>();
+        Collection<ChessMove> valids = new ArrayList<>();
         ChessGame.TeamColor color = theBoard.getPiece(startPosition).getTeamColor();
         if (theBoard.getPiece(startPosition) == null){
             return null;
@@ -156,11 +156,6 @@ public class ChessGame {
             }
         }
         return checkMate;
-        //Collection<ChessMove> empty = new ArrayList<ChessMove>();
-        //if (validMoves(kingPos).isEmpty() && isInCheck(teamColor)){
-        //    return true;
-        //}
-        //return false;
     }
 
     /**
