@@ -2,7 +2,6 @@ package service;
 
 import dataaccess.DataAccessException;
 import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryGameDAO;
 import dataaccess.MemoryUserDAO;
 import model.AuthData;
 import model.UserData;
@@ -65,7 +64,7 @@ public class UserServiceTests {
         userService.putUser("user2",user2);
         UserData wrong = new UserData("user1", "word", "fake email");
 
-        AuthData expected = new AuthData("random", "user1");
+        //AuthData expected = new AuthData("random", "user1");
         try {
             AuthData actual = userService.login(wrong);
         }
@@ -85,7 +84,7 @@ public class UserServiceTests {
         userService.putUser("user2",user2);
         UserData wrong = new UserData("user10", "pass", "fake email");
 
-        AuthData expected = new AuthData("random", "user1");
+        //AuthData expected = new AuthData("random", "user1");
         try {
             AuthData actual = userService.login(wrong);
         }
@@ -112,7 +111,7 @@ public class UserServiceTests {
         boolean thrown = false;
         AuthData authData = new AuthData("token", "username");
         userService.putAuth("token", authData);
-        AuthData wrong = new AuthData("shmoken", "username");
+        AuthData wrong = new AuthData("broken", "username");
 
         try {
             userService.logout(wrong.authToken());

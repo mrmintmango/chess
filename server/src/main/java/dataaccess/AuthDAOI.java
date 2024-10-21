@@ -2,9 +2,6 @@ package dataaccess;
 
 import model.AuthData;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public interface AuthDAOI {
 
     void clear();
@@ -15,9 +12,9 @@ public interface AuthDAOI {
 
     void deleteAuth(String authToken) throws DataAccessException;
 
-    public boolean authFound(String authToken);
+    boolean authFound(String authToken);
 
-    public int getAuthSize();
+    int getAuthSize();
 
-    public void putAuth(String name, AuthData auth);
+    void putAuth(String name, AuthData auth);
 }

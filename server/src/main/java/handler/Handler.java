@@ -3,7 +3,6 @@ package handler;
 import java.util.ArrayList;
 import java.util.Map;
 
-import chess.ChessGame;
 import com.google.gson.Gson;
 import model.*;
 import spark.*;
@@ -31,7 +30,7 @@ public class Handler {
             res.body("{}");
             return "{}";
         } catch (Exception e) {
-            return ExceptionCatcher(e, req, res);
+            return ExceptionCatcher(e, res);
         }
     }
 
@@ -44,7 +43,7 @@ public class Handler {
             return gson.toJson(auth);
         }
         catch (Exception e) {
-            return ExceptionCatcher(e, req, res);
+            return ExceptionCatcher(e, res);
         }
     }
 
@@ -57,7 +56,7 @@ public class Handler {
             return gson.toJson(auth);
         }
         catch (Exception e) {
-            return ExceptionCatcher(e, req, res);
+            return ExceptionCatcher(e, res);
         }
     }
 
@@ -68,11 +67,9 @@ public class Handler {
             userService.logout(authToken);
             res.body("{}");
             return "{}";
-            //res.body(gson.toJson(null));
-            //return gson.toJson(null);
         }
         catch (Exception e) {
-            return ExceptionCatcher(e, req, res);
+            return ExceptionCatcher(e, res);
         }
     }
 
@@ -81,12 +78,12 @@ public class Handler {
         try {
             String authToken = req.headers("authorization");
             ArrayList<GameData> list = gameService.ListGames(authToken);
-            ListGamesResponse response = new ListGamesResponse("games: ", list);
+            ListGamesResponse response = new ListGamesResponse(list);
             res.body(gson.toJson(response));
             return gson.toJson(response);
         }
         catch (Exception e) {
-            return ExceptionCatcher(e, req, res);
+            return ExceptionCatcher(e, res);
         }
     }
 
@@ -100,7 +97,7 @@ public class Handler {
             res.body(gson.toJson(response));
             return gson.toJson(response);
         } catch (Exception e) {
-            return ExceptionCatcher(e, req, res);
+            return ExceptionCatcher(e, res);
         }
     }
 
@@ -113,12 +110,12 @@ public class Handler {
             res.body("{}");
             return "{}";
         } catch (Exception e) {
-            return ExceptionCatcher(e, req, res);
+            return ExceptionCatcher(e, res);
         }
     }
 
 
-    public Object ExceptionCatcher(Exception e, Request req, Response res) {
+    public Object ExceptionCatcher(Exception e, Response res) {
         String body = gson.toJson(Map.of("message", String.format("Error: %s", e.getMessage()), "success", false));
         if (e.getMessage().equals("unauthorized")) {
             res.status(401);
@@ -137,7 +134,7 @@ public class Handler {
         }
         res.body(body);
         return body;
-    } //womp womp
+    }
 
 
     //res.status 401
