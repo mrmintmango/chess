@@ -26,7 +26,7 @@ public class Handler {
     //CLEAR APPLICATION
     public Object clearApplication(Request req, Response res) {
         try {
-            parentService.ClearApplication();
+            parentService.clearApplication();
             res.body("{}");
             return "{}";
         } catch (Exception e) {
@@ -77,7 +77,7 @@ public class Handler {
     public Object listGames(Request req, Response res) {
         try {
             String authToken = req.headers("authorization");
-            ArrayList<GameData> list = gameService.ListGames(authToken);
+            ArrayList<GameData> list = gameService.listGames(authToken);
             ListGamesResponse response = new ListGamesResponse(list);
             res.body(gson.toJson(response));
             return gson.toJson(response);
@@ -92,7 +92,7 @@ public class Handler {
         try {
             String authToken = req.headers("authorization");
             CreateGameRequest request = new CreateGameRequest(authToken, req.body());
-            GameData game = gameService.CreateGame(request);
+            GameData game = gameService.createGame(request);
             CreateGameResponse response = new CreateGameResponse(game.gameID());
             res.body(gson.toJson(response));
             return gson.toJson(response);
@@ -106,7 +106,7 @@ public class Handler {
         try  {
             String authToken = req.headers("authorization");
             JoinGameRequest request = gson.fromJson(req.body(), JoinGameRequest.class);
-            gameService.JoinGame(authToken, request);
+            gameService.joinGame(authToken, request);
             res.body("{}");
             return "{}";
         } catch (Exception e) {
