@@ -27,11 +27,11 @@ public class ParentServiceTests {
         GameData gameData = new GameData(5, "white", "black", "gameName", game);
         AuthData authData = new AuthData("authToken", "username");
         UserData userData = new UserData("username", "password", "email@gmail@yahoo");
-        parentService.AddUser("username", userData);
-        parentService.AddGame(5, gameData);
-        parentService.AddAuth("username", authData);
+        parentService.addUser("username", userData);
+        parentService.addGame(5, gameData);
+        parentService.addAuth("username", authData);
 
-        parentService.ClearApplication();
+        parentService.clearApplication();
 
         Assertions.assertEquals(0, parentService.authSize());
         Assertions.assertEquals(0, parentService.gameSize());

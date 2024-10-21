@@ -24,18 +24,18 @@ public class Handler {
     }
 
     //CLEAR APPLICATION
-    public Object ClearApplication(Request req, Response res) {
+    public Object clearApplication(Request req, Response res) {
         try {
-            parentService.ClearApplication();
+            parentService.clearApplication();
             res.body("{}");
             return "{}";
         } catch (Exception e) {
-            return ExceptionCatcher(e, res);
+            return exceptionCatcher(e, res);
         }
     }
 
     //REGISTER
-    public Object Register(Request req, Response res) {
+    public Object register(Request req, Response res) {
         try {
             UserData user = gson.fromJson(req.body(), UserData.class);
             AuthData auth = userService.register(user);
@@ -43,12 +43,12 @@ public class Handler {
             return gson.toJson(auth);
         }
         catch (Exception e) {
-            return ExceptionCatcher(e, res);
+            return exceptionCatcher(e, res);
         }
     }
 
     //LOGIN
-    public Object Login(Request req, Response res) {
+    public Object login(Request req, Response res) {
         try { //to get auth header its req.headers("authorization") -> results in a single string
             UserData user = gson.fromJson(req.body(), UserData.class);
             AuthData auth = userService.login(user);
@@ -56,12 +56,12 @@ public class Handler {
             return gson.toJson(auth);
         }
         catch (Exception e) {
-            return ExceptionCatcher(e, res);
+            return exceptionCatcher(e, res);
         }
     }
 
     //LOGOUT
-    public Object Logout(Request req, Response res) {
+    public Object logout(Request req, Response res) {
         try {
             String authToken = req.headers("authorization");
             userService.logout(authToken);
@@ -69,53 +69,53 @@ public class Handler {
             return "{}";
         }
         catch (Exception e) {
-            return ExceptionCatcher(e, res);
+            return exceptionCatcher(e, res);
         }
     }
 
     //LIST GAMES
-    public Object ListGames(Request req, Response res) {
+    public Object listGames(Request req, Response res) {
         try {
             String authToken = req.headers("authorization");
-            ArrayList<GameData> list = gameService.ListGames(authToken);
+            ArrayList<GameData> list = gameService.listGames(authToken);
             ListGamesResponse response = new ListGamesResponse(list);
             res.body(gson.toJson(response));
             return gson.toJson(response);
         }
         catch (Exception e) {
-            return ExceptionCatcher(e, res);
+            return exceptionCatcher(e, res);
         }
     }
 
     //CREATE GAME
-    public Object CreateGame(Request req, Response res) {
+    public Object createGame(Request req, Response res) {
         try {
             String authToken = req.headers("authorization");
             CreateGameRequest request = new CreateGameRequest(authToken, req.body());
-            GameData game = gameService.CreateGame(request);
+            GameData game = gameService.createGame(request);
             CreateGameResponse response = new CreateGameResponse(game.gameID());
             res.body(gson.toJson(response));
             return gson.toJson(response);
         } catch (Exception e) {
-            return ExceptionCatcher(e, res);
+            return exceptionCatcher(e, res);
         }
     }
 
     //JOIN GAME
-    public Object JoinGame(Request req, Response res) {
+    public Object joinGame(Request req, Response res) {
         try  {
             String authToken = req.headers("authorization");
             JoinGameRequest request = gson.fromJson(req.body(), JoinGameRequest.class);
-            gameService.JoinGame(authToken, request);
+            gameService.joinGame(authToken, request);
             res.body("{}");
             return "{}";
         } catch (Exception e) {
-            return ExceptionCatcher(e, res);
+            return exceptionCatcher(e, res);
         }
     }
 
 
-    public Object ExceptionCatcher(Exception e, Response res) {
+    public Object exceptionCatcher(Exception e, Response res) {
         String body = gson.toJson(Map.of("message", String.format("Error: %s", e.getMessage()), "success", false));
         if (e.getMessage().equals("unauthorized")) {
             res.status(401);

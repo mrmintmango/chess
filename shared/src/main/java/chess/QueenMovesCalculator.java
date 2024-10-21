@@ -3,15 +3,16 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class bishopMovesCalculator extends ChessMovesCalculator {
-    ChessGame.TeamColor teamColor;
+import static chess.RookMovesCalculator.getChessPositionRook;
+
+public class QueenMovesCalculator extends ChessMovesCalculator {
     Collection<ChessMove> moves;
-    bishopMovesCalculator(ChessGame.TeamColor teamColor) {
+    public QueenMovesCalculator(ChessGame.TeamColor teamColor) {
         super();
         this.teamColor = teamColor;
     }
 
-    public Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition){
+    public Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition) {
         moves = new ArrayList<>();
 
         //Check how many spaces are up, down, and to the sides.
@@ -53,25 +54,45 @@ public class bishopMovesCalculator extends ChessMovesCalculator {
             addMoves(right,-1,1,myPosition,board);
         }
 
+        //check up
+        addRMove(up,myPosition,board,1);
+
+        //check down
+        addRMove(down,myPosition,board,2);
+
+        //check left
+        addRMove(left,myPosition,board,3);
+
+        //check Right
+        addRMove(right,myPosition,board,4);
+
         return moves;
     }
 
     public void addMoves(int iter, int row, int col, ChessPosition myPosition, ChessBoard board){
+        BishopMovesCalculator.bishopMoves(iter, row, col, myPosition, board, moves, this.teamColor);
+    }
+
+    public void addRMove(int iter, ChessPosition myPosition, ChessBoard board, int direction) {
         for (int i = 1; i <= iter; i++) {
-            ChessPosition move = new ChessPosition(myPosition.getRow()+(row*i), myPosition.getColumn()+(col*i));
-            if (board.getPiece(move) == null){
-                ChessMove e = new ChessMove(myPosition, move,null);
+            ChessPosition oneUp = cPos(myPosition, i, direction);
+            if (board.getPiece(oneUp) == null){
+                ChessMove e = new ChessMove(myPosition, oneUp,null);
                 moves.add(e);
             }
-            else if (board.getPiece(move).getTeamColor() != this.teamColor) {
-                ChessMove e = new ChessMove(myPosition, move,null);
+            if (board.getPiece(oneUp) != null && board.getPiece(oneUp).getTeamColor() != teamColor) {
+                ChessMove e = new ChessMove(myPosition, oneUp,null);
                 moves.add(e);
                 break;
             }
-            else if (board.getPiece(move).getTeamColor() == this.teamColor) {
+            if (board.getPiece(oneUp) != null && board.getPiece(oneUp).getTeamColor() == teamColor) {
                 break;
             }
         }
+    }
+
+    public ChessPosition cPos(ChessPosition myPosition, int iter, int direction) {
+        return getChessPositionRook(myPosition, iter, direction);
     }
 
 }

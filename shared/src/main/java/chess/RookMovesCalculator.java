@@ -3,9 +3,9 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class rookMovesCalculator extends ChessMovesCalculator {
+public class RookMovesCalculator extends ChessMovesCalculator {
     Collection<ChessMove> moves;
-    public rookMovesCalculator(ChessGame.TeamColor teamColor) {
+    public RookMovesCalculator(ChessGame.TeamColor teamColor) {
         super();
         this.teamColor = teamColor;
     }
@@ -53,6 +53,10 @@ public class rookMovesCalculator extends ChessMovesCalculator {
     }
 
     public ChessPosition cPos(ChessPosition myPosition, int iter, int direction) {
+        return getChessPositionRook(myPosition, iter, direction);
+    }
+
+    static ChessPosition getChessPositionRook(ChessPosition myPosition, int iter, int direction) {
         if (direction == 1){
             return new ChessPosition(myPosition.getRow()+iter, myPosition.getColumn());
         }

@@ -20,7 +20,7 @@ public class GameService {
         this.memoryGameDAO = memoryGameDAO;
     }
 
-    public ArrayList<GameData> ListGames(String authToken) throws DataAccessException{
+    public ArrayList<GameData> listGames(String authToken) throws DataAccessException{
         if (memoryAuthDAO.authFound(authToken)){
             return memoryGameDAO.listGames();
         }
@@ -28,7 +28,7 @@ public class GameService {
     }
 
     //double check how to get the gameID
-    public GameData CreateGame(CreateGameRequest request) throws DataAccessException {
+    public GameData createGame(CreateGameRequest request) throws DataAccessException {
         ChessGame game;
         if (request.gameName() != null && request.authToken() != null) {
             if (memoryAuthDAO.authFound(request.authToken())){
@@ -41,10 +41,9 @@ public class GameService {
             else throw new DataAccessException("unauthorized");
         }
         else throw new DataAccessException("bad request");
-
     }
 
-    public void JoinGame(String authToken, JoinGameRequest request) throws DataAccessException {
+    public void joinGame(String authToken, JoinGameRequest request) throws DataAccessException {
         int gameID = request.gameID();
         if (request.playerColor() != null){
             if (memoryAuthDAO.authFound(authToken)){

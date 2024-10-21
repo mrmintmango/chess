@@ -17,7 +17,7 @@ public class ParentService {
         this.memoryUserDAO = memoryUserDAO;
     }
 
-    public void ClearApplication() {
+    public void clearApplication() {
         memoryAuthDAO.clear();
         memoryGameDAO.clear();
         memoryUserDAO.clear();
@@ -25,13 +25,13 @@ public class ParentService {
 
     //FOR TESTING
 
-     public void AddAuth(String authToken, AuthData auth) {
+     public void addAuth(String authToken, AuthData auth) {
         memoryAuthDAO.createAuth(authToken,auth);
      }
-     public void AddGame(int gameID, GameData game) {
+     public void addGame(int gameID, GameData game) {
         memoryGameDAO.putGame(gameID, game);
      }
-     public void AddUser(String username, UserData user) {
+     public void addUser(String username, UserData user) {
         memoryUserDAO.putUser(username, user);
      }
 

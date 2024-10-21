@@ -3,10 +3,10 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class kingMovesCalculator extends ChessMovesCalculator {
+public class KingMovesCalculator extends ChessMovesCalculator {
     ChessGame.TeamColor teamColor;
     Collection<ChessMove> moves;
-    kingMovesCalculator(ChessGame.TeamColor teamColor) {
+    KingMovesCalculator(ChessGame.TeamColor teamColor) {
         super();
         this.teamColor = teamColor;
     }
