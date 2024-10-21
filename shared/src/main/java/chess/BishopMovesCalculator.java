@@ -3,15 +3,18 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static chess.ChessGame.*;
+
 public class BishopMovesCalculator extends ChessMovesCalculator {
-    ChessGame.TeamColor teamColor;
-    Collection<ChessMove> moves;
-    BishopMovesCalculator(ChessGame.TeamColor teamColor) {
+    static TeamColor teamColor;
+    static Collection<ChessMove> moves;
+
+    public BishopMovesCalculator(TeamColor teamC) {
         super();
-        this.teamColor = teamColor;
+        teamColor = teamC;
     }
 
-    public Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition){
+    public static Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition){
         moves = new ArrayList<>();
 
         //Check how many spaces are up, down, and to the sides.
@@ -56,11 +59,11 @@ public class BishopMovesCalculator extends ChessMovesCalculator {
         return moves;
     }
 
-    public void addMoves(int iter, int row, int col, ChessPosition myPosition, ChessBoard board){
-        bishopMoves(iter, row, col, myPosition, board, moves, this.teamColor);
+    public static void addMoves(int iter, int row, int col, ChessPosition myPosition, ChessBoard board){
+        bishopMoves(iter, row, col, myPosition, board, moves, teamColor);
     }
 
-    static void bishopMoves(int iter, int row, int col, ChessPosition myPosition, ChessBoard board, Collection<ChessMove> moves, ChessGame.TeamColor teamColor) {
+    static void bishopMoves(int iter, int row, int col, ChessPosition myPosition, ChessBoard board, Collection<ChessMove> moves, TeamColor teamColor) {
         for (int i = 1; i <= iter; i++) {
             ChessPosition move = new ChessPosition(myPosition.getRow()+(row*i), myPosition.getColumn()+(col*i));
             if (board.getPiece(move) == null){
