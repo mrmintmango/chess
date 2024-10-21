@@ -44,7 +44,7 @@ public class UserServiceTests {
     }
 
     @Test
-    public void LoginTest() throws DataAccessException {
+    public void loginTest() throws DataAccessException {
         UserData user1 = new UserData("user1", "pass", "fake email");
         UserData user2 = new UserData("user2", "password", "fake-email");
         userService.putUser("user1",user1);
@@ -56,7 +56,7 @@ public class UserServiceTests {
     }
 
     @Test
-    public void LoginFailPasswordTest() {
+    public void loginFailPasswordTest() {
         boolean thrown = false;
         UserData user1 = new UserData("user1", "pass", "fake email");
         UserData user2 = new UserData("user2", "password", "fake-email");
@@ -75,7 +75,7 @@ public class UserServiceTests {
     }
 
     @Test
-    public void LoginFailUsernameTest() {
+    public void loginFailUsernameTest() {
         boolean thrown = false;
         UserData user1 = new UserData("user1", "pass", "fake email");
         UserData user2 = new UserData("user2", "password", "fake-email");
