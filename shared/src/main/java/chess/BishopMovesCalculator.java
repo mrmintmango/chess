@@ -3,18 +3,15 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static chess.ChessGame.*;
-
 public class BishopMovesCalculator extends ChessMovesCalculator {
-    static TeamColor teamColor;
-    static Collection<ChessMove> moves;
-
-    public BishopMovesCalculator(TeamColor teamC) {
+    ChessGame.TeamColor teamColor;
+    Collection<ChessMove> moves;
+    BishopMovesCalculator(ChessGame.TeamColor teamColor) {
         super();
-        teamColor = teamC;
+        this.teamColor = teamColor;
     }
 
-    public static Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition){
+    public Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition){
         moves = new ArrayList<>();
 
         //Check how many spaces are up, down, and to the sides.
@@ -59,23 +56,19 @@ public class BishopMovesCalculator extends ChessMovesCalculator {
         return moves;
     }
 
-    public static void addMoves(int iter, int row, int col, ChessPosition myPosition, ChessBoard board){
-        bishopMoves(iter, row, col, myPosition, board, moves, teamColor);
-    }
-
-    static void bishopMoves(int iter, int row, int col, ChessPosition myPosition, ChessBoard board, Collection<ChessMove> moves, TeamColor teamColor) {
+    public void addMoves(int iter, int row, int col, ChessPosition myPosition, ChessBoard board){
         for (int i = 1; i <= iter; i++) {
             ChessPosition move = new ChessPosition(myPosition.getRow()+(row*i), myPosition.getColumn()+(col*i));
             if (board.getPiece(move) == null){
                 ChessMove e = new ChessMove(myPosition, move,null);
                 moves.add(e);
             }
-            else if (board.getPiece(move).getTeamColor() != teamColor) {
+            else if (board.getPiece(move).getTeamColor() != this.teamColor) {
                 ChessMove e = new ChessMove(myPosition, move,null);
                 moves.add(e);
                 break;
             }
-            else if (board.getPiece(move).getTeamColor() == teamColor) {
+            else if (board.getPiece(move).getTeamColor() == this.teamColor) {
                 break;
             }
         }
