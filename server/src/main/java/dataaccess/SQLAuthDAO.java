@@ -2,7 +2,10 @@ package dataaccess;
 
 import model.AuthData;
 
+import java.sql.SQLException;
+
 public class SQLAuthDAO implements AuthDAOI{
+
     @Override
     public void clear() {
 
@@ -37,4 +40,7 @@ public class SQLAuthDAO implements AuthDAOI{
     public void putAuth(String name, AuthData auth) {
 
     }
+
+
+
 }

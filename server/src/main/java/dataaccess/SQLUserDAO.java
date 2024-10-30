@@ -3,6 +3,11 @@ package dataaccess;
 import model.UserData;
 
 public class SQLUserDAO implements UserDAOI{
+
+    public SQLUserDAO() throws DataAccessException {
+        DatabaseManager.createDatabase();
+    }
+
     @Override
     public void clear() {
 

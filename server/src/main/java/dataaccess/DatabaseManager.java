@@ -20,10 +20,13 @@ public class DatabaseManager {
                 }
                 Properties props = new Properties();
                 props.load(propStream);
-                DATABASE_NAME = props.getProperty("chess");
-                USER = props.getProperty("Ruben Matos");
-                PASSWORD = props.getProperty("VintageRemedy1982");
-                //Maybe call createDatabase method here?
+                DATABASE_NAME = props.getProperty("db.name");
+                USER = props.getProperty("db.user");
+                PASSWORD = props.getProperty("db.password");
+
+                //maybe create database here?
+                createDatabase();
+
                 var host = props.getProperty("db.host");
                 var port = Integer.parseInt(props.getProperty("db.port"));
                 CONNECTION_URL = String.format("jdbc:mysql://%s:%d", host, port);
@@ -43,9 +46,47 @@ public class DatabaseManager {
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.executeUpdate();
             }
-            //Maybe create your tables here??
+            createTables();
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
+        }
+    }
+
+    private static final String[] createStatements = {
+            """
+            CREATE TABLE IF NOT EXISTS auth (
+                'id' int NOT NULL AUTO_INCREMENT,
+                'authToken' varchar(256) NOT NULL,
+                PRIMARY KEY ('id'),
+                INDEX(authToken)
+               ),
+               
+            CREATE TABLE IF NOT EXISTS game (
+                'id' int NOT NULL AUTO_INCREMENT,
+                'whiteUsername' TEXT DEFAULT NULL,
+                'blackUsername' TEXT DEFAULT NULL,
+                'gameName' TEXT DEFAULT NULL,
+                'game' ChessGame DEFAULT NULL
+                ),
+            CREATE TABLE IF NOT EXISTS USER (
+                'id' int NOT NULL AUTO_INCREMENT,
+                'username' TEXT DEFAULT NULL,
+                'password' TEXT DEFAULT NULL,
+                'email' TEXT DEFAULT NULL
+                )
+"""
+    };
+
+    private static void createTables() throws DataAccessException {
+        DatabaseManager.createDatabase();
+        try (var conn = DatabaseManager.getConnection()) {
+            for (var statement : createStatements) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
         }
     }
 
@@ -70,4 +111,5 @@ public class DatabaseManager {
             throw new DataAccessException(e.getMessage());
         }
     }
+
 }

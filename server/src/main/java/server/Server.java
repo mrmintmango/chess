@@ -11,7 +11,7 @@ public class Server {
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
-        //make the handler
+
         GameDAOI gameDAOI = new MemoryGameDAO();
         UserDAOI userDAOI = new MemoryUserDAO();
         AuthDAOI authDAOI = new MemoryAuthDAO();
