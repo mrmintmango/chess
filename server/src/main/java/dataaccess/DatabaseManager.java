@@ -20,9 +20,9 @@ public class DatabaseManager {
                 }
                 Properties props = new Properties();
                 props.load(propStream);
-                DATABASE_NAME = props.getProperty("db.name");
-                USER = props.getProperty("db.user");
-                PASSWORD = props.getProperty("db.password");
+                DATABASE_NAME = props.getProperty("chess");
+                USER = props.getProperty("Ruben Matos");
+                PASSWORD = props.getProperty("VintageRemedy1982");
                 //Maybe call createDatabase method here?
                 var host = props.getProperty("db.host");
                 var port = Integer.parseInt(props.getProperty("db.port"));
