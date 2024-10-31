@@ -3,6 +3,7 @@ package service;
 import dataaccess.*;
 import model.AuthData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -36,7 +37,10 @@ public class UserService {
 
     public AuthData login(UserData user) throws DataAccessException {
         if (userDAO.userFound(user.username())){
-            if (Objects.equals(userDAO.getUser(user.username()).password(), user.password())){
+            //Objects.equals(userDAO.getUser(user.username()).password(), user.password())
+            //That was the previous if before implementing SQL
+            //String hashedPass = BCrypt.hashpw(user.password(), BCrypt.gensalt());
+            if (BCrypt.checkpw(user.password(), userDAO.getUser(user.username()).password())){
                 String authToken = UUID.randomUUID().toString(); //creates a new authToken
                 AuthData authData = new AuthData(authToken, user.username()); //creates new authData with token and username from user
                 authDAO.createAuth(authToken, authData); //places the new authData into the authData store

@@ -1,6 +1,7 @@
 package dataaccess;
 
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,11 +20,11 @@ public class SQLUserDAO implements UserDAOI{
     }
 
     @Override
-    public UserData getUser(String email) throws DataAccessException {
-        var statement = "SELECT username, password, email FROM user WHERE email=?";
+    public UserData getUser(String username) throws DataAccessException {
+        var statement = "SELECT username, password, email FROM user WHERE username=?";
         try (var conn = DatabaseManager.getConnection()) {
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
-                ps.setString(1, email);
+                ps.setString(1, username);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         String user = rs.getString(1);
@@ -49,7 +50,10 @@ public class SQLUserDAO implements UserDAOI{
     public void putUser(String name, UserData user) {
         var statement = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
         try {
-            DatabaseManager.executeUpdate(statement, name, user.password(), user.email());
+            //Hash the password first for protection.
+            String hashedPassword = BCrypt.hashpw(user.password(), BCrypt.gensalt());
+
+            DatabaseManager.executeUpdate(statement, name, hashedPassword, user.email());
         } catch (DataAccessException e) {
             throw new RuntimeException(e); //update later
         }
