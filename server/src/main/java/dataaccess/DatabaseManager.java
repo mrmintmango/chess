@@ -145,4 +145,14 @@ public class DatabaseManager {
         }
     }
 
+    public static void clear(String statement) {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.executeUpdate();
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new RuntimeException(e); //update later
+        }
+    }
+
 }

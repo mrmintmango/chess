@@ -15,13 +15,7 @@ public class SQLUserDAO implements UserDAOI{
     @Override
     public void clear() {
         var statement = "TRUNCATE user";
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var ps = conn.prepareStatement(statement)) {
-                ps.executeUpdate();
-            }
-        } catch (SQLException | DataAccessException e) {
-            throw new RuntimeException(e); //update later
-        }
+        DatabaseManager.clear(statement);
     }
 
     @Override

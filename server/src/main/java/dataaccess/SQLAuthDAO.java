@@ -8,7 +8,8 @@ public class SQLAuthDAO implements AuthDAOI{
 
     @Override
     public void clear() {
-
+        var statement = "TRUNCATE auth";
+        DatabaseManager.clear(statement);
     }
 
     @Override
