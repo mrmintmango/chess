@@ -85,7 +85,13 @@ public class SQLGameDAO implements GameDAOI{
 
     @Override
     public void putGame(int gameID, GameData game) {
-
+        var statement = "INSERT INTO game (whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?)";
+        try {
+            String jsonGame = new Gson().toJson(game.game());
+            DatabaseManager.executeUpdate(statement, game.whiteUsername(), game.blackUsername(), game.gameName(), jsonGame);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e); //update later
+        }
     }
 
     @Override
