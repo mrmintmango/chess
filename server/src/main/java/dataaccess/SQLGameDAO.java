@@ -1,5 +1,7 @@
 package dataaccess;
 
+import chess.ChessGame;
+import com.google.gson.Gson;
 import model.GameData;
 import model.UserData;
 
@@ -19,8 +21,9 @@ public class SQLGameDAO implements GameDAOI{
     public void createGame(int gameID, GameData gameData) {
         var statement = "INSERT INTO game (whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?, ?)";
         try {
-            //Serialize the actual game object from the game data and replace with game
-            DatabaseManager.executeUpdate(statement, gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), "game");
+            //Serialize the actual game object from the game data to store in database
+            String jsonGame = new Gson().toJson(gameData.game());
+            DatabaseManager.executeUpdate(statement, gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), jsonGame);
         } catch (DataAccessException e) {
             throw new RuntimeException(e); //update later
         }
@@ -37,9 +40,10 @@ public class SQLGameDAO implements GameDAOI{
                         String whiteUsername = rs.getString(2);
                         String blackUsername = rs.getString(3);
                         String gameName = rs.getString(4);
-                        //the game will need to be deserialized before becoming an actual game again.
-                        String game = rs.getString(5);
-                        return new GameData(gameID, whiteUsername, blackUsername, gameName, null);
+                        //deserializes the game from json string stored in database
+                        String jsonGame = rs.getString(5);
+                        ChessGame game = new Gson().fromJson(jsonGame, ChessGame.class);
+                        return new GameData(gameID, whiteUsername, blackUsername, gameName, game);
                     }
                 }
             }
@@ -61,9 +65,9 @@ public class SQLGameDAO implements GameDAOI{
                         String whiteUsername = rs.getString(2);
                         String blackUsername = rs.getString(3);
                         String gameName = rs.getString(4);
-                        //the game will need to be deserialized before becoming an actual game again.
-                        String game = rs.getString(5);
-                        gameList.add(new GameData(gameID, whiteUsername, blackUsername, gameName, null));
+                        String jsonGame = rs.getString(5);
+                        ChessGame game = new Gson().fromJson(jsonGame, ChessGame.class);
+                        gameList.add(new GameData(gameID, whiteUsername, blackUsername, gameName, game));
                     }
                 }
             }
