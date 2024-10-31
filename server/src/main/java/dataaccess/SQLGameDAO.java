@@ -42,6 +42,8 @@ public class SQLGameDAO implements GameDAOI{
                         String whiteUsername = rs.getString(2);
                         String blackUsername = rs.getString(3);
                         String gameName = rs.getString(4);
+                        //String actualGameName = new Gson().fromJson(gameName, String.class);
+
                         //deserializes the game from json string stored in database
                         String jsonGame = rs.getString(5);
                         ChessGame game = new Gson().fromJson(jsonGame, ChessGame.class);

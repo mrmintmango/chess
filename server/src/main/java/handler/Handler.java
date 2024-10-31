@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import model.*;
 import spark.*;
 import service.GameService;
@@ -91,7 +93,11 @@ public class Handler {
     public Object createGame(Request req, Response res) {
         try {
             String authToken = req.headers("authorization");
-            CreateGameRequest request = new CreateGameRequest(authToken, req.body());
+            JsonObject gameName = new Gson().fromJson(req.body(), JsonObject.class);
+            gameName.get("gameName");
+            String reqBod = gameName.get("gameName").getAsString();
+
+            CreateGameRequest request = new CreateGameRequest(authToken, reqBod);
             GameData game = gameService.createGame(request);
             CreateGameResponse response = new CreateGameResponse(game.gameID());
             res.body(gson.toJson(response));
