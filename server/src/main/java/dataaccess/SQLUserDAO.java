@@ -42,19 +42,7 @@ public class SQLUserDAO implements UserDAOI{
     @Override
     public boolean userFound(String email) {
         var statement = "SELECT email FROM user WHERE email=?";
-        try (var conn = DatabaseManager.getConnection()) {
-            try (PreparedStatement ps = conn.prepareStatement(statement)) {
-                ps.setString(1, email);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        return true;
-                    }
-                }
-            }
-        } catch (SQLException | DataAccessException e) {
-            throw new RuntimeException(e); //update later
-        }
-        return false;
+        return DatabaseManager.found(statement, email);
     }
 
     @Override

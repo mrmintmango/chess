@@ -79,7 +79,8 @@ public class SQLGameDAO implements GameDAOI{
 
     @Override
     public boolean findGame(int gameID) {
-        return false;
+        var statement = "SELECT gameID FROM game WHERE gameID=?";
+        return DatabaseManager.found(statement, gameID);
     }
 
     @Override

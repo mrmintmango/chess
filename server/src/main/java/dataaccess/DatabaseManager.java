@@ -155,4 +155,25 @@ public class DatabaseManager {
         }
     }
 
+    public static boolean found(String statement, Object param) {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                if (param instanceof String p) {
+                    ps.setString(1, p);
+                }
+                else if (param instanceof Integer p) {
+                    ps.setInt(1, p);
+                }
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return true;
+                    }
+                }
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new RuntimeException(e); //update later
+        }
+        return false;
+    }
+
 }
