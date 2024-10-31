@@ -1,30 +1,35 @@
 package service;
 
-import dataaccess.DataAccessException;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryUserDAO;
+import dataaccess.*;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class UserServiceTests {
     private UserService userService;
+    UserDAOI userDAO = new SQLUserDAO();
+    AuthDAOI authDAO = new SQLAuthDAO();
+
+    public UserServiceTests() throws DataAccessException {
+        userService = new UserService(authDAO, userDAO);
+    }
 
     @BeforeEach
-    public void setUserService() {
-        MemoryUserDAO userDAO = new MemoryUserDAO();
-        MemoryAuthDAO authDAO = new MemoryAuthDAO();
-        userService = new UserService(authDAO, userDAO);
+    public void setUserService() throws DataAccessException {
+        userDAO.clear();
+        authDAO.clear();
     }
 
     @Test
     public void registerTest() throws DataAccessException {
         UserData user = new UserData("username", "password", "email@gmail.com");
         userService.register(user);
+        boolean match = BCrypt.checkpw(user.password(), userDAO.getUser(user.username()).password());
 
-        Assertions.assertEquals(user, userService.getUser("username"));
+        Assertions.assertTrue(match);
     }
 
     @Test

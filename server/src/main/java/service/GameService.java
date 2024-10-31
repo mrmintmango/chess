@@ -11,18 +11,18 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class GameService {
-    private final AuthDAOI memoryAuthDAO;
-    private final GameDAOI memoryGameDAO;
-    public int increment = 1111;
+    private final AuthDAOI AuthDAO;
+    private final GameDAOI GameDAO;
+    public int increment = 1;
 
-    public GameService(AuthDAOI memoryAuthDAO, GameDAOI memoryGameDAO){
-        this.memoryAuthDAO = memoryAuthDAO;
-        this.memoryGameDAO = memoryGameDAO;
+    public GameService(AuthDAOI AuthDAO, GameDAOI GameDAO){
+        this.AuthDAO = AuthDAO;
+        this.GameDAO = GameDAO;
     }
 
     public ArrayList<GameData> listGames(String authToken) throws DataAccessException{
-        if (memoryAuthDAO.authFound(authToken)){
-            return memoryGameDAO.listGames();
+        if (AuthDAO.authFound(authToken)){
+            return GameDAO.listGames();
         }
         else {
             throw new DataAccessException("unauthorized");
@@ -33,10 +33,11 @@ public class GameService {
     public GameData createGame(CreateGameRequest request) throws DataAccessException {
         ChessGame game;
         if (request.gameName() != null && request.authToken() != null) {
-            if (memoryAuthDAO.authFound(request.authToken())){
+            if (AuthDAO.authFound(request.authToken())){
                 game = new ChessGame();
+                //the zeros used to be the increment value
                 GameData gameData = new GameData(increment, null, null, request.gameName(), game);
-                memoryGameDAO.createGame(increment, gameData);
+                GameDAO.createGame(increment, gameData);
                 increment++;
                 return gameData;
             }
@@ -52,20 +53,20 @@ public class GameService {
     public void joinGame(String authToken, JoinGameRequest request) throws DataAccessException {
         int gameID = request.gameID();
         if (request.playerColor() != null){
-            if (memoryAuthDAO.authFound(authToken)){
-                String username = memoryAuthDAO.getAuth(authToken).username();
-                if (memoryGameDAO.findGame(gameID)) {
-                    if (Objects.equals(request.playerColor(), "BLACK") && memoryGameDAO.getGame(gameID).blackUsername() == null)
+            if (AuthDAO.authFound(authToken)){
+                String username = AuthDAO.getAuth(authToken).username();
+                if (GameDAO.findGame(gameID)) {
+                    if (Objects.equals(request.playerColor(), "BLACK") && GameDAO.getGame(gameID).blackUsername() == null)
                     {
-                        memoryGameDAO.updateGame(gameID, username, false);
+                        GameDAO.updateGame(gameID, username, false);
                     }
-                    else if (Objects.equals(request.playerColor(), "WHITE") && memoryGameDAO.getGame(gameID).whiteUsername() == null) {
-                        memoryGameDAO.updateGame(gameID, username, true);
+                    else if (Objects.equals(request.playerColor(), "WHITE") && GameDAO.getGame(gameID).whiteUsername() == null) {
+                        GameDAO.updateGame(gameID, username, true);
                     }
-                    else if (Objects.equals(request.playerColor(), "WHITE") && !(memoryGameDAO.getGame(gameID).whiteUsername() == null)) {
+                    else if (Objects.equals(request.playerColor(), "WHITE") && !(GameDAO.getGame(gameID).whiteUsername() == null)) {
                         throw new DataAccessException("already taken");
                     }
-                    else if (Objects.equals(request.playerColor(), "BLACK") && !(memoryGameDAO.getGame(gameID).blackUsername() == null)) {
+                    else if (Objects.equals(request.playerColor(), "BLACK") && !(GameDAO.getGame(gameID).blackUsername() == null)) {
                         throw new DataAccessException("already taken");
                     }
                 }
@@ -83,14 +84,14 @@ public class GameService {
     }
 
     public void createAuth(String name, AuthData auth) {
-        memoryAuthDAO.createAuth(name, auth);
+        AuthDAO.createAuth(name, auth);
     }
 
     public GameData getGame(int gameID) throws DataAccessException {
-        return memoryGameDAO.getGame(gameID);
+        return GameDAO.getGame(gameID);
     }
 
     public void putGame(int gameID, GameData game) {
-        memoryGameDAO.putGame(gameID, game);
+        GameDAO.putGame(gameID, game);
     }
 }

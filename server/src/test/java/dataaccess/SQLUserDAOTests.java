@@ -16,6 +16,7 @@ public class SQLUserDAOTests {
 
     @BeforeEach
     public void setUserDAO() {
+        userDAO.clear();
         userDAO.registerUser(user1);
         userDAO.registerUser(user2);
         userDAO.registerUser(user3);
@@ -37,18 +38,80 @@ public class SQLUserDAOTests {
             throw new RuntimeException(e);
         }
 
-        Assertions.assertEquals(user1, check);
+        Assertions.assertEquals(user1.username(), check.username());
     }
 
     @Test
     public void getUserFailTest() throws DataAccessException {
+        DataAccessException thrown = null;
         UserData check;
         try {
             check = userDAO.getUser("UserOne");
         } catch (DataAccessException e) {
-            throw new DataAccessException("wrong username");
+            thrown = new DataAccessException("wrong username");
         }
 
-        //Assertions.assertThrows(DataAccessException, e);
+        assert thrown != null;
+        Assertions.assertEquals("wrong username", thrown.getMessage());
+    }
+
+    @Test
+    public void userFoundTest() {
+        boolean find = userDAO.userFound("User3");
+
+        Assertions.assertTrue(find);
+    }
+
+    @Test
+    public void userFoundFailTest() {
+        boolean find = userDAO.userFound("UserThree");
+
+        Assertions.assertFalse(find);
+    }
+
+    @Test
+    public void putUserTest() {
+        userDAO.putUser("User4", new UserData("User4", "pass4", "gmail4"));
+        boolean find = userDAO.userFound("User4");
+
+        Assertions.assertTrue(find);
+    }
+
+    @Test
+    public void putUserFailTest() {
+        userDAO.putUser("User4", new UserData("User4", "pass4", "gmail4"));
+        boolean find = userDAO.userFound("UserFour");
+        //No idea how to actually test for this method not working
+        Assertions.assertFalse(find);
+    }
+
+    @Test
+    public void registerUserTest() {
+        userDAO.registerUser(new UserData("User4", "pass4", "gmail4"));
+        boolean find = userDAO.userFound("User4");
+
+        Assertions.assertTrue(find);
+    }
+
+    @Test
+    public void registerUserFailTest() {
+        userDAO.registerUser(new UserData("User4", "pass4", "gmail4"));
+        boolean find = userDAO.userFound("UserFour");
+
+        Assertions.assertFalse(find);
+    }
+
+    @Test
+    public void getUserSizeTest() {
+        int size = userDAO.getUserSize();
+
+        Assertions.assertEquals(3, size);
+    }
+
+    @Test
+    public void getUserSizeFailTest() {
+        int size = userDAO.getUserSize();
+
+        Assertions.assertNotSame(4, size);
     }
 }

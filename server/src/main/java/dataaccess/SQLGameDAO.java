@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class SQLGameDAO implements GameDAOI{
+    //int gameID;
     @Override
     public void clear() {
         var statement = "TRUNCATE game";
@@ -19,11 +20,12 @@ public class SQLGameDAO implements GameDAOI{
 
     @Override
     public void createGame(int gameID, GameData gameData) {
-        var statement = "INSERT INTO game (whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?)";
+        var statement = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?, ?)";
         try {
             //Serialize the actual game object from the game data to store in database
             String jsonGame = new Gson().toJson(gameData.game());
-            DatabaseManager.executeUpdate(statement, gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), jsonGame);
+            //String gameName = new Gson().fromJson(gameData.gameName(), String.class);
+            DatabaseManager.executeUpdate(statement, gameID, gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), jsonGame);
         } catch (DataAccessException e) {
             throw new RuntimeException(e); //update later
         }
@@ -83,12 +85,14 @@ public class SQLGameDAO implements GameDAOI{
             GameData original = getGame(gameID);
             GameData updatedGame;
             if (bw) { //white is true black is false
-                updatedGame = new GameData(original.gameID(), username, original.blackUsername(), original.gameName(), original.game());
+                String statement = "UPDATE game SET whiteUsername=? WHERE gameID=?";
+                DatabaseManager.executeUpdate(statement, username, gameID);
             }
             else {
-                updatedGame = new GameData(original.gameID(), original.whiteUsername(), username, original.gameName(), original.game());
+                String statement = "UPDATE game SET blackUsername=? WHERE gameID=?";
+                DatabaseManager.executeUpdate(statement, username, gameID);
             }
-            putGame(gameID, updatedGame);
+            //putGame(gameID, updatedGame);
         } catch (DataAccessException e) {
             throw new RuntimeException(e); //update later
         }

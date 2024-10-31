@@ -32,12 +32,14 @@ public class SQLUserDAO implements UserDAOI{
                         String mail = rs.getString(3);
                         return new UserData(user, pass, mail);
                     }
+                    else {
+                        throw new DataAccessException("username not found");
+                    }
                 }
             }
         } catch (SQLException | DataAccessException e) {
-            throw new RuntimeException(e); //update later
+            throw new DataAccessException("Bad connection"); //update later
         }
-        return null;
     }
 
     @Override
