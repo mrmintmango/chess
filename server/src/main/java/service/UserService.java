@@ -8,21 +8,21 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class UserService {
-    private final AuthDAOI memoryAuthDAO;
-    private final UserDAOI memoryUserDAO;
+    private final AuthDAOI authDAO;
+    private final UserDAOI userDAO;
 
-    public UserService(AuthDAOI memoryAuthDAO, UserDAOI memoryUserDAO){
-        this.memoryAuthDAO = memoryAuthDAO;
-        this.memoryUserDAO = memoryUserDAO;
+    public UserService(AuthDAOI authDAO, UserDAOI userDAO){
+        this.authDAO = authDAO;
+        this.userDAO = userDAO;
     }
 
     public AuthData register(UserData user) throws DataAccessException{
         if (user.username() != null && user.password() != null) {
-            if (!memoryUserDAO.userFound(user.username())){
+            if (!userDAO.userFound(user.username())){
                 String authToken = UUID.randomUUID().toString(); //creates a new authToken
                 AuthData authData = new AuthData(authToken, user.username()); //creates new authData with token and username from user
-                memoryAuthDAO.createAuth(authToken, authData); //places the new authData into the authData store
-                memoryUserDAO.registerUser(user);
+                authDAO.createAuth(authToken, authData); //places the new authData into the authData store
+                userDAO.registerUser(user);
                 return authData;
             }
             else {
@@ -35,11 +35,11 @@ public class UserService {
     }
 
     public AuthData login(UserData user) throws DataAccessException {
-        if (memoryUserDAO.userFound(user.username())){
-            if (Objects.equals(memoryUserDAO.getUser(user.username()).password(), user.password())){
+        if (userDAO.userFound(user.username())){
+            if (Objects.equals(userDAO.getUser(user.username()).password(), user.password())){
                 String authToken = UUID.randomUUID().toString(); //creates a new authToken
                 AuthData authData = new AuthData(authToken, user.username()); //creates new authData with token and username from user
-                memoryAuthDAO.createAuth(authToken, authData); //places the new authData into the authData store
+                authDAO.createAuth(authToken, authData); //places the new authData into the authData store
                 return authData;
             }
             else {
@@ -52,8 +52,8 @@ public class UserService {
     }
 
     public void logout(String authToken) throws DataAccessException {
-        if (memoryAuthDAO.authFound(authToken)){
-            memoryAuthDAO.deleteAuth(authToken);
+        if (authDAO.authFound(authToken)){
+            authDAO.deleteAuth(authToken);
         }
         else {
             throw new DataAccessException("unauthorized");
@@ -62,19 +62,19 @@ public class UserService {
 
     //Methods for testing purposes.
     public UserData getUser(String username) throws DataAccessException {
-        return memoryUserDAO.getUser(username);
+        return userDAO.getUser(username);
     }
 
     public void putUser(String name, UserData user) {
-        memoryUserDAO.putUser(name, user);
+        userDAO.putUser(name, user);
     }
 
     public void putAuth(String name, AuthData auth) {
-        memoryAuthDAO.putAuth(name, auth);
+        authDAO.putAuth(name, auth);
     }
 
     public int getAuthSize() {
-        return memoryAuthDAO.getAuthSize();
+        return authDAO.getAuthSize();
     }
 
 }

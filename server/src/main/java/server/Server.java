@@ -13,7 +13,12 @@ public class Server {
         Spark.port(desiredPort);
 
         GameDAOI gameDAOI = new MemoryGameDAO();
-        UserDAOI userDAOI = new MemoryUserDAO();
+        UserDAOI userDAOI = null;
+        try {
+            userDAOI = new SQLUserDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
         AuthDAOI authDAOI = new MemoryAuthDAO();
 
         ParentService parentService = new ParentService(authDAOI, gameDAOI, userDAOI);

@@ -1,13 +1,47 @@
 package dataaccess;
 
+import javax.xml.crypto.Data;
 import java.sql.*;
 import java.util.Properties;
+
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+import static java.sql.Types.NULL;
 
 public class DatabaseManager {
     private static final String DATABASE_NAME;
     private static final String USER;
     private static final String PASSWORD;
     private static final String CONNECTION_URL;
+
+    //Code to create tables
+    private static final String[] createStatements = {
+            """
+            CREATE TABLE IF NOT EXISTS auth (
+                `authToken` varchar(256) NOT NULL,
+                `username` varchar(256) NOT NULL,
+                PRIMARY KEY (`authToken`)
+               )
+""",
+            """
+            CREATE TABLE IF NOT EXISTS game (
+                `gameID` int NOT NULL AUTO_INCREMENT,
+                `whiteUsername` TEXT DEFAULT NULL,
+                `blackUsername` TEXT DEFAULT NULL,
+                `gameName` TEXT DEFAULT NULL,
+                PRIMARY KEY (`gameID`),
+                `game` LONGTEXT DEFAULT NULL
+                )
+""",
+            """
+            CREATE TABLE IF NOT EXISTS user (
+                `id` int NOT NULL AUTO_INCREMENT,
+                `username` TEXT DEFAULT NULL,
+                `password` TEXT DEFAULT NULL,
+                `email` TEXT DEFAULT NULL,
+                PRIMARY KEY (`id`)
+                )
+"""
+    };
 
     /*
      * Load the database information for the db.properties file.
@@ -24,15 +58,15 @@ public class DatabaseManager {
                 USER = props.getProperty("db.user");
                 PASSWORD = props.getProperty("db.password");
 
-                //maybe create database here?
-                createDatabase();
-
                 var host = props.getProperty("db.host");
                 var port = Integer.parseInt(props.getProperty("db.port"));
                 CONNECTION_URL = String.format("jdbc:mysql://%s:%d", host, port);
+
+                //maybe create database here?
+                createDatabase();
             }
         } catch (Exception ex) {
-            throw new RuntimeException("unable to process db.properties. " + ex.getMessage());
+            throw new RuntimeException("unable to process db.properties. " + ex.getMessage(), ex);
         }
     }
 
@@ -46,39 +80,16 @@ public class DatabaseManager {
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.executeUpdate();
             }
+            //create the tables for the database
             createTables();
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
         }
     }
 
-    private static final String[] createStatements = {
-            """
-            CREATE TABLE IF NOT EXISTS auth (
-                'id' int NOT NULL AUTO_INCREMENT,
-                'authToken' varchar(256) NOT NULL,
-                PRIMARY KEY ('id'),
-                INDEX(authToken)
-               ),
-               
-            CREATE TABLE IF NOT EXISTS game (
-                'id' int NOT NULL AUTO_INCREMENT,
-                'whiteUsername' TEXT DEFAULT NULL,
-                'blackUsername' TEXT DEFAULT NULL,
-                'gameName' TEXT DEFAULT NULL,
-                'game' ChessGame DEFAULT NULL
-                ),
-            CREATE TABLE IF NOT EXISTS USER (
-                'id' int NOT NULL AUTO_INCREMENT,
-                'username' TEXT DEFAULT NULL,
-                'password' TEXT DEFAULT NULL,
-                'email' TEXT DEFAULT NULL
-                )
-"""
-    };
 
     private static void createTables() throws DataAccessException {
-        DatabaseManager.createDatabase();
+        //DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : createStatements) {
                 try (var preparedStatement = conn.prepareStatement(statement)) {
@@ -87,6 +98,29 @@ public class DatabaseManager {
             }
         } catch (SQLException ex) {
             throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
+        }
+    }
+
+    //Code to run updates as stated in the DAO classes. (found in pet shop code)
+    public static int executeUpdate(String statement, Object... params) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
+                for (var i = 0; i < params.length; i++) {
+                    var param = params[i];
+                    if (param instanceof String p) ps.setString(i + 1, p);
+                    else if (param instanceof Integer p) ps.setInt(i + 1, p);
+                    else if (param == null) ps.setNull(i + 1, NULL);
+                }
+                ps.executeUpdate();
+
+                var rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+                return 0;
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
         }
     }
 
