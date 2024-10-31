@@ -40,9 +40,9 @@ public class SQLUserDAO implements UserDAOI{
     }
 
     @Override
-    public boolean userFound(String email) {
-        var statement = "SELECT email FROM user WHERE email=?";
-        return DatabaseManager.found(statement, email);
+    public boolean userFound(String username) {
+        var statement = "SELECT username FROM user WHERE username=?";
+        return DatabaseManager.found(statement, username);
     }
 
     @Override

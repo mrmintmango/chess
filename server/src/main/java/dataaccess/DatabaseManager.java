@@ -37,7 +37,7 @@ public class DatabaseManager {
                 `username` TEXT DEFAULT NULL,
                 `password` TEXT DEFAULT NULL,
                 `email` TEXT DEFAULT NULL,
-                PRIMARY KEY (`email`)
+                PRIMARY KEY (`username`)
                 )
 """
     };

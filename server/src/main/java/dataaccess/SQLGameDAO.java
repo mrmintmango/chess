@@ -77,6 +77,23 @@ public class SQLGameDAO implements GameDAOI{
         return gameList;
     }
 
+    //add an update game method.
+    public void updateGame(int gameID, String username, boolean bw) {
+        try {
+            GameData original = getGame(gameID);
+            GameData updatedGame;
+            if (bw) { //white is true black is false
+                updatedGame = new GameData(original.gameID(), username, original.blackUsername(), original.gameName(), original.game());
+            }
+            else {
+                updatedGame = new GameData(original.gameID(), original.whiteUsername(), username, original.gameName(), original.game());
+            }
+            putGame(gameID, updatedGame);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e); //update later
+        }
+    }
+
     @Override
     public boolean findGame(int gameID) {
         var statement = "SELECT gameID FROM game WHERE gameID=?";

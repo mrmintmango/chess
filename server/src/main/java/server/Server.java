@@ -18,7 +18,7 @@ public class Server {
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
-        AuthDAOI authDAOI = new MemoryAuthDAO();
+        AuthDAOI authDAOI = new SQLAuthDAO();
         GameDAOI gameDAOI = new SQLGameDAO();
 
         ParentService parentService = new ParentService(authDAOI, gameDAOI, userDAOI);
