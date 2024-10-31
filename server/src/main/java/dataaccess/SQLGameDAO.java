@@ -51,7 +51,26 @@ public class SQLGameDAO implements GameDAOI{
 
     @Override
     public ArrayList<GameData> listGames() {
-        return null;
+        ArrayList<GameData> gameList = new ArrayList<>();
+        var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM game";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        int gameID = rs.getInt(1);
+                        String whiteUsername = rs.getString(2);
+                        String blackUsername = rs.getString(3);
+                        String gameName = rs.getString(4);
+                        //the game will need to be deserialized before becoming an actual game again.
+                        String game = rs.getString(5);
+                        gameList.add(new GameData(gameID, whiteUsername, blackUsername, gameName, null));
+                    }
+                }
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new RuntimeException(e); //update later
+        }
+        return gameList;
     }
 
     @Override
