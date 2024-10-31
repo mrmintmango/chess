@@ -34,11 +34,10 @@ public class DatabaseManager {
 """,
             """
             CREATE TABLE IF NOT EXISTS user (
-                `id` int NOT NULL AUTO_INCREMENT,
                 `username` TEXT DEFAULT NULL,
                 `password` TEXT DEFAULT NULL,
                 `email` TEXT DEFAULT NULL,
-                PRIMARY KEY (`id`)
+                PRIMARY KEY (`email`)
                 )
 """
     };

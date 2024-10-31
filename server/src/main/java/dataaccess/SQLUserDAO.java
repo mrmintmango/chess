@@ -2,6 +2,8 @@ package dataaccess;
 
 import model.UserData;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class SQLUserDAO implements UserDAOI{
@@ -18,12 +20,30 @@ public class SQLUserDAO implements UserDAOI{
                 ps.executeUpdate();
             }
         } catch (SQLException | DataAccessException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); //update later
         }
     }
 
     @Override
-    public UserData getUser(String username) throws DataAccessException {
+    public UserData getUser(String email) throws DataAccessException {
+        var statement = "SELECT username, password, email FROM user WHERE email=?";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ps.setString(1, email);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        String user = rs.getString(1);
+                        String pass = rs.getString(2);
+                        String mail = rs.getString(3);
+                        return new UserData(user, pass, mail);
+                    }
+                }
+            }
+
+        } catch (SQLException | DataAccessException e) {
+            throw new RuntimeException(e); //update later
+        }
+
         return null;
     }
 
