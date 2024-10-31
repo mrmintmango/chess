@@ -176,4 +176,19 @@ public class DatabaseManager {
         return false;
     }
 
+    public static int size(String statement) {
+        int size = 0;
+        try (var conn = DatabaseManager.getConnection()) {
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        size++;
+                    }
+                }
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new RuntimeException(e); //update later
+        }
+        return size;
+    }
 }

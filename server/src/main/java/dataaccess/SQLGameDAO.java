@@ -96,6 +96,7 @@ public class SQLGameDAO implements GameDAOI{
 
     @Override
     public int getGameSize() {
-        return 0;
+        var statement = "SELECT gameID FROM game";
+        return DatabaseManager.size(statement);
     }
 }
