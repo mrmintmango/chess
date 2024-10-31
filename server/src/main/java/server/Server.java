@@ -19,7 +19,7 @@ public class Server {
             throw new RuntimeException(e);
         }
         AuthDAOI authDAOI = new MemoryAuthDAO();
-        GameDAOI gameDAOI = new MemoryGameDAO();
+        GameDAOI gameDAOI = new SQLGameDAO();
 
         ParentService parentService = new ParentService(authDAOI, gameDAOI, userDAOI);
         GameService gameService = new GameService(authDAOI, gameDAOI);
