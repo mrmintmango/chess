@@ -25,18 +25,18 @@ public class DatabaseManager {
             """
             CREATE TABLE IF NOT EXISTS game (
                 `gameID` int NOT NULL AUTO_INCREMENT,
-                `whiteUsername` TEXT DEFAULT NULL,
-                `blackUsername` TEXT DEFAULT NULL,
-                `gameName` TEXT DEFAULT NULL,
+                `whiteUsername` varchar(256) DEFAULT NULL,
+                `blackUsername` varchar(256) DEFAULT NULL,
+                `gameName` varchar(256) DEFAULT NULL,
                 PRIMARY KEY (`gameID`),
                 `game` LONGTEXT DEFAULT NULL
                 )
 """,
             """
             CREATE TABLE IF NOT EXISTS user (
-                `username` TEXT DEFAULT NULL,
-                `password` TEXT DEFAULT NULL,
-                `email` TEXT DEFAULT NULL,
+                `username` varchar(256) NOT NULL,
+                `password` varchar(256) DEFAULT NULL,
+                `email` varchar(256) DEFAULT NULL,
                 PRIMARY KEY (`username`)
                 )
 """
