@@ -39,16 +39,27 @@ public class SQLUserDAO implements UserDAOI{
                     }
                 }
             }
-
         } catch (SQLException | DataAccessException e) {
             throw new RuntimeException(e); //update later
         }
-
         return null;
     }
 
     @Override
-    public boolean userFound(String username) {
+    public boolean userFound(String email) {
+        var statement = "SELECT email FROM user WHERE email=?";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ps.setString(1, email);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return true;
+                    }
+                }
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new RuntimeException(e); //update later
+        }
         return false;
     }
 
@@ -68,6 +79,19 @@ public class SQLUserDAO implements UserDAOI{
 
     @Override
     public int getUserSize() {
-        return 0;
+        int size = 0;
+        var statement = "SELECT email FROM user";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        size++;
+                    }
+                }
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new RuntimeException(e); //update later
+        }
+        return size;
     }
 }
