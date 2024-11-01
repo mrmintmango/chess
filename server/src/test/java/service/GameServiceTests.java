@@ -27,10 +27,10 @@ public class GameServiceTests {
         AuthData authData = new AuthData("testToken", "authUsername");
         gameService.createAuth("testToken", authData);
         gameService.createGame(request);
-        ChessGame game = gameService.getGame(1111).game();
-        GameData gameData = new GameData(1111,null, null, "testName", game);
+        ChessGame game = gameService.getGame(1).game();
+        GameData gameData = new GameData(1,null, null, "testName", game);
 
-        Assertions.assertEquals(gameData, gameService.getGame(1111));
+        Assertions.assertEquals(gameData, gameService.getGame(1));
     }
 
     @Test
@@ -53,11 +53,11 @@ public class GameServiceTests {
         AuthData authData = new AuthData("testToken", "authUsername");
         gameService.createAuth("testToken", authData);
         gameService.createGame(request);
-        JoinGameRequest joinReq = new JoinGameRequest("WHITE", 1111);
+        JoinGameRequest joinReq = new JoinGameRequest("WHITE", 1);
         String authToken = "testToken";
         gameService.joinGame(authToken, joinReq);
 
-        Assertions.assertEquals("authUsername", gameService.getGame(1111).whiteUsername());
+        Assertions.assertEquals("authUsername", gameService.getGame(1).whiteUsername());
     }
 
     @Test
@@ -65,17 +65,17 @@ public class GameServiceTests {
         AuthData authData = new AuthData("testToken", "authUsername");
         gameService.createAuth("testToken", authData);
         gameService.createGame(request);
-        JoinGameRequest joinReq = new JoinGameRequest("BLACK", 1111);
+        JoinGameRequest joinReq = new JoinGameRequest("BLACK", 1);
         String authToken = "testToken";
         gameService.joinGame(authToken, joinReq);
 
-        Assertions.assertEquals("authUsername", gameService.getGame(1111).blackUsername());
+        Assertions.assertEquals("authUsername", gameService.getGame(1).blackUsername());
     }
 
     @Test
     public void joinGameFailTest() {
         boolean thrown = false;
-        JoinGameRequest joinReq = new JoinGameRequest("WHITE", 1111);
+        JoinGameRequest joinReq = new JoinGameRequest("WHITE", 1);
         String authToken = "testToken";
 
         try {
@@ -101,13 +101,13 @@ public class GameServiceTests {
 
     @Test
     public void listGamesTest() throws DataAccessException {
-        GameData game1 = new GameData(1111, null, null, "game1", new ChessGame());
-        GameData game2 = new GameData(1112, null, null, "game2", new ChessGame());
-        GameData game3 = new GameData(1113, null, null, "game3", new ChessGame());
+        GameData game1 = new GameData(1, null, null, "game1", new ChessGame());
+        GameData game2 = new GameData(2, null, null, "game2", new ChessGame());
+        GameData game3 = new GameData(3, null, null, "game3", new ChessGame());
 
-        gameService.putGame(1111, game1);
-        gameService.putGame(1112, game2);
-        gameService.putGame(1113, game3);
+        gameService.putGame(1, game1);
+        gameService.putGame(2, game2);
+        gameService.putGame(3, game3);
 
         ArrayList<GameData> expected = new ArrayList<>();
         expected.add(game1);
