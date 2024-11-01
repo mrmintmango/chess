@@ -68,5 +68,60 @@ public class SQLAuthDAOTests {
         Assertions.assertEquals(one, null);
     }
 
+    @Test
+    void deleteAuthTest() throws DataAccessException {
+        authDAO.deleteAuth("AuthToken3");
+
+        Assertions.assertEquals(authDAO.getAuthSize(), 2);
+    }
+
+    @Test
+    void deleteAuthFailTest() throws DataAccessException {
+        authDAO.deleteAuth("AuthTokenThree");
+
+        Assertions.assertEquals(authDAO.getAuthSize(), 3);
+    }
+
+    @Test
+    void authFoundTest() {
+        boolean test = authDAO.authFound("AuthToken1");
+
+        Assertions.assertTrue(test);
+    }
+
+    @Test
+    void authFoundFailTest() {
+        boolean test = authDAO.authFound("AuthTokenOne");
+
+        Assertions.assertFalse(test);
+    }
+
+    @Test
+    void getAuthSizeTest() {
+        int size = authDAO.getAuthSize();
+
+        Assertions.assertEquals(size, 3);
+    }
+
+    @Test
+    void getAuthSizeFailTest() {
+        int size = authDAO.getAuthSize();
+
+        Assertions.assertNotEquals(size, 5);
+    }
+
+    @Test
+    void putAuthTest() {
+        authDAO.putAuth("NameNew", new AuthData("AuthTokenNew", "NameNew"));
+
+        Assertions.assertEquals(authDAO.getAuthSize(), 4);
+    }
+
+    @Test
+    void putAuthFailTest() {
+        authDAO.putAuth("NameNew", new AuthData("AuthTokenNew", "NameNew"));
+
+        Assertions.assertNotEquals(authDAO.getAuthSize(), 3);
+    }
 
 }

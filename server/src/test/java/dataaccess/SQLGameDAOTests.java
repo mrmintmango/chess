@@ -34,4 +34,25 @@ public class SQLGameDAOTests {
 
         Assertions.assertEquals(gameDAO.getGameSize(), 4);
     }
+
+    @Test
+    void createGameFailTest() {
+        gameDAO.createGame(4, new GameData(4, null, null, "game4", new ChessGame()));
+
+        Assertions.assertNotEquals(gameDAO.getGameSize(), 3);
+    }
+
+    @Test
+    void getGameTest() throws DataAccessException {
+        GameData test = gameDAO.getGame(1);
+
+        Assertions.assertEquals(test.gameName(), "game1");
+    }
+
+    @Test
+    void getGameFailTest() throws DataAccessException {
+        GameData test = gameDAO.getGame(7);
+
+        Assertions.assertEquals(test, null);
+    }
 }
