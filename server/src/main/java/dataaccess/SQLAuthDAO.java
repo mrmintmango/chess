@@ -1,9 +1,6 @@
 package dataaccess;
 
-import chess.ChessGame;
-import com.google.gson.Gson;
 import model.AuthData;
-import model.GameData;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -41,7 +38,7 @@ public class SQLAuthDAO implements AuthDAOI{
                 }
             }
         } catch (SQLException | DataAccessException e) {
-            throw new RuntimeException(e); //update later
+            throw new DataAccessException("connection problem"); //update later
         }
         return null;
     }

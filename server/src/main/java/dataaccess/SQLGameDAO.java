@@ -3,7 +3,7 @@ package dataaccess;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import model.GameData;
-import model.UserData;
+
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -52,7 +52,7 @@ public class SQLGameDAO implements GameDAOI{
                 }
             }
         } catch (SQLException | DataAccessException e) {
-            throw new RuntimeException(e); //update later
+            throw new DataAccessException("connection problem"); //update later
         }
         return null;
     }
@@ -84,16 +84,14 @@ public class SQLGameDAO implements GameDAOI{
     //add an update game method.
     public void updateGame(int gameID, String username, boolean bw) {
         try {
-            GameData original = getGame(gameID);
-            GameData updatedGame;
+            String statement;
             if (bw) { //white is true black is false
-                String statement = "UPDATE game SET whiteUsername=? WHERE gameID=?";
-                DatabaseManager.executeUpdate(statement, username, gameID);
+                statement = "UPDATE game SET whiteUsername=? WHERE gameID=?";
             }
             else {
-                String statement = "UPDATE game SET blackUsername=? WHERE gameID=?";
-                DatabaseManager.executeUpdate(statement, username, gameID);
+                statement = "UPDATE game SET blackUsername=? WHERE gameID=?";
             }
+            DatabaseManager.executeUpdate(statement, username, gameID);
             //putGame(gameID, updatedGame);
         } catch (DataAccessException e) {
             throw new RuntimeException(e); //update later
