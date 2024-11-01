@@ -15,9 +15,9 @@ public class GameService {
     private final GameDAOI gameDAO;
     public int increment = 1;
 
-    public GameService(AuthDAOI AuthDAO, GameDAOI GameDAO){
-        this.authDAO = AuthDAO;
-        this.gameDAO = GameDAO;
+    public GameService(AuthDAOI authDAO, GameDAOI gameDAO){
+        this.authDAO = authDAO;
+        this.gameDAO = gameDAO;
     }
 
     public ArrayList<GameData> listGames(String authToken) throws DataAccessException{
