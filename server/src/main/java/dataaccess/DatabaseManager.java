@@ -1,6 +1,5 @@
 package dataaccess;
 
-import javax.xml.crypto.Data;
 import java.sql.*;
 import java.util.Properties;
 
@@ -14,7 +13,7 @@ public class DatabaseManager {
     private static final String CONNECTION_URL;
 
     //Code to create tables
-    private static final String[] createStatements = {
+    private static final String[] CreateStatements = {
             """
             CREATE TABLE IF NOT EXISTS auth (
                 `authToken` varchar(256) NOT NULL,
@@ -90,7 +89,7 @@ public class DatabaseManager {
     private static void createTables() throws DataAccessException {
         //DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
+            for (var statement : CreateStatements) {
                 try (var preparedStatement = conn.prepareStatement(statement)) {
                     preparedStatement.executeUpdate();
                 }
@@ -101,22 +100,25 @@ public class DatabaseManager {
     }
 
     //Code to run updates as stated in the DAO classes. (found in pet shop code)
-    public static int executeUpdate(String statement, Object... params) throws DataAccessException {
+    public static void executeUpdate(String statement, Object... params) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 for (var i = 0; i < params.length; i++) {
                     var param = params[i];
-                    if (param instanceof String p) ps.setString(i + 1, p);
-                    else if (param instanceof Integer p) ps.setInt(i + 1, p);
-                    else if (param == null) ps.setNull(i + 1, NULL);
+                    switch (param) {
+                        case String p -> ps.setString(i + 1, p);
+                        case Integer p -> ps.setInt(i + 1, p);
+                        case null -> ps.setNull(i + 1, NULL);
+                        default -> {
+                        }
+                    }
                 }
                 ps.executeUpdate();
 
                 var rs = ps.getGeneratedKeys();
                 if (rs.next()) {
-                    return rs.getInt(1);
+                    rs.getInt(1);
                 }
-                return 0;
             }
         } catch (SQLException e) {
             throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));

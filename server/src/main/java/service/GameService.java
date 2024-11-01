@@ -11,18 +11,18 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class GameService {
-    private final AuthDAOI AuthDAO;
-    private final GameDAOI GameDAO;
+    private final AuthDAOI authDAO;
+    private final GameDAOI gameDAO;
     public int increment = 1;
 
     public GameService(AuthDAOI AuthDAO, GameDAOI GameDAO){
-        this.AuthDAO = AuthDAO;
-        this.GameDAO = GameDAO;
+        this.authDAO = AuthDAO;
+        this.gameDAO = GameDAO;
     }
 
     public ArrayList<GameData> listGames(String authToken) throws DataAccessException{
-        if (AuthDAO.authFound(authToken)){
-            return GameDAO.listGames();
+        if (authDAO.authFound(authToken)){
+            return gameDAO.listGames();
         }
         else {
             throw new DataAccessException("unauthorized");
@@ -33,11 +33,11 @@ public class GameService {
     public GameData createGame(CreateGameRequest request) throws DataAccessException {
         ChessGame game;
         if (request.gameName() != null && request.authToken() != null) {
-            if (AuthDAO.authFound(request.authToken())){
+            if (authDAO.authFound(request.authToken())){
                 game = new ChessGame();
                 //the zeros used to be the increment value
                 GameData gameData = new GameData(increment, null, null, request.gameName(), game);
-                GameDAO.createGame(increment, gameData);
+                gameDAO.createGame(increment, gameData);
                 increment++;
                 return gameData;
             }
@@ -53,20 +53,20 @@ public class GameService {
     public void joinGame(String authToken, JoinGameRequest request) throws DataAccessException {
         int gameID = request.gameID();
         if (request.playerColor() != null){
-            if (AuthDAO.authFound(authToken)){
-                String username = AuthDAO.getAuth(authToken).username();
-                if (GameDAO.findGame(gameID)) {
-                    if (Objects.equals(request.playerColor(), "BLACK") && GameDAO.getGame(gameID).blackUsername() == null)
+            if (authDAO.authFound(authToken)){
+                String username = authDAO.getAuth(authToken).username();
+                if (gameDAO.findGame(gameID)) {
+                    if (Objects.equals(request.playerColor(), "BLACK") && gameDAO.getGame(gameID).blackUsername() == null)
                     {
-                        GameDAO.updateGame(gameID, username, false);
+                        gameDAO.updateGame(gameID, username, false);
                     }
-                    else if (Objects.equals(request.playerColor(), "WHITE") && GameDAO.getGame(gameID).whiteUsername() == null) {
-                        GameDAO.updateGame(gameID, username, true);
+                    else if (Objects.equals(request.playerColor(), "WHITE") && gameDAO.getGame(gameID).whiteUsername() == null) {
+                        gameDAO.updateGame(gameID, username, true);
                     }
-                    else if (Objects.equals(request.playerColor(), "WHITE") && !(GameDAO.getGame(gameID).whiteUsername() == null)) {
+                    else if (Objects.equals(request.playerColor(), "WHITE") && !(gameDAO.getGame(gameID).whiteUsername() == null)) {
                         throw new DataAccessException("already taken");
                     }
-                    else if (Objects.equals(request.playerColor(), "BLACK") && !(GameDAO.getGame(gameID).blackUsername() == null)) {
+                    else if (Objects.equals(request.playerColor(), "BLACK") && !(gameDAO.getGame(gameID).blackUsername() == null)) {
                         throw new DataAccessException("already taken");
                     }
                 }
@@ -84,14 +84,14 @@ public class GameService {
     }
 
     public void createAuth(String name, AuthData auth) {
-        AuthDAO.createAuth(name, auth);
+        authDAO.createAuth(name, auth);
     }
 
     public GameData getGame(int gameID) throws DataAccessException {
-        return GameDAO.getGame(gameID);
+        return gameDAO.getGame(gameID);
     }
 
     public void putGame(int gameID, GameData game) {
-        GameDAO.putGame(gameID, game);
+        gameDAO.putGame(gameID, game);
     }
 }
