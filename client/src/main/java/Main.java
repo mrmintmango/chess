@@ -9,8 +9,10 @@ public class Main {
     }
 
     public static void testingCode(){
-        ChessBoard board = new ChessBoard();
+        ChessPiece[][] pieces = new ChessPiece[8][8];
+        ChessBoard board = new ChessBoard(pieces);
 
-        board.createBoarder();
+        //add actual pieces to pieces;
+        board.createBoard();
     }
 }
