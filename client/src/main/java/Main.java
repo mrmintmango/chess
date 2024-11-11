@@ -1,5 +1,6 @@
 import chess.*;
 import ui.ChessBoard;
+import ui.Client;
 
 public class Main {
     public static void main(String[] args) {
@@ -14,7 +15,8 @@ public class Main {
         testBoard.resetBoard();
         ChessBoard board = new ChessBoard(testBoard.getSquares());
 
-        //add actual pieces to pieces;
-        board.createBoard();
+        //board.createBoard();
+        Client menu = new Client();
+
     }
 }
