@@ -1,10 +1,12 @@
 package ui;
 
+import chess.ChessGame;
 import chess.ChessPiece;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.io.PrintStream;
+import java.util.Objects;
 
 import static java.lang.System.out;
 
@@ -27,9 +29,21 @@ public class ChessBoard extends EscapeSequences {
         drawHeader(out, true);
         out.println();
 
-        //Chess Board time
         setBeige(out);
         drawBoard(true);
+
+        drawHeader(out, true);
+        out.println();
+
+        setBlack(out); //middle bar
+        out.println();
+
+        setBeige(out);
+        drawHeader(out, false);
+        out.println();
+
+        setBeige(out);
+        drawBoard(false);
 
         drawHeader(out, false);
         out.println();
@@ -41,16 +55,16 @@ public class ChessBoard extends EscapeSequences {
         //top = true, bottom = false
         if(topBottom){
             out.print("   ");
-            for (String letter : letters) {
-                out.print(" " + letter + " ");
+            for (int i = letters.size()-1; i >= 0; i--) {
+                out.print(" " + letters.get(i) + " ");
             }
             out.print("   ");
             setBlack(out);
         }
         else {
             out.print("   ");
-            for (int i = letters.size()-1; i >= 0; i--) {
-                out.print(" " + letters.get(i) + " ");
+            for (String letter : letters) {
+                out.print(" " + letter + " ");
             }
             out.print("   ");
             setBlack(out);
@@ -61,6 +75,20 @@ public class ChessBoard extends EscapeSequences {
     public void drawBoard(boolean bw){
         //white = true, black = false
         if(bw) {
+            for(int i = 0; i <= 7; i++){
+                out.print(" " + numbers.get(i) + " ");
+                if (i%2 == 0){
+                    drawBoardLine(i);
+                }
+                else {
+                    drawBoardLine(i);
+                }
+                setBeige(out);
+                out.print(" " + numbers.get(i) + " ");
+                out.println();
+            }
+        }
+        else{
             for(int i = 7; i >= 0; i--){
                 out.print(" " + numbers.get(i) + " ");
                 if (i%2 == 0){
@@ -106,8 +134,37 @@ public class ChessBoard extends EscapeSequences {
             out.print("   ");
         }
         else {
-            out.print(" " + board[i][j] + " ");
+            if (board[i][j].getTeamColor() == ChessGame.TeamColor.WHITE){
+                out.print(SET_TEXT_COLOR_RED); // red = white
+            }
+            else {
+                out.print(SET_TEXT_COLOR_GREEN); // green = black
+            }
+            out.print(" " + pieceIcon(board[i][j].getPieceType().toString()) + " ");
         }
+    }
+
+    private String pieceIcon(String pieceType){
+        if (Objects.equals(pieceType, "QUEEN")){
+            return "Q";
+        }
+        else if (Objects.equals(pieceType, "KING")){
+            return "K";
+        }
+        else if (Objects.equals(pieceType, "PAWN")){
+            return "P";
+        }
+        else if (Objects.equals(pieceType, "BISHOP")){
+            return "B";
+        }
+        else if (Objects.equals(pieceType, "ROOK")){
+            return "R";
+        }
+        else if (Objects.equals(pieceType, "KNIGHT")){
+            return "N";
+        }
+
+        return "?";
     }
 
     private static void setWhite(PrintStream out) {

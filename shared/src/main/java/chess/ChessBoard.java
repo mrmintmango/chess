@@ -16,7 +16,6 @@ public class ChessBoard {
     }
 
     public ChessBoard(ChessBoard copy){
-        //squares = copy.squares.clone();
         for (int row = 0; row <= 7; row++) { //revert to 0 and 7
             for (int column = 0; column <= 7; column++) {
                 if (copy.squares[row][column] != null){
@@ -145,5 +144,11 @@ public class ChessBoard {
     @Override
     public int hashCode() {
         return Arrays.deepHashCode(squares);
+    }
+
+    //for testing the UI
+
+    public ChessPiece[][] getSquares() {
+        return squares;
     }
 }
