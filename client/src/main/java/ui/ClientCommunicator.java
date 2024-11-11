@@ -1,9 +1,11 @@
 package ui;
 
+import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 public class ClientCommunicator {
@@ -12,7 +14,7 @@ public class ClientCommunicator {
 
     public void delete() {}
 
-    public HttpURLConnection post(String urlString) throws IOException {
+    public InputStream post(String urlString) throws IOException {
         URL url = new URL(urlString);
 
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -20,7 +22,41 @@ public class ClientCommunicator {
         connection.setRequestMethod("POST");
         connection.setDoOutput(true);
 
-        return connection;
+        connection.connect();
+
+        try(OutputStream requestBody = connection.getOutputStream();) {
+            if (requestBody != null) {  // this is only for other ones
+                //maybe alter the request property with stuff for the endpoints???
+                connection.addRequestProperty("Content-Type", "application/json");
+                String reqData = new Gson().toJson(requestBody);
+                try (OutputStream reqBody = connection.getOutputStream()) {
+                    reqBody.write(reqData.getBytes());
+                }
+            }
+            // Write request body to OutputStream ...
+        }
+
+        if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+            // Get HTTP response headers, if necessary
+            // Map<String, List<String>> headers = connection.getHeaderFields();
+
+            // OR
+
+            connection.getHeaderField("Content-Length");
+
+            InputStream responseBody = connection.getInputStream();
+            // Read response body from InputStream ...
+            return responseBody;
+        }
+        else {
+            // SERVER RETURNED AN HTTP ERROR
+
+            InputStream responseBody = connection.getErrorStream();
+            // Read and process error response body from InputStream ...
+
+        }
+
+        return null;
     }
 
     public void get(String urlString) throws IOException {

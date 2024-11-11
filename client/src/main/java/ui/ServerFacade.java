@@ -6,9 +6,11 @@ import java.net.HttpURLConnection;
 
 public class ServerFacade {
     ClientCommunicator clientCom;
+    String urlString;
 
-    public ServerFacade(){
+    public ServerFacade(String urlString){
         clientCom = new ClientCommunicator();
+        this.urlString = urlString;
     }
 
     public void clear() {}
@@ -17,27 +19,13 @@ public class ServerFacade {
         //first create a connection
         HttpURLConnection http;
         try {
-            http = clientCom.post("localhost:8080");
+            InputStream inputStream = clientCom.post(urlString);
+
+            String input = String.valueOf(inputStream.read());
         }
         catch (IOException e) {
             return e.getMessage();
         }
-
-        http.connect();
-
-//        if (http.getResponseCode() == HttpURLConnection.HTTP_OK) {
-//            InputStream responseBody = connection.getInputStream();
-//            // Read and process response body from InputStream ...
-//
-//        } else {
-//            // SERVER RETURNED AN HTTP ERROR
-//            InputStream responseBody = connection.getErrorStream();
-//            // Read and process error response body from InputStream ...
-//            throw new IOException("HTTP ERROR");
-//        }
-
-        //Then make the request for the actual server
-
         return "GOOD";
     }
 
