@@ -77,12 +77,8 @@ public class ChessBoard extends EscapeSequences {
         if(bw) {
             for(int i = 0; i <= 7; i++){
                 out.print(" " + numbers.get(i) + " ");
-                if (i%2 == 0){
-                    drawBoardLine(i);
-                }
-                else {
-                    drawBoardLine(i);
-                }
+                drawBoardLineTop(i);
+
                 setBeige(out);
                 out.print(" " + numbers.get(i) + " ");
                 out.println();
@@ -91,12 +87,8 @@ public class ChessBoard extends EscapeSequences {
         else{
             for(int i = 7; i >= 0; i--){
                 out.print(" " + numbers.get(i) + " ");
-                if (i%2 == 0){
-                    drawBoardLine(i);
-                }
-                else {
-                    drawBoardLine(i);
-                }
+                drawBoardLineBottom(i);
+
                 setBeige(out);
                 out.print(" " + numbers.get(i) + " ");
                 out.println();
@@ -104,10 +96,10 @@ public class ChessBoard extends EscapeSequences {
         }
     }
 
-    private void drawBoardLine(int i) {
+    private void drawBoardLineTop(int i) {
         if(i%2 == 0){
-            for(int j = 0; j < 8; j++){
-                if(j%2==0){
+            for(int j = 7; j >= 0; j--){
+                if(j%2!=0){
                     out.print(SET_BG_COLOR_WHITE);
                 }
                 else {
@@ -117,8 +109,33 @@ public class ChessBoard extends EscapeSequences {
             }
         }
         else {
-            for(int j = 0; j < 8; j++){
-                if(j%2==0){
+            for(int j = 7; j >= 0; j--){
+                if(j%2!=0){
+                    out.print(SET_BG_COLOR_BLACK);
+                }
+                else {
+                    out.print(SET_BG_COLOR_WHITE);
+                }
+                boardSquares(i,j);
+            }
+        }
+    }
+
+    private void drawBoardLineBottom(int i) {
+        if(i%2 == 0){
+            for(int j = 0; j <= 7; j++){
+                if(j%2!=0){
+                    out.print(SET_BG_COLOR_WHITE);
+                }
+                else {
+                    out.print(SET_BG_COLOR_BLACK);
+                }
+                boardSquares(i,j);
+            }
+        }
+        else {
+            for(int j = 0; j <= 7; j++){
+                if(j%2!=0){
                     out.print(SET_BG_COLOR_BLACK);
                 }
                 else {
@@ -163,7 +180,6 @@ public class ChessBoard extends EscapeSequences {
         else if (Objects.equals(pieceType, "KNIGHT")){
             return "N";
         }
-
         return "?";
     }
 
