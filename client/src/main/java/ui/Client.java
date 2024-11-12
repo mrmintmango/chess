@@ -1,12 +1,15 @@
 package ui;
 
+import java.io.IOException;
 import java.util.Objects;
 import java.util.Scanner;
 import static java.lang.System.out;
 
 public class Client {
+    ServerFacade serverFacade;
 
     public Client(){
+        serverFacade = new ServerFacade("http://localhost:8080");
         out.print("Welcome to 240 Chess. Type the corresponding number to get started");
         Scanner scanner = new Scanner(System.in);
         loggedOutMenu();
@@ -42,7 +45,15 @@ public class Client {
                 out.println("EMAIL: ");
                 String email = scan.nextLine();
                 // create a register request thing for the server facade I think
-                out.println("You've been registered!");
+                try {
+                    String regResponse = serverFacade.register(username, password, email);
+                    if (regResponse.equals("GOOD")){
+                        out.println("You've been registered!");
+                    }
+                } catch (IOException e) {
+                    out.println("woopsie, there was a problem");
+                    out.println("!!! " + e.getMessage() + " !!!");
+                }
 
                 menuCalculatorOut(scan);
             }

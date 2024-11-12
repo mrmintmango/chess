@@ -14,7 +14,7 @@ public class ClientCommunicator {
 
     public void delete() {}
 
-    public InputStream post(String urlString) throws IOException {
+    public InputStream post(String urlString, Object requestInfo) throws IOException {
         URL url = new URL(urlString);
 
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -25,14 +25,20 @@ public class ClientCommunicator {
         connection.connect();
 
         try(OutputStream requestBody = connection.getOutputStream();) {
-            if (requestBody != null) {  // this is only for other ones
-                //maybe alter the request property with stuff for the endpoints???
-                connection.addRequestProperty("Content-Type", "application/json");
-                String reqData = new Gson().toJson(requestBody);
-                try (OutputStream reqBody = connection.getOutputStream()) {
+            connection.addRequestProperty("Content-Type", "application/json");
+            String reqData = new Gson().toJson(requestInfo);
+            try (OutputStream reqBody = connection.getOutputStream()) {
                     reqBody.write(reqData.getBytes());
                 }
-            }
+
+//            if (requestBody != null) {  // this is only for other ones
+//                //maybe alter the request property with stuff for the endpoints???
+//                connection.addRequestProperty("Content-Type", "application/json");
+//                String reqData = new Gson().toJson(requestBody);
+//                try (OutputStream reqBody = connection.getOutputStream()) {
+//                    reqBody.write(reqData.getBytes());
+//                }
+//            }
             // Write request body to OutputStream ...
         }
 
