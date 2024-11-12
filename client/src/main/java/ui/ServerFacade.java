@@ -1,10 +1,12 @@
 package ui;
 
+import model.AuthData;
 import model.UserData;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.util.Objects;
 
 public class ServerFacade {
     ClientCommunicator clientCom;
@@ -23,14 +25,13 @@ public class ServerFacade {
         //first create a connection
         HttpURLConnection http;
         try {
-            InputStream inputStream = clientCom.post(urlString, newUser);
+            String name = clientCom.post(urlString, newUser);
 
-            String input = String.valueOf(inputStream.read());
-            if (input.equals("200")) {
+            if (Objects.equals(name, username)) {
                 return "GOOD";
             }
             else {
-                return input;
+                return name;
             }
         }
         catch (IOException e) {

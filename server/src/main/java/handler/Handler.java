@@ -6,6 +6,7 @@ import java.util.Map;
 import com.google.gson.Gson;
 
 import com.google.gson.JsonObject;
+import dataaccess.DataAccessException;
 import model.*;
 import spark.*;
 import service.GameService;
@@ -44,7 +45,7 @@ public class Handler {
             res.body(gson.toJson(auth));
             return gson.toJson(auth);
         }
-        catch (Exception e) {
+        catch (DataAccessException e) {
             return exceptionCatcher(e, res);
         }
     }

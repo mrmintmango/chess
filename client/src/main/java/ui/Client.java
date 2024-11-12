@@ -9,7 +9,7 @@ public class Client {
     ServerFacade serverFacade;
 
     public Client(){
-        serverFacade = new ServerFacade("http://localhost:8080"); //later switch this to user input
+        serverFacade = new ServerFacade("http://localhost:8080/user"); //later switch this to user input
         out.print("Welcome to 240 Chess. Type the corresponding number to get started");
         Scanner scanner = new Scanner(System.in);
         loggedOutMenu();
