@@ -26,16 +26,20 @@ public class ServerFacade {
             InputStream inputStream = clientCom.post(urlString, newUser);
 
             String input = String.valueOf(inputStream.read());
+            if (input.equals("200")) {
+                return "GOOD";
+            }
+            else {
+                return input;
+            }
         }
         catch (IOException e) {
             return e.getMessage();
         }
-        return "GOOD";
+        //return "GOOD";
     }
 
-    public void login() {
-
-    }
+    public void login() {}
 
     public void logout() {}
 

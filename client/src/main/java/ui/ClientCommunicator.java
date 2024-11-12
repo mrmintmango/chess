@@ -25,12 +25,9 @@ public class ClientCommunicator {
         connection.connect();
 
         try(OutputStream requestBody = connection.getOutputStream();) {
-            connection.addRequestProperty("Content-Type", "application/json");
+            //connection.addRequestProperty("Content-Type", "application/json");  I think this is for headers
             String reqData = new Gson().toJson(requestInfo);
-            try (OutputStream reqBody = connection.getOutputStream()) {
-                    reqBody.write(reqData.getBytes());
-                }
-
+            requestBody.write(reqData.getBytes());
 //            if (requestBody != null) {  // this is only for other ones
 //                //maybe alter the request property with stuff for the endpoints???
 //                connection.addRequestProperty("Content-Type", "application/json");
@@ -59,10 +56,10 @@ public class ClientCommunicator {
 
             InputStream responseBody = connection.getErrorStream();
             // Read and process error response body from InputStream ...
-
+            return responseBody;
         }
 
-        return null;
+        //return null;
     }
 
     public void get(String urlString) throws IOException {

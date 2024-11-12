@@ -9,7 +9,7 @@ public class Client {
     ServerFacade serverFacade;
 
     public Client(){
-        serverFacade = new ServerFacade("http://localhost:8080");
+        serverFacade = new ServerFacade("http://localhost:8080"); //later switch this to user input
         out.print("Welcome to 240 Chess. Type the corresponding number to get started");
         Scanner scanner = new Scanner(System.in);
         loggedOutMenu();
@@ -47,6 +47,13 @@ public class Client {
                 // create a register request thing for the server facade I think
                 try {
                     String regResponse = serverFacade.register(username, password, email);
+
+                    //for testing purposes
+                    out.println(regResponse);
+                    out.println("------------");
+                    out.println();
+
+
                     if (regResponse.equals("GOOD")){
                         out.println("You've been registered!");
                     }
