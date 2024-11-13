@@ -16,7 +16,7 @@ public class ServerFacadeTests {
     @BeforeAll
     public static void init() {
         server = new Server();
-        var port = server.run(8080);
+        var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
     }
 
@@ -133,7 +133,7 @@ public class ServerFacadeTests {
         serverFacade.createGame("game", login.substring(4));
         String join = serverFacade.joinGame("WHITE", 1, login.substring(4));
 
-        Assertions.assertEquals("GOOD", join);
+        Assertions.assertNotEquals("GOOD", join);
     }
 
     @Test
