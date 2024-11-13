@@ -155,7 +155,7 @@ public class Client {
                 }
             }
             case "4" -> caseFour(scan); //list game
-            case "5" -> {
+            case "5" -> { //join game
                 int gameID = 0;
                 String response = "unreached server";
                 out.println("Which game would you like to join?:");
@@ -165,17 +165,28 @@ public class Client {
 
                 try {
                     gameList=serverFacade.listGames(playerAuthToken);
-                    if (gameList!=null){
+                    if (gameList!=null && Integer.parseInt(number) > 0 && Integer.parseInt(number) < gameList.size()/4){
                         gameID=Integer.parseInt(gameList.get(((Integer.parseInt(number)-1)*4)));
+                    }
+                    else if (gameList!=null && (Integer.parseInt(number) < 0 || Integer.parseInt(number) > gameList.size()/4)){
+                        out.println("Not a valid game number");
+                        loggedInMenu();
+                        menuCalculatorIn(scan);
+                    }
+                    else if(color == null || !Objects.equals(color, "WHITE") && !Objects.equals(color, "BLACK")){
+                        out.println("Error: Invalid player color.");
+                        loggedInMenu();
+                        menuCalculatorIn(scan);
                     }
                     else {
                         out.println("There are no games to join.");
                         loggedInMenu();
                         menuCalculatorIn(scan);
                     }
+
                     response = serverFacade.joinGame(color, gameID, playerAuthToken);
                 } catch (NumberFormatException e) {
-                    out.println("Please input a valid game number.");
+                    out.println("invalid game number.");
                     loggedInMenu();
                     menuCalculatorIn(scan);
                 }
@@ -194,11 +205,31 @@ public class Client {
                 menuCalculatorIn(scan);
             }
             case "6" -> {
-                out.println("I don't have this functionality yet, \nbut check back in the next update");
-                out.println("\nIn the meantime, here is a chessboard that you can look at: ");
+                out.println("Which game would you like to observe?");
+                String number = scan.nextLine();
 
-                //output the given chessboard.
-                printChess();
+                try {
+                    gameList = serverFacade.listGames(playerAuthToken);
+                    if (gameList == null) {
+                        out.println("No games to observe");
+                        loggedInMenu();
+                        menuCalculatorIn(scan);
+                    } else if (Integer.parseInt(number) < 0 || Integer.parseInt(number) > gameList.size() / 4) {
+                        out.println("Not a valid game number");
+                        loggedInMenu();
+                        menuCalculatorIn(scan);
+                    } else {
+                        out.println("Observing game: " + number);
+                        //output the given chessboard.
+                        printChess();
+                    }
+                }
+                catch (NumberFormatException e) {
+                out.println("Please input a valid game number.");
+                loggedInMenu();
+                menuCalculatorIn(scan);
+            }
+
 
                 menuCalculatorIn(scan);
             }
@@ -217,13 +248,13 @@ public class Client {
             out.println("Game number: " + list.get(counter));
             out.println("Game Name: " + list.get(counter+1));
             if (list.get(counter+2)!=null){
-                out.println("White player: TAKEN");
+                out.println("White player: " + list.get(counter+2));
             }
             else {
                 out.println("White player: EMPTY");
             }
             if (list.get(counter+3)!=null){
-                out.println("Black player: TAKEN");
+                out.println("Black player: " + list.get(counter+3));
             }
             else {
                 out.println("Black player: EMPTY");
