@@ -157,25 +157,7 @@ public class Client {
                     out.println(response);
                 }
             }
-            case "4" -> {
-                out.println("List of existing games: ");
-                //Server list game request and printing
-                ArrayList<String> response = serverFacade.listGames(playerAuthToken);
-
-                if (response.isEmpty()){
-                    out.println("No games created yet");
-                    menuCalculatorIn(scan);
-                }
-                else if (Objects.equals(response.getFirst(), "error")) {
-                    out.println("woopsie, there was a problem");
-                    out.println(response.get(1));
-                }
-                else  {
-                    listPrinter(response);
-                }
-
-                menuCalculatorIn(scan);
-            }
+            case "4" -> caseFour(scan); //list game
             case "5" -> {
                 int gameID = 0;
                 String response = "unreached server";
@@ -263,5 +245,24 @@ public class Client {
         board.createBoard();
         out.println();
         out.println();
+    }
+
+    public void caseFour(Scanner scan) throws IOException {
+        out.println("List of existing games: ");
+        //Server list game request and printing
+        ArrayList<String> response = serverFacade.listGames(playerAuthToken);
+
+        if (response.isEmpty()){
+            out.println("No games created yet");
+            menuCalculatorIn(scan);
+        }
+        else if (Objects.equals(response.getFirst(), "error")) {
+            out.println("woopsie, there was a problem");
+            out.println(response.get(1));
+        }
+        else  {
+            listPrinter(response);
+        }
+        menuCalculatorIn(scan);
     }
 }
