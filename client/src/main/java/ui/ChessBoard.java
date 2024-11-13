@@ -32,10 +32,11 @@ public class ChessBoard extends EscapeSequences {
         setBeige(out);
         drawBoard(true);
 
+        setBeige(out);
         drawHeader(out, true);
         out.println();
 
-        setBlack(out); //middle bar
+        out.print(RESET_BG_COLOR); //middle bar
         out.println();
 
         setBeige(out);
@@ -45,8 +46,12 @@ public class ChessBoard extends EscapeSequences {
         setBeige(out);
         drawBoard(false);
 
+        setBeige(out);
         drawHeader(out, false);
         out.println();
+
+        out.print(RESET_BG_COLOR);
+        out.print(RESET_TEXT_COLOR);
     }
 
     public void drawHeader(PrintStream out, boolean topBottom) {
@@ -59,7 +64,7 @@ public class ChessBoard extends EscapeSequences {
                 out.print(" " + letters.get(i) + " ");
             }
             out.print("   ");
-            setBlack(out);
+            out.print(RESET_BG_COLOR);
         }
         else {
             out.print("   ");
@@ -67,7 +72,7 @@ public class ChessBoard extends EscapeSequences {
                 out.print(" " + letter + " ");
             }
             out.print("   ");
-            setBlack(out);
+            out.print(RESET_BG_COLOR);
         }
 
     }
@@ -76,21 +81,25 @@ public class ChessBoard extends EscapeSequences {
         //white = true, black = false
         if(bw) {
             for(int i = 0; i <= 7; i++){
+                setBeige(out);
                 out.print(" " + numbers.get(i) + " ");
                 drawBoardLineTop(i);
 
                 setBeige(out);
                 out.print(" " + numbers.get(i) + " ");
+                out.print(RESET_BG_COLOR);
                 out.println();
             }
         }
         else{
             for(int i = 7; i >= 0; i--){
+                setBeige(out);
                 out.print(" " + numbers.get(i) + " ");
                 drawBoardLineBottom(i);
 
                 setBeige(out);
                 out.print(" " + numbers.get(i) + " ");
+                out.print(RESET_BG_COLOR);
                 out.println();
             }
         }

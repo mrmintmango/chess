@@ -13,11 +13,12 @@ import java.util.Objects;
 public class GameService {
     private final AuthDAOI authDAO;
     private final GameDAOI gameDAO;
-    public int increment = 1;
+    public int increment;
 
-    public GameService(AuthDAOI authDAO, GameDAOI gameDAO){
+    public GameService(AuthDAOI authDAO, GameDAOI gameDAO, int incrementVal){
         this.authDAO = authDAO;
         this.gameDAO = gameDAO;
+        increment = incrementVal;
     }
 
     public ArrayList<GameData> listGames(String authToken) throws DataAccessException{

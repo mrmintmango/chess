@@ -19,7 +19,7 @@ public class GameServiceTests {
     public void setUp() {
         MemoryGameDAO gameDAO = new MemoryGameDAO();
         MemoryAuthDAO authDAO = new MemoryAuthDAO();
-        gameService = new GameService(authDAO, gameDAO);
+        gameService = new GameService(authDAO, gameDAO, gameDAO.getGameSize()+1);
     }
 
     @Test

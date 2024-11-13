@@ -1,15 +1,20 @@
 package ui;
 
+import chess.ChessPiece;
+import model.GameData;
+
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Scanner;
 import static java.lang.System.out;
 
 public class Client {
     ServerFacade serverFacade;
+    String playerAuthToken = null;
 
     public Client(){
-        serverFacade = new ServerFacade("http://localhost:8080/user"); //later switch this to user input
+        serverFacade = new ServerFacade("http://localhost:8080"); //later switch this to user input
         out.print("Welcome to 240 Chess. Type the corresponding number to get started");
         Scanner scanner = new Scanner(System.in);
         loggedOutMenu();
@@ -44,18 +49,17 @@ public class Client {
                 String password = scan.nextLine();
                 out.println("EMAIL: ");
                 String email = scan.nextLine();
+
                 // create a register request thing for the server facade I think
                 try {
                     String regResponse = serverFacade.register(username, password, email);
 
-                    //for testing purposes
-                    out.println(regResponse);
-                    out.println("------------");
-                    out.println();
-
-
                     if (regResponse.equals("GOOD")){
                         out.println("You've been registered!");
+                    }
+                    else  {
+                        out.println("woopsie, there was a problem");
+                        out.println(regResponse);
                     }
                 } catch (IOException e) {
                     out.println("woopsie, there was a problem");
@@ -71,8 +75,27 @@ public class Client {
                 String password = scan.nextLine();
 
                 //First check if that players username and password is correct
-                loggedInMenu();
-                menuCalculatorIn(scan);
+                try {
+                    String regResponse = serverFacade.login(username, password);
+
+                    if (regResponse.contains("GOOD")){
+                        playerAuthToken = regResponse.substring(4);
+                        out.println("You've been logged in!");
+                        out.println("----------------");
+                        loggedInMenu();
+                        menuCalculatorIn(scan);
+                    }
+                    else  {
+                        out.println("woopsie, there was a problem");
+                        out.println(regResponse);
+                        out.println("----------------");
+                        loggedOutMenu();
+                        menuCalculatorOut(scan);
+                    }
+                } catch (IOException e) {
+                    out.println("woopsie, there was a problem");
+                    out.println("!!! " + e.getMessage() + " !!!");
+                }
             }
             case "3" -> {
                 out.println("Thanks for playing!");
@@ -94,10 +117,10 @@ public class Client {
 
     }
 
-    public void menuCalculatorIn(Scanner scan) {
+    public void menuCalculatorIn(Scanner scan) throws IOException {
         String input = scan.nextLine();
         switch (input) {
-            case "1" -> {
+            case "1" -> { //Help menu
                 out.println("1- Displays this help menu again");
                 out.println("2- Logout current user");
                 out.println("3- Create a new chess game");
@@ -108,20 +131,54 @@ public class Client {
             }
             case "2" -> {
                 //logout request for server goes here
-                out.println("You've been logged out.");
-                loggedOutMenu();
-                menuCalculatorOut(scan);
+                String response = serverFacade.logout(playerAuthToken);
+
+                if (response.equals("GOOD")){
+                    out.println("You've been logged out!");
+                    playerAuthToken = null;
+                    loggedOutMenu();
+                    menuCalculatorOut(scan);
+                }
+                else  {
+                    out.println("woopsie, there was a problem");
+                    out.println(response);
+                }
             }
             case "3" -> {
                 out.println("Please name the new game: ");
                 String gameName = scan.nextLine();
                 // create game code goes here
-                out.println("Game has been created");
-                menuCalculatorIn(scan);
+                String response = serverFacade.createGame(gameName, playerAuthToken);
+
+                if (response.equals("GOOD")){
+                    out.println("Game has been created");
+                    menuCalculatorIn(scan);
+                }
+                else  {
+                    out.println("woopsie, there was a problem");
+                    out.println(response);
+                }
             }
             case "4" -> {
                 out.println("List of existing games: ");
                 //Server list game request and printing
+                ArrayList<String> response = serverFacade.listGames(playerAuthToken);
+
+                if (response.isEmpty()){
+                    out.println("No games created yet");
+                    menuCalculatorIn(scan);
+                }
+                else if (Objects.equals(response.getFirst(), "error")) {
+                    out.println("woopsie, there was a problem");
+                    out.println(response.get(1));
+                }
+                else  {
+                    for (String s : response) {
+                        out.println(s);
+                    }
+                    out.println();
+                }
+
                 menuCalculatorIn(scan);
             }
             case "5" -> {
@@ -133,6 +190,12 @@ public class Client {
                 out.println("\nIn the meantime, here is the chessboard you'd like to see: ");
 
                 //output the given chessboard.
+                chess.ChessBoard testBoard = new chess.ChessBoard();
+                testBoard.resetBoard();
+                ChessBoard board = new ChessBoard(testBoard.getSquares());
+                board.createBoard();
+                out.println();
+                out.println();
 
                 menuCalculatorIn(scan);
             }
