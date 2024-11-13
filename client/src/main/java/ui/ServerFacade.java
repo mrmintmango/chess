@@ -81,5 +81,15 @@ public class ServerFacade {
         }
     }
 
-    public void joinGame() {}
+    public String joinGame(String playerColor, int gameID, String authToken) throws IOException {
+        HttpURLConnection http;
+        String response = clientCom.put((urlString + "/game"), playerColor, gameID, authToken);
+
+        if (Objects.equals(response, "{}")) {
+            return "GOOD";
+        }
+        else {
+            return response;
+        }
+    }
 }

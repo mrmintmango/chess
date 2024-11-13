@@ -4,10 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dataaccess.DataAccessException;
-import model.AuthData;
-import model.CreateGameRequest;
-import model.CreateGameResponse;
-import model.ListGamesResponse;
+import model.*;
 import spark.utils.IOUtils;
 
 import java.io.*;
@@ -144,6 +141,38 @@ public class ClientCommunicator {
         }
     }
 
-    public void put() {}
+    public String put(String urlString, String playerColor, int gameID, String authToken) throws IOException {
+        URL url = new URL(urlString);
 
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+        connection.setReadTimeout(5000);
+        connection.setRequestMethod("PUT");
+        connection.setDoOutput(true);
+
+        connection.addRequestProperty("Authorization", authToken);
+
+        try (OutputStream requestBody = connection.getOutputStream();) {
+            JoinGameRequest request = new JoinGameRequest(playerColor, gameID);
+            String reqData = new Gson().toJson(request);
+            requestBody.write(reqData.getBytes());
+        }
+
+        connection.connect();
+
+        if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+            InputStream responseBody = connection.getInputStream();
+            // Read response body from InputStream ...
+            String response = new String(responseBody.readAllBytes());
+
+            return response;
+        } else {
+            // SERVER RETURNED AN HTTP ERROR
+            InputStream responseBody = connection.getErrorStream();
+            // Read and process error response body from InputStream ...
+            InputStreamReader reader = new InputStreamReader(responseBody);
+            Map error = new Gson().fromJson(reader, Map.class);
+            return error.get("message").toString();
+        }
+    }
 }

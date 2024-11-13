@@ -187,7 +187,7 @@ public class Client {
             }
             case "6" -> {
                 out.println("I don't have this functionality yet, \nbut check back in the next update");
-                out.println("\nIn the meantime, here is the chessboard you'd like to see: ");
+                out.println("\nIn the meantime, here is a chessboard that you can look at: ");
 
                 //output the given chessboard.
                 chess.ChessBoard testBoard = new chess.ChessBoard();
