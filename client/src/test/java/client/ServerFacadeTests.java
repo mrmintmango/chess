@@ -132,7 +132,7 @@ public class ServerFacadeTests {
         String login = serverFacade.login("user1", "pass");
         serverFacade.createGame("game", login.substring(4));
         System.out.print(serverFacade.listGames(login.substring(4)));
-        String join = serverFacade.joinGame("WHITE", Integer.parseInt(serverFacade.listGames(login.substring(4)).get(0)), login.substring(4));
+        String join = serverFacade.joinGame("WHITE", Integer.parseInt(serverFacade.listGames(login.substring(4)).getFirst()), login.substring(4));
 
         Assertions.assertEquals("GOOD", join);
     }
