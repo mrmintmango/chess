@@ -141,7 +141,7 @@ public class Client {
             }
             case "3" -> {
                 out.println("Please name the new game: ");
-                String gameName = scan.nextLine();
+                String gameName = scan.nextLine(); //make sure name isn't null
                 // create game code goes here
                 String response = serverFacade.createGame(gameName, playerAuthToken);
 
