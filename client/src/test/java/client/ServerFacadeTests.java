@@ -11,12 +11,13 @@ import java.util.ArrayList;
 public class ServerFacadeTests {
 
     private static Server server;
-    ServerFacade serverFacade = new ServerFacade("http://localhost:8080");
+    private static ServerFacade serverFacade;
 
     @BeforeAll
     public static void init() {
         server = new Server();
         var port = server.run(0);
+        serverFacade = new ServerFacade("http://localhost:" + port);
         System.out.println("Started test HTTP server on " + port);
     }
 
@@ -89,7 +90,7 @@ public class ServerFacadeTests {
         serverFacade.createGame("game2", login.substring(4));
         ArrayList<String> list = serverFacade.listGames(login.substring(4));
 
-        Assertions.assertEquals(2, list.size());
+        Assertions.assertEquals(8, list.size());
     }
 
     @Test
@@ -127,13 +128,13 @@ public class ServerFacadeTests {
     @Test
     public void joinGamePassTest() throws IOException {
         server.clearServer("Ruben is Awesome");
-        server.clearServer("Ruben is Awesome");
         serverFacade.register("user1", "pass", "email");
         String login = serverFacade.login("user1", "pass");
         serverFacade.createGame("game", login.substring(4));
-        String join = serverFacade.joinGame("WHITE", 1, login.substring(4));
+        System.out.print(serverFacade.listGames(login.substring(4)));
+        String join = serverFacade.joinGame("WHITE", Integer.parseInt(serverFacade.listGames(login.substring(4)).get(0)), login.substring(4));
 
-        Assertions.assertNotEquals("GOOD", join);
+        Assertions.assertEquals("GOOD", join);
     }
 
     @Test

@@ -170,8 +170,14 @@ public class Client {
                     out.println(response.get(1));
                 }
                 else  {
+                    out.println();
+                    int counter = 1;
                     for (String s : response) {
-                        out.println(s);
+                        if (counter%4 == 0){
+                            out.println();
+                        }
+                        out.print(s + " ");
+                        counter++;
                     }
                     out.println();
                 }

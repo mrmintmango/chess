@@ -108,7 +108,7 @@ public class ClientCommunicator {
         connection.setReadTimeout(5000);
         connection.setRequestMethod("GET");
 
-        connection.addRequestProperty("Authorization", authToken);
+        connection.addRequestProperty("authorization", authToken);
 
         connection.connect();
 
@@ -120,7 +120,10 @@ public class ClientCommunicator {
 
             ListGamesResponse response = new Gson().fromJson(reader, ListGamesResponse.class);
             for (int i = 0; i < response.games().size(); i++){
+                answer.add(String.valueOf(response.games().get(i).gameID()));
                 answer.add(response.games().get(i).gameName());
+                answer.add(response.games().get(i).whiteUsername());
+                answer.add(response.games().get(i).blackUsername());
             }
             return answer;
         }
@@ -146,7 +149,7 @@ public class ClientCommunicator {
         connection.setRequestMethod("PUT");
         connection.setDoOutput(true);
 
-        connection.addRequestProperty("Authorization", authToken);
+        connection.addRequestProperty("authorization", authToken);
 
         try (OutputStream requestBody = connection.getOutputStream()) {
             JoinGameRequest request = new JoinGameRequest(playerColor, gameID);
