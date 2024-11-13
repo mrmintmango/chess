@@ -176,7 +176,31 @@ public class Client {
                 menuCalculatorIn(scan);
             }
             case "5" -> {
-                out.println("I don't have this functionality yet, \nbut check back in the next update");
+                out.println("Which game would you like to join?:");
+                String gameID = scan.nextLine();
+                out.println("Which Color player would you like? (all caps):");
+                String color = scan.nextLine();
+
+                String response = "unreached server";
+                try {
+                    response = serverFacade.joinGame(color, Integer.parseInt(gameID), playerAuthToken);
+                } catch (NumberFormatException e) {
+                    out.println("Please input a valid gameID number.");
+                    loggedInMenu();
+                    menuCalculatorIn(scan);
+                }
+
+                if (response.equals("GOOD")){
+                    out.println("You've joined the game!");
+                    printChess();
+
+                    menuCalculatorIn(scan);
+                }
+                else  {
+                    out.println("woopsie, there was a problem");
+                    out.println(response);
+                }
+
                 menuCalculatorIn(scan);
             }
             case "6" -> {
@@ -184,12 +208,7 @@ public class Client {
                 out.println("\nIn the meantime, here is a chessboard that you can look at: ");
 
                 //output the given chessboard.
-                chess.ChessBoard testBoard = new chess.ChessBoard();
-                testBoard.resetBoard();
-                ChessBoard board = new ChessBoard(testBoard.getSquares());
-                board.createBoard();
-                out.println();
-                out.println();
+                printChess();
 
                 menuCalculatorIn(scan);
             }
@@ -203,14 +222,35 @@ public class Client {
 
     public void listPrinter(ArrayList<String> list) {
         out.println();
-        int counter = 1;
-        for (String s : list) {
-            if (counter%4 == 0){
-                out.println();
+        int counter = 0;
+        for (int i = 0; i < list.size()/4; i++){
+            out.println("Game ID: " + list.get(counter));
+            out.println("Game Name: " + list.get(counter+1));
+            if (list.get(counter+2)!=null){
+                out.println("White player: TAKEN");
             }
-            out.print(s + " ");
-            counter++;
+            else {
+                out.println("White player: EMPTY");
+            }
+            if (list.get(counter+3)!=null){
+                out.println("Black player: TAKEN");
+            }
+            else {
+                out.println("Black player: EMPTY");
+            }
+            counter=counter+4;
+            out.println();
         }
+        out.println();
+    }
+
+    public void printChess() {
+        //output the given chessboard.
+        chess.ChessBoard testBoard = new chess.ChessBoard();
+        testBoard.resetBoard();
+        ChessBoard board = new ChessBoard(testBoard.getSquares());
+        board.createBoard();
+        out.println();
         out.println();
     }
 }
