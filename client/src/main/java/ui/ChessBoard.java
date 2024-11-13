@@ -15,9 +15,6 @@ public class ChessBoard extends EscapeSequences {
     ArrayList<Integer> numbers;
     private final ChessPiece[][] board;
 
-    //Board dimensions
-    private static final int BOARD_SIZE_IN_SQUARES = 8;
-
     public ChessBoard(ChessPiece[][] pieces){
         letters = new ArrayList<>(Arrays.asList("a", "b", "c", "d", "e", "f", "g", "h"));
         numbers = new ArrayList<>(Arrays.asList(1,2,3,4,5,6,7,8));
@@ -25,28 +22,28 @@ public class ChessBoard extends EscapeSequences {
     }
 
     public void createBoard() {
-        setBeige(out);
+        setBeige();
         drawHeader(out, true);
         out.println();
 
-        setBeige(out);
+        setBeige();
         drawBoard(true);
 
-        setBeige(out);
+        setBeige();
         drawHeader(out, true);
         out.println();
 
         out.print(RESET_BG_COLOR); //middle bar
         out.println();
 
-        setBeige(out);
+        setBeige();
         drawHeader(out, false);
         out.println();
 
-        setBeige(out);
+        setBeige();
         drawBoard(false);
 
-        setBeige(out);
+        setBeige();
         drawHeader(out, false);
         out.println();
 
@@ -81,11 +78,11 @@ public class ChessBoard extends EscapeSequences {
         //white = true, black = false
         if(bw) {
             for(int i = 0; i <= 7; i++){
-                setBeige(out);
+                setBeige();
                 out.print(" " + numbers.get(i) + " ");
                 drawBoardLineTop(i);
 
-                setBeige(out);
+                setBeige();
                 out.print(" " + numbers.get(i) + " ");
                 out.print(RESET_BG_COLOR);
                 out.println();
@@ -93,11 +90,11 @@ public class ChessBoard extends EscapeSequences {
         }
         else{
             for(int i = 7; i >= 0; i--){
-                setBeige(out);
+                setBeige();
                 out.print(" " + numbers.get(i) + " ");
                 drawBoardLineBottom(i);
 
-                setBeige(out);
+                setBeige();
                 out.print(" " + numbers.get(i) + " ");
                 out.print(RESET_BG_COLOR);
                 out.println();
@@ -192,19 +189,9 @@ public class ChessBoard extends EscapeSequences {
         return "?";
     }
 
-    private static void setWhite(PrintStream out) {
-        out.print(SET_BG_COLOR_WHITE);
-        out.print(SET_TEXT_COLOR_WHITE);
-    }
-
-    private static void setBeige(PrintStream out) {
-        out.print(SET_BG_COLOR_LIGHT_GREY);
-        out.print(SET_TEXT_COLOR_BLACK);
-    }
-
-    private static void setBlack(PrintStream out) {
-        out.print(SET_BG_COLOR_BLACK);
-        out.print(SET_TEXT_COLOR_BLACK);
+    private static void setBeige() {
+        System.out.print(SET_BG_COLOR_LIGHT_GREY);
+        System.out.print(SET_TEXT_COLOR_BLACK);
     }
 
 }

@@ -1,11 +1,8 @@
 package ui;
 
-import model.AuthData;
 import model.UserData;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -23,8 +20,6 @@ public class ServerFacade {
     public String register(String username, String password, String email) throws IOException {
         UserData newUser = new UserData(username, password, email);
 
-        //first create a connection
-        HttpURLConnection http;
         ArrayList<String> name = clientCom.post((urlString + "/user"), newUser, null, false);
 
         if (Objects.equals(name.getFirst(), username)) {
@@ -38,8 +33,6 @@ public class ServerFacade {
     public String login(String username, String password) throws IOException {
         UserData newUser = new UserData(username, password, null);
 
-        //first create a connection
-        HttpURLConnection http;
         ArrayList<String> name = clientCom.post((urlString + "/session"), newUser, null, false);
 
         if (Objects.equals(name.getFirst(), username)) {
@@ -51,7 +44,6 @@ public class ServerFacade {
     }
 
     public String logout(String authToken) throws IOException {
-        HttpURLConnection http;
         String response = clientCom.delete((urlString + "/session"), authToken);
 
         if (Objects.equals(response, "{}")) {
@@ -63,14 +55,11 @@ public class ServerFacade {
     }
 
     public ArrayList<String> listGames(String authToken) throws IOException {
-        HttpURLConnection http;
-        ArrayList<String> response = clientCom.get((urlString + "/game"), authToken);
-        return response;
+        return clientCom.get((urlString + "/game"), authToken);
 
     }
 
     public String createGame(String gameName, String authToken) throws IOException {
-        HttpURLConnection http;
         ArrayList<String> response = clientCom.post((urlString + "/game"), gameName, authToken, true);
 
         if (response.getFirst().equals(gameName)) {
@@ -82,7 +71,6 @@ public class ServerFacade {
     }
 
     public String joinGame(String playerColor, int gameID, String authToken) throws IOException {
-        HttpURLConnection http;
         String response = clientCom.put((urlString + "/game"), playerColor, gameID, authToken);
 
         if (Objects.equals(response, "{}")) {

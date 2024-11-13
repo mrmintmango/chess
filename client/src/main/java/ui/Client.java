@@ -1,8 +1,5 @@
 package ui;
 
-import chess.ChessPiece;
-import model.GameData;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;

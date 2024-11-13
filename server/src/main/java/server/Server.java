@@ -8,18 +8,20 @@ import service.UserService;
 import spark.*;
 
 public class Server {
+    UserDAOI userDAOI = null;
+    AuthDAOI authDAOI;
+    GameDAOI gameDAOI;
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
-        UserDAOI userDAOI = null;
         try {
             userDAOI = new SQLUserDAO();
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
-        AuthDAOI authDAOI = new SQLAuthDAO();
-        GameDAOI gameDAOI = new SQLGameDAO();
+        authDAOI = new SQLAuthDAO();
+        gameDAOI = new SQLGameDAO();
 
         ParentService parentService = new ParentService(authDAOI, gameDAOI, userDAOI);
         GameService gameService = new GameService(authDAOI, gameDAOI, gameDAOI.getGameSize()+1);
@@ -44,5 +46,13 @@ public class Server {
     public void stop() {
         Spark.stop();
         Spark.awaitStop();
+    }
+
+    public void clearServer(String adminPassword) {
+        if (adminPassword.equals("Ruben is Awesome")) {
+            userDAOI.clear();
+            authDAOI.clear();
+            gameDAOI.clear();
+        }
     }
 }

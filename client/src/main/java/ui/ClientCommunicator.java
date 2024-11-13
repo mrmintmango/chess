@@ -1,21 +1,14 @@
 package ui;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dataaccess.DataAccessException;
 import model.*;
-import spark.utils.IOUtils;
 
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Scanner;
 
 public class ClientCommunicator {
 
@@ -30,21 +23,24 @@ public class ClientCommunicator {
 
         connection.addRequestProperty("authorization", deleteInfo.toString());
 
+        return getString(connection);
+    }
+
+    private String getString(HttpURLConnection connection) throws IOException {
         connection.connect();
 
         if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
             InputStream responseBody = connection.getInputStream();
             // Read response body from InputStream ...
-            String response = new String(responseBody.readAllBytes());
 
-            return response;
+            return new String(responseBody.readAllBytes());
         }
         else {
             // SERVER RETURNED AN HTTP ERROR
             InputStream responseBody = connection.getErrorStream();
             // Read and process error response body from InputStream ...
             InputStreamReader reader = new InputStreamReader(responseBody);
-            Map error = new Gson().fromJson(reader, Map.class);
+            var error = new Gson().fromJson(reader, Map.class);
             return error.get("message").toString();
         }
     }
@@ -60,14 +56,14 @@ public class ClientCommunicator {
         if (headerInfo != null){
             connection.addRequestProperty("authorization", headerInfo);
 
-            try(OutputStream requestBody = connection.getOutputStream();) {
+            try(OutputStream requestBody = connection.getOutputStream()) {
                 JsonObject reqData = new JsonObject();
                 reqData.addProperty("gameName", requestInfo.toString());
                 requestBody.write(reqData.toString().getBytes());
             }
         }
         else {
-            try(OutputStream requestBody = connection.getOutputStream();) {
+            try(OutputStream requestBody = connection.getOutputStream()) {
                 String reqData = new Gson().toJson(requestInfo);
                 requestBody.write(reqData.getBytes());
             }
@@ -97,7 +93,7 @@ public class ClientCommunicator {
             InputStream responseBody = connection.getErrorStream();
             // Read and process error response body from InputStream ...
             InputStreamReader reader = new InputStreamReader(responseBody);
-            Map error = new Gson().fromJson(reader, Map.class);
+            var error = new Gson().fromJson(reader, Map.class);
             ArrayList<String> answer = new ArrayList<>();
             answer.add(error.get("message").toString());
             return answer;
@@ -133,7 +129,7 @@ public class ClientCommunicator {
             InputStream responseBody = connection.getErrorStream();
             // Read and process error response body from InputStream ...
             InputStreamReader reader = new InputStreamReader(responseBody);
-            Map error = new Gson().fromJson(reader, Map.class);
+            var error = new Gson().fromJson(reader, Map.class);
             ArrayList<String> answer = new ArrayList<>();
             answer.add("error");
             answer.add(error.get("message").toString());
@@ -152,27 +148,12 @@ public class ClientCommunicator {
 
         connection.addRequestProperty("Authorization", authToken);
 
-        try (OutputStream requestBody = connection.getOutputStream();) {
+        try (OutputStream requestBody = connection.getOutputStream()) {
             JoinGameRequest request = new JoinGameRequest(playerColor, gameID);
             String reqData = new Gson().toJson(request);
             requestBody.write(reqData.getBytes());
         }
 
-        connection.connect();
-
-        if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-            InputStream responseBody = connection.getInputStream();
-            // Read response body from InputStream ...
-            String response = new String(responseBody.readAllBytes());
-
-            return response;
-        } else {
-            // SERVER RETURNED AN HTTP ERROR
-            InputStream responseBody = connection.getErrorStream();
-            // Read and process error response body from InputStream ...
-            InputStreamReader reader = new InputStreamReader(responseBody);
-            Map error = new Gson().fromJson(reader, Map.class);
-            return error.get("message").toString();
-        }
+        return getString(connection);
     }
 }
