@@ -9,6 +9,7 @@ import static java.lang.System.out;
 public class Client {
     ServerFacade serverFacade;
     String playerAuthToken = null;
+    ArrayList<String> gameList = null;
 
     public Client(){
         serverFacade = new ServerFacade("http://localhost:8080"); //later switch this to user input
@@ -176,16 +177,26 @@ public class Client {
                 menuCalculatorIn(scan);
             }
             case "5" -> {
+                int gameID = 0;
+                String response = "unreached server";
                 out.println("Which game would you like to join?:");
-                String gameID = scan.nextLine();
+                String number = scan.nextLine();
                 out.println("Which Color player would you like? (all caps):");
                 String color = scan.nextLine();
 
-                String response = "unreached server";
                 try {
-                    response = serverFacade.joinGame(color, Integer.parseInt(gameID), playerAuthToken);
+                    gameList=serverFacade.listGames(playerAuthToken);
+                    if (gameList!=null){
+                        gameID=Integer.parseInt(gameList.get(((Integer.parseInt(number)-1)*4)));
+                    }
+                    else {
+                        out.println("There are no games to join.");
+                        loggedInMenu();
+                        menuCalculatorIn(scan);
+                    }
+                    response = serverFacade.joinGame(color, gameID, playerAuthToken);
                 } catch (NumberFormatException e) {
-                    out.println("Please input a valid gameID number.");
+                    out.println("Please input a valid game number.");
                     loggedInMenu();
                     menuCalculatorIn(scan);
                 }
@@ -224,7 +235,7 @@ public class Client {
         out.println();
         int counter = 0;
         for (int i = 0; i < list.size()/4; i++){
-            out.println("Game ID: " + list.get(counter));
+            out.println("Game number: " + list.get(counter));
             out.println("Game Name: " + list.get(counter+1));
             if (list.get(counter+2)!=null){
                 out.println("White player: TAKEN");
