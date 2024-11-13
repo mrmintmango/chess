@@ -40,7 +40,7 @@ public class ClientCommunicator {
             InputStream responseBody = connection.getErrorStream();
             // Read and process error response body from InputStream ...
             InputStreamReader reader = new InputStreamReader(responseBody);
-            var error = new Gson().fromJson(reader, Map.class);
+            Map error = new Gson().fromJson(reader, Map.class);
             return error.get("message").toString();
         }
     }
@@ -93,7 +93,7 @@ public class ClientCommunicator {
             InputStream responseBody = connection.getErrorStream();
             // Read and process error response body from InputStream ...
             InputStreamReader reader = new InputStreamReader(responseBody);
-            var error = new Gson().fromJson(reader, Map.class);
+            Map error = new Gson().fromJson(reader, Map.class);
             ArrayList<String> answer = new ArrayList<>();
             answer.add(error.get("message").toString());
             return answer;
@@ -129,7 +129,7 @@ public class ClientCommunicator {
             InputStream responseBody = connection.getErrorStream();
             // Read and process error response body from InputStream ...
             InputStreamReader reader = new InputStreamReader(responseBody);
-            var error = new Gson().fromJson(reader, Map.class);
+            Map error = new Gson().fromJson(reader, Map.class);
             ArrayList<String> answer = new ArrayList<>();
             answer.add("error");
             answer.add(error.get("message").toString());
