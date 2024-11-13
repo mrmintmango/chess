@@ -37,7 +37,7 @@ public class ServerFacadeTests {
         server.clearServer("Ruben is Awesome");
         String answer = serverFacade.register("user1", "pass", "email");
 
-        Assertions.assertEquals("GOOD", answer);
+        Assertions.assertTrue(answer.contains("GOOD"));
     }
 
     @Test

@@ -23,7 +23,7 @@ public class ServerFacade {
         ArrayList<String> name = clientCom.post((urlString + "/user"), newUser, null, false);
 
         if (Objects.equals(name.getFirst(), username)) {
-            return "GOOD";
+            return ("GOOD" + name.get(1));
         }
         else {
             return name.getFirst();

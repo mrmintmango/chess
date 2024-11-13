@@ -52,8 +52,9 @@ public class Client {
                 try {
                     String regResponse = serverFacade.register(username, password, email);
 
-                    if (regResponse.equals("GOOD")){
+                    if (regResponse.contains("GOOD")){
                         out.println("You've been registered!");
+                        loggedIn(regResponse, scan);
                     }
                     else  {
                         out.println("woopsie, there was a problem");
@@ -77,11 +78,7 @@ public class Client {
                     String regResponse = serverFacade.login(username, password);
 
                     if (regResponse.contains("GOOD")){
-                        playerAuthToken = regResponse.substring(4);
-                        out.println("You've been logged in!");
-                        out.println("----------------");
-                        loggedInMenu();
-                        menuCalculatorIn(scan);
+                        loggedIn(regResponse, scan);
                     }
                     else  {
                         out.println("woopsie, there was a problem");
@@ -263,6 +260,14 @@ public class Client {
         else  {
             listPrinter(response);
         }
+        menuCalculatorIn(scan);
+    }
+
+    public void loggedIn(String regResponse, Scanner scan) throws IOException {
+        playerAuthToken = regResponse.substring(4);
+        out.println("You've been logged in!");
+        out.println("----------------");
+        loggedInMenu();
         menuCalculatorIn(scan);
     }
 }
