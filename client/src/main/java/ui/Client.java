@@ -170,16 +170,7 @@ public class Client {
                     out.println(response.get(1));
                 }
                 else  {
-                    out.println();
-                    int counter = 1;
-                    for (String s : response) {
-                        if (counter%4 == 0){
-                            out.println();
-                        }
-                        out.print(s + " ");
-                        counter++;
-                    }
-                    out.println();
+                    listPrinter(response);
                 }
 
                 menuCalculatorIn(scan);
@@ -208,5 +199,18 @@ public class Client {
                 menuCalculatorIn(scan);
             }
         }
+    }
+
+    public void listPrinter(ArrayList<String> list) {
+        out.println();
+        int counter = 1;
+        for (String s : list) {
+            if (counter%4 == 0){
+                out.println();
+            }
+            out.print(s + " ");
+            counter++;
+        }
+        out.println();
     }
 }
