@@ -24,7 +24,7 @@ public class Server {
         gameDAOI = new SQLGameDAO();
 
         ParentService parentService = new ParentService(authDAOI, gameDAOI, userDAOI);
-        GameService gameService = new GameService(authDAOI, gameDAOI, gameDAOI.getGameSize());
+        GameService gameService = new GameService(authDAOI, gameDAOI, gameDAOI.getGameSize()+1);
         UserService userService = new UserService(authDAOI, userDAOI);
         Handler handler = new Handler(parentService, gameService, userService);
 
