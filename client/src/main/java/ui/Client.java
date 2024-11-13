@@ -264,7 +264,7 @@ public class Client {
 
         try {
             gameList=serverFacade.listGames(playerAuthToken);
-            if (gameList!=null && Integer.parseInt(number) > 0 && Integer.parseInt(number) < gameList.size()/4){
+            if (gameList!=null && Integer.parseInt(number) > 0 && Integer.parseInt(number) <= gameList.size()/4){
                 gameID=Integer.parseInt(gameList.get(((Integer.parseInt(number)-1)*4)));
             }
             else if (gameList!=null && (Integer.parseInt(number) < 0 || Integer.parseInt(number) > gameList.size()/4)){
