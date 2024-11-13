@@ -155,55 +155,7 @@ public class Client {
                 }
             }
             case "4" -> caseFour(scan); //list game
-            case "5" -> { //join game
-                int gameID = 0;
-                String response = "unreached server";
-                out.println("Which game would you like to join?:");
-                String number = scan.nextLine();
-                out.println("Which Color player would you like? (all caps):");
-                String color = scan.nextLine();
-
-                try {
-                    gameList=serverFacade.listGames(playerAuthToken);
-                    if (gameList!=null && Integer.parseInt(number) > 0 && Integer.parseInt(number) < gameList.size()/4){
-                        gameID=Integer.parseInt(gameList.get(((Integer.parseInt(number)-1)*4)));
-                    }
-                    else if (gameList!=null && (Integer.parseInt(number) < 0 || Integer.parseInt(number) > gameList.size()/4)){
-                        out.println("Not a valid game number");
-                        loggedInMenu();
-                        menuCalculatorIn(scan);
-                    }
-                    else if(color == null || !Objects.equals(color, "WHITE") && !Objects.equals(color, "BLACK")){
-                        out.println("Error: Invalid player color.");
-                        loggedInMenu();
-                        menuCalculatorIn(scan);
-                    }
-                    else {
-                        out.println("There are no games to join.");
-                        loggedInMenu();
-                        menuCalculatorIn(scan);
-                    }
-
-                    response = serverFacade.joinGame(color, gameID, playerAuthToken);
-                } catch (NumberFormatException e) {
-                    out.println("invalid game number.");
-                    loggedInMenu();
-                    menuCalculatorIn(scan);
-                }
-
-                if (response.equals("GOOD")){
-                    out.println("You've joined the game!");
-                    printChess();
-
-                    menuCalculatorIn(scan);
-                }
-                else  {
-                    out.println("woopsie, there was a problem");
-                    out.println(response);
-                }
-
-                menuCalculatorIn(scan);
-            }
+            case "5" -> joinGame(scan); //join game method below
             case "6" -> {
                 out.println("Which game would you like to observe?");
                 String number = scan.nextLine();
@@ -299,6 +251,56 @@ public class Client {
         out.println("You've been logged in!");
         out.println("----------------");
         loggedInMenu();
+        menuCalculatorIn(scan);
+    }
+
+    public void joinGame(Scanner scan) throws IOException {
+        int gameID = 0;
+        String response = "unreached server";
+        out.println("Which game would you like to join?:");
+        String number = scan.nextLine();
+        out.println("Which Color player would you like? (all caps):");
+        String color = scan.nextLine();
+
+        try {
+            gameList=serverFacade.listGames(playerAuthToken);
+            if (gameList!=null && Integer.parseInt(number) > 0 && Integer.parseInt(number) < gameList.size()/4){
+                gameID=Integer.parseInt(gameList.get(((Integer.parseInt(number)-1)*4)));
+            }
+            else if (gameList!=null && (Integer.parseInt(number) < 0 || Integer.parseInt(number) > gameList.size()/4)){
+                out.println("Not a valid game number");
+                loggedInMenu();
+                menuCalculatorIn(scan);
+            }
+            else if(color == null || !Objects.equals(color, "WHITE") && !Objects.equals(color, "BLACK")){
+                out.println("Error: Invalid player color.");
+                loggedInMenu();
+                menuCalculatorIn(scan);
+            }
+            else {
+                out.println("There are no games to join.");
+                loggedInMenu();
+                menuCalculatorIn(scan);
+            }
+
+            response = serverFacade.joinGame(color, gameID, playerAuthToken);
+        } catch (NumberFormatException | IOException e) {
+            out.println("invalid game number.");
+            loggedInMenu();
+            menuCalculatorIn(scan);
+        }
+
+        if (response.equals("GOOD")){
+            out.println("You've joined the game!");
+            printChess();
+
+            menuCalculatorIn(scan);
+        }
+        else  {
+            out.println("woopsie, there was a problem");
+            out.println(response);
+        }
+
         menuCalculatorIn(scan);
     }
 }
