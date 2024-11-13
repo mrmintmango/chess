@@ -264,16 +264,16 @@ public class Client {
 
         try {
             gameList=serverFacade.listGames(playerAuthToken);
-            if (gameList!=null && Integer.parseInt(number) > 0 && Integer.parseInt(number) <= gameList.size()/4){
-                gameID=Integer.parseInt(gameList.get(((Integer.parseInt(number)-1)*4)));
-            }
-            else if (gameList!=null && (Integer.parseInt(number) < 0 || Integer.parseInt(number) > gameList.size()/4)){
-                out.println("Not a valid game number");
+            if(!Objects.equals(color, "WHITE") && !Objects.equals(color, "BLACK")) {
+                out.println("Error: Invalid player color.");
                 loggedInMenu();
                 menuCalculatorIn(scan);
             }
-            else if(color == null || !Objects.equals(color, "WHITE") && !Objects.equals(color, "BLACK")){
-                out.println("Error: Invalid player color.");
+            else if (gameList!=null && Integer.parseInt(number) > 0 && Integer.parseInt(number) <= gameList.size()/4){
+                gameID=Integer.parseInt(gameList.get(((Integer.parseInt(number)-1)*4)));
+            }
+            else if (gameList!=null && (Integer.parseInt(number) <= 0 || Integer.parseInt(number) > gameList.size()/4)){
+                out.println("Not a valid game number");
                 loggedInMenu();
                 menuCalculatorIn(scan);
             }
