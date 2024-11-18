@@ -37,6 +37,56 @@ public class Client {
         out.println("6. Observe Game");
     }
 
+    public void inGameMenu() {
+        out.println("[IN GAME]");
+        out.println("1. Help");
+        out.println("2. Redraw Board");
+        out.println("3. Leave");
+        out.println("4. Make Move");
+        out.println("5. Resign");
+        out.println("6. Highlight Legal Moves");
+    }
+
+    public void inGameMenuCalculator(Scanner scan) {
+        String input = scan.nextLine();
+        switch (input) {
+            case "1" -> { //print help menu
+                out.println("1. reprints this help menu");
+                out.println("2. draws the board again");
+                out.println("3. Leave the match, can be rejoined");
+                out.println("4. Make a move against your opponent");
+                out.println("5. Admit defeat");
+                out.println("6. Highlight the possible moves a piece can make");
+                out.println();
+                inGameMenuCalculator(scan);
+            }
+            case "2" -> {
+                //redraw the board method here
+            }
+            case "3" -> {
+                //leave the match method here
+            }
+            case "4" -> {
+                out.println("Insert a valid move to make (in the form a2a4)");
+                out.println("name the promotion piece afterwards if your pawn is promoting (a7a8 QUEEN)");
+                String move = scan.nextLine();
+                //then call the make move calculator
+            }
+            case "5" -> {
+                //Resign from the game
+            }
+            case "6" -> {
+                //highlightBoard();
+            }
+            case null, default -> {
+                out.println("... please input a valid option:");
+                out.println();
+                inGameMenu();
+                inGameMenuCalculator(scan);
+            }
+        }
+    }
+
     public void menuCalculatorOut(Scanner scan) {
         String input = scan.nextLine();
         switch (input) {
