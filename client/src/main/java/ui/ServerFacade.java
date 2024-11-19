@@ -8,10 +8,12 @@ import java.util.Objects;
 
 public class ServerFacade {
     ClientCommunicator clientCom;
+    WebsocketCommunicator webCom;
     String urlString;
 
-    public ServerFacade(String urlString){
+    public ServerFacade(String urlString, ServerMessageObserver serverMessageObserver) {
         clientCom = new ClientCommunicator();
+        webCom = new WebsocketCommunicator(serverMessageObserver);
         this.urlString = urlString;
     }
 
@@ -56,7 +58,6 @@ public class ServerFacade {
 
     public ArrayList<String> listGames(String authToken) throws IOException {
         return clientCom.get((urlString + "/game"), authToken);
-
     }
 
     public String createGame(String gameName, String authToken) throws IOException {

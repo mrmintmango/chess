@@ -1,18 +1,20 @@
 package ui;
 
+import websocket.messages.ServerMessage;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Scanner;
 import static java.lang.System.out;
 
-public class Client {
+public class Client implements ServerMessageObserver{
     ServerFacade serverFacade;
     String playerAuthToken = null;
     ArrayList<String> gameList = null;
 
     public Client(){
-        serverFacade = new ServerFacade("http://localhost:8080"); //later switch this to user input
+        serverFacade = new ServerFacade("http://localhost:8080", this); //later switch this to user input
         out.print("Welcome to 240 Chess. Type the corresponding number to get started");
         Scanner scanner = new Scanner(System.in);
         loggedOutMenu();
@@ -223,7 +225,8 @@ public class Client {
                     } else {
                         out.println("Observing game: " + number);
                         //output the given chessboard.
-                        printChess();
+                        int gameID=Integer.parseInt(gameList.get(((Integer.parseInt(number)-1)*4)));
+                        printChess(gameID);
                     }
                 }
                 catch (NumberFormatException e) {
@@ -267,12 +270,15 @@ public class Client {
         out.println();
     }
 
-    public void printChess() {
+    public void printChess(int gameID) {
         //output the given chessboard.
+        //chess.ChessBoard board = get the board of the game from the server with the corresponding game ID
+
+
         chess.ChessBoard testBoard = new chess.ChessBoard();
         testBoard.resetBoard();
         ChessBoard board = new ChessBoard(testBoard.getSquares());
-        board.createBoard();
+        board.createBoard("WHITE");
         out.println();
         out.println();
     }
@@ -342,9 +348,10 @@ public class Client {
 
         if (response.equals("GOOD")){
             out.println("You've joined the game!");
-            printChess();
+            printChess(gameID);
 
-            menuCalculatorIn(scan);
+            inGameMenu();
+            inGameMenuCalculator(scan);
         }
         else  {
             out.println("woopsie, there was a problem");
@@ -353,4 +360,6 @@ public class Client {
 
         menuCalculatorIn(scan);
     }
+
+    private void notify(ServerMessage message){}
 }

@@ -21,32 +21,31 @@ public class ChessBoard extends EscapeSequences {
         board = pieces;
     }
 
-    public void createBoard() {
-        setBeige();
-        drawHeader(out, true);
-        out.println();
+    public void createBoard(String bw) {
+        if(bw.equals("WHITE")){
+            setBeige();
+            drawHeader(out, true);
+            out.println();
 
-        setBeige();
-        drawBoard(true);
+            setBeige();
+            drawBoard(true);
 
-        setBeige();
-        drawHeader(out, true);
-        out.println();
+            setBeige();
+            drawHeader(out, true);
+            out.println();
+        }
+        else if (bw.equals("BLACK")){
+            setBeige();
+            drawHeader(out, false);
+            out.println();
 
-        out.print(RESET_BG_COLOR); //middle bar
-        out.println();
+            setBeige();
+            drawBoard(false);
 
-        setBeige();
-        drawHeader(out, false);
-        out.println();
-
-        setBeige();
-        drawBoard(false);
-
-        setBeige();
-        drawHeader(out, false);
-        out.println();
-
+            setBeige();
+            drawHeader(out, false);
+            out.println();
+        }
         out.print(RESET_BG_COLOR);
         out.print(RESET_TEXT_COLOR);
     }

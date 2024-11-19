@@ -3,6 +3,7 @@ package client;
 import org.junit.jupiter.api.*;
 import server.Server;
 import ui.ServerFacade;
+import ui.Client;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,8 +17,9 @@ public class ServerFacadeTests {
     @BeforeAll
     public static void init() {
         server = new Server();
+        Client client = new Client();
         var port = server.run(0);
-        serverFacade = new ServerFacade("http://localhost:" + port);
+        serverFacade = new ServerFacade("http://localhost:" + port, client);
         System.out.println("Started test HTTP server on " + port);
     }
 
