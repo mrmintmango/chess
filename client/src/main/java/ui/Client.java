@@ -274,7 +274,6 @@ public class Client implements ServerMessageObserver{
         //output the given chessboard.
         //chess.ChessBoard board = get the board of the game from the server with the corresponding game ID
 
-
         chess.ChessBoard testBoard = new chess.ChessBoard();
         testBoard.resetBoard();
         ChessBoard board = new ChessBoard(testBoard.getSquares());
