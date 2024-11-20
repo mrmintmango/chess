@@ -8,11 +8,8 @@ import java.net.URISyntaxException;
 public class WebsocketCommunicator {
     private final Session session;
 
-    public WebsocketCommunicator(ServerMessageObserver serverMessageObserver) {
-
-
-
-        URI uri = new URI("ws://localhost:8080/connect");
+    public WebsocketCommunicator(ServerMessageObserver serverMessageObserver) throws Exception {
+        URI uri = new URI("ws://localhost:8080/ws");
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         this.session = container.connectToServer(this, uri);
 

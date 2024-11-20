@@ -11,7 +11,7 @@ public class WebsocketHandler {
     public static class websocketHandler {
         public static void main(String[] args) {
             Spark.port(8080);
-            Spark.webSocket("/connect", websocketHandler.class);
+            Spark.webSocket("/ws", websocketHandler.class);
             Spark.get("/echo/:msg", (req, res) -> "HTTP response: " + req.params(":msg"));
         }
 

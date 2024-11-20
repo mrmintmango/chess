@@ -2,6 +2,7 @@ package server;
 
 import dataaccess.*;
 import handler.Handler;
+import handler.WebsocketHandler;
 import org.eclipse.jetty.websocket.server.WebSocketHandler;
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import service.GameService;
@@ -30,10 +31,13 @@ public class Server {
         UserService userService = new UserService(authDAOI, userDAOI);
         Handler handler = new Handler(parentService, gameService, userService);
         //creates a websocket handler class
-        WebSocketHandler wsHandler = new WebSocketHandler();
+        WebSocketHandler wsHandler = new WebSocketHandler() {
+            @Override
+            public void configure(WebSocketServletFactory webSocketServletFactory) {}
+        };
 
         //Updated stuff for Websocket, but might not need it because it's in my wsHandler???
-        Spark.webSocket("/ws", Server.class);
+        Spark.webSocket("/ws", WebsocketHandler.class);
         //might not need this below?
         //Spark.get("/echo/:msg", (req, res) -> "HTTP response: " + req.params(":msg"));
 

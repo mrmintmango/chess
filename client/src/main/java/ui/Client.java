@@ -18,7 +18,15 @@ public class Client implements ServerMessageObserver{
         out.print("Welcome to 240 Chess. Type the corresponding number to get started");
         Scanner scanner = new Scanner(System.in);
         loggedOutMenu();
-        menuCalculatorOut(scanner);
+        //menuCalculatorOut(scanner);
+
+        //websocket stuff
+        websocketTester(scanner);
+    }
+
+    public void websocketTester(Scanner scan) {
+        String message = scan.nextLine();
+
     }
 
     public void loggedOutMenu() {
