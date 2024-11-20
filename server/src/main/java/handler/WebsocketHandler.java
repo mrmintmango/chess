@@ -1,4 +1,4 @@
-package ui;
+package handler;
 
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
