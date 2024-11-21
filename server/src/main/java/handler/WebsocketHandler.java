@@ -1,10 +1,12 @@
 package handler;
 
-import com.google.gson.Gson;
+import com.google.gson.*;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.UserGameCommand;
+
+import java.lang.reflect.Type;
 
 @WebSocket
 public class WebsocketHandler {
@@ -28,5 +30,22 @@ public class WebsocketHandler {
     public void leave() {}
 
     public void resign() {}
+
+
+    private static class CommandDeserializer implements JsonDeserializer<UserGameCommand> {
+        @Override
+        public UserGameCommand deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+
+            String typeString = jsonObject.get("type").getAsString();
+            UserGameCommand.CommandType commandType = UserGameCommand.CommandType.valueOf(typeString);
+
+            return switch(commandType) {
+                case CONNECT -> context.deserialize(jsonElement, );
+                //case Car -> context.deserialize(jsonElement, Car.class);
+                //case Truck -> context.deserialize(jsonElement, Truck.class);
+            };
+        }
+    }
 
 }
