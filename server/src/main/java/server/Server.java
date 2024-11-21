@@ -1,12 +1,22 @@
 package server;
 
+import com.google.gson.*;
 import dataaccess.*;
 import handler.Handler;
 import handler.WebsocketHandler;
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import service.GameService;
 import service.ParentService;
 import service.UserService;
 import spark.*;
+import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
+import websocket.messages.ServerMessage;
+
+import java.lang.reflect.Type;
 
 public class Server {
     UserDAOI userDAOI = null;
@@ -60,6 +70,46 @@ public class Server {
             userDAOI.clear();
             authDAOI.clear();
             gameDAOI.clear();
+        }
+    }
+
+    //Websocket implementation
+    @OnWebSocketMessage
+    public void onMessage(Session session, String message) throws Exception {
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(ServerMessage.class, new MessageDeserializer());
+        Gson gson = builder.create();
+
+        ServerMessage serverMessage = gson.fromJson(message, ServerMessage.class);
+        switch (serverMessage.getServerMessageType()){
+            case LOAD_GAME -> loadGame();
+            case ERROR -> error();
+            case NOTIFICATION -> notification();
+        }
+        //session.getRemote().sendString("WebSocket response: " + userGameCommand);
+    }
+
+    public void loadGame() {}
+
+    public void error() {}
+
+    public void notification() {}
+
+
+    private static class MessageDeserializer implements JsonDeserializer<ServerMessage> {
+        @Override
+        public ServerMessage deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext context) throws JsonParseException {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+
+            String typeString = jsonObject.get("type").getAsString();
+            ServerMessage.ServerMessageType messageType = ServerMessage.ServerMessageType.valueOf(typeString);
+
+            return switch(messageType) {
+                case LOAD_GAME -> context.deserialize(jsonElement, LoadGameMessage.class);
+                case ERROR -> context.deserialize(jsonElement, ErrorMessage.class);
+                case NOTIFICATION -> context.deserialize(jsonElement, NotificationMessage.class);
+                case null, default -> throw new JsonIOException("Invalid Message Type");
+            };
         }
     }
 }

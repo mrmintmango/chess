@@ -1,6 +1,7 @@
 package handler;
 
 import com.google.gson.*;
+import org.eclipse.jetty.server.Authentication;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
@@ -17,7 +18,11 @@ public class WebsocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String userGameCommand) throws Exception {
-        UserGameCommand gameCommand = new Gson().fromJson(userGameCommand, UserGameCommand.class);
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(UserGameCommand.class, new CommandDeserializer());
+        Gson gson = builder.create();
+
+        UserGameCommand gameCommand = gson.fromJson(userGameCommand, UserGameCommand.class);
         switch (gameCommand.getCommandType()){
             case CONNECT -> connect();
             case MAKE_MOVE -> makeMove();
@@ -54,21 +59,4 @@ public class WebsocketHandler {
         }
     }
 
-    //might need to go in the server, not sure rn
-    private static class MessageDeserializer implements JsonDeserializer<ServerMessage> {
-        @Override
-        public ServerMessage deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext context) throws JsonParseException {
-            JsonObject jsonObject = jsonElement.getAsJsonObject();
-
-            String typeString = jsonObject.get("type").getAsString();
-            ServerMessage.ServerMessageType messageType = ServerMessage.ServerMessageType.valueOf(typeString);
-
-            return switch(messageType) {
-                case LOAD_GAME -> context.deserialize(jsonElement, LoadGameMessage.class);
-                case ERROR -> context.deserialize(jsonElement, ErrorMessage.class);
-                case NOTIFICATION -> context.deserialize(jsonElement, NotificationMessage.class);
-                case null, default -> throw new JsonIOException("Invalid Message Type");
-            };
-        }
-    }
 }
