@@ -16,7 +16,11 @@ public class Main {
         ChessBoard board = new ChessBoard(testBoard.getSquares());
 
         //board.createBoard();
-        Client menu = new Client();
+        try{
+            Client menu = new Client();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
     }
 }

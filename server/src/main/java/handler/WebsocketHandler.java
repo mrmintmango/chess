@@ -1,25 +1,32 @@
 package handler;
 
+import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import spark.Spark;
+import websocket.commands.UserGameCommand;
 
+@WebSocket
 public class WebsocketHandler {
 
-    @WebSocket
-    public static class websocketHandler {
-        public static void main(String[] args) {
-            Spark.port(8080);
-            Spark.webSocket("/ws", websocketHandler.class);
-            Spark.get("/echo/:msg", (req, res) -> "HTTP response: " + req.params(":msg"));
+    @OnWebSocketMessage
+    public void onMessage(Session session, String userGameCommand) throws Exception {
+        UserGameCommand gameCommand = new Gson().fromJson(userGameCommand, UserGameCommand.class);
+        switch (gameCommand.getCommandType()){
+            case CONNECT -> connect();
+            case MAKE_MOVE -> makeMove();
+            case LEAVE -> leave();
+            case RESIGN -> resign();
         }
-
-        @OnWebSocketMessage
-        public void onMessage(Session session, String userGameCommand) throws Exception {
-
-            session.getRemote().sendString("WebSocket response: " + userGameCommand);
-        }
+        //session.getRemote().sendString("WebSocket response: " + userGameCommand);
     }
+
+    public void connect() {}
+
+    public void makeMove() {}
+
+    public void leave() {}
+
+    public void resign() {}
 
 }

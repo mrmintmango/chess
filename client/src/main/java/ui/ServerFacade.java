@@ -13,7 +13,11 @@ public class ServerFacade {
 
     public ServerFacade(String urlString, ServerMessageObserver serverMessageObserver) {
         clientCom = new ClientCommunicator();
-        webCom = new WebsocketCommunicator(serverMessageObserver);
+        try {
+            webCom = new WebsocketCommunicator(serverMessageObserver);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         this.urlString = urlString;
     }
 
@@ -73,6 +77,8 @@ public class ServerFacade {
 
     public String joinGame(String playerColor, int gameID, String authToken) throws IOException {
         String response = clientCom.put((urlString + "/game"), playerColor, gameID, authToken);
+
+
 
         if (Objects.equals(response, "{}")) {
             return "GOOD";

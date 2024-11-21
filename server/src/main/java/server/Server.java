@@ -3,8 +3,6 @@ package server;
 import dataaccess.*;
 import handler.Handler;
 import handler.WebsocketHandler;
-import org.eclipse.jetty.websocket.server.WebSocketHandler;
-import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import service.GameService;
 import service.ParentService;
 import service.UserService;
@@ -18,6 +16,9 @@ public class Server {
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
+        //creates a websocket handler class
+        WebsocketHandler wsHandler = new WebsocketHandler();
+
         try {
             userDAOI = new SQLUserDAO();
         } catch (DataAccessException e) {
@@ -30,19 +31,12 @@ public class Server {
         GameService gameService = new GameService(authDAOI, gameDAOI, gameDAOI.getGameSize()+1);
         UserService userService = new UserService(authDAOI, userDAOI);
         Handler handler = new Handler(parentService, gameService, userService);
-        //creates a websocket handler class
-        WebSocketHandler wsHandler = new WebSocketHandler() {
-            @Override
-            public void configure(WebSocketServletFactory webSocketServletFactory) {}
-        };
-
-        //Updated stuff for Websocket, but might not need it because it's in my wsHandler???
-        Spark.webSocket("/ws", WebsocketHandler.class);
-        //might not need this below?
-        //Spark.get("/echo/:msg", (req, res) -> "HTTP response: " + req.params(":msg"));
 
         Spark.staticFiles.location("web");
 
+        //websocket
+        Spark.webSocket("/ws", wsHandler);
+        Spark.get("/:msg", (req, res) -> "HTTP response: " + req.params(":msg"));
         // Register your endpoints and handle exceptions here.
         Spark.delete("/db", (handler::clearApplication));
         Spark.post("/user", (handler::register));

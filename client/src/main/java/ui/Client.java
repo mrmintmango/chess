@@ -1,5 +1,7 @@
 package ui;
 
+import chess.ChessGame;
+import chess.ChessPiece;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -8,25 +10,36 @@ import java.util.Objects;
 import java.util.Scanner;
 import static java.lang.System.out;
 
-public class Client implements ServerMessageObserver{
-    ServerFacade serverFacade;
+public class Client implements ServerMessageObserver {
+    static ServerFacade serverFacade;
     String playerAuthToken = null;
     ArrayList<String> gameList = null;
 
-    public Client(){
-        serverFacade = new ServerFacade("http://localhost:8080", this); //later switch this to user input
-        out.print("Welcome to 240 Chess. Type the corresponding number to get started");
+    public static void main(String[] args) {
+        var ws = new Client();
+        serverFacade = new ServerFacade("http://localhost:8080", ws); //later switch this to user input
+        out.print("Welcome to 240 Chess!");
+        out.println();
         Scanner scanner = new Scanner(System.in);
-        loggedOutMenu();
+
+        //loggedOutMenu();
         //menuCalculatorOut(scanner);
 
         //websocket stuff
-        websocketTester(scanner);
+        try{
+            websocketTester(scanner);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
-    public void websocketTester(Scanner scan) {
-        String message = scan.nextLine();
-
+    public static void websocketTester(Scanner scan) throws Exception {
+        int counter = 4;
+        while (counter > 0){
+            serverFacade.webCom.send(scan.nextLine());
+            counter--;
+        }
     }
 
     public void loggedOutMenu() {
@@ -288,7 +301,7 @@ public class Client implements ServerMessageObserver{
         board.createBoard("WHITE");
         out.println();
         out.println();
-    }
+    } //Phase 6
 
     public void caseFour(Scanner scan) throws IOException {
         out.println("List of existing games: ");
@@ -366,7 +379,7 @@ public class Client implements ServerMessageObserver{
         }
 
         menuCalculatorIn(scan);
-    }
+    } //Phase 6
 
     private void notify(ServerMessage message){}
 }
