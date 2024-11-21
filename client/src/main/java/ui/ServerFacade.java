@@ -1,6 +1,9 @@
 package ui;
 
+import com.google.gson.Gson;
 import model.UserData;
+import websocket.commands.ConnectCommand;
+import websocket.commands.UserGameCommand;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -78,9 +81,16 @@ public class ServerFacade {
     public String joinGame(String playerColor, int gameID, String authToken) throws IOException {
         String response = clientCom.put((urlString + "/game"), playerColor, gameID, authToken);
 
-
-
         if (Objects.equals(response, "{}")) {
+            //websocket
+            ConnectCommand connectCommand = new ConnectCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
+            String connect = new Gson().toJson(connectCommand);
+            try{
+                webCom.send(connect);
+            } catch (Exception e) {
+                throw new RuntimeException(e); //update to correct error in the future.
+            }
+
             return "GOOD";
         }
         else {

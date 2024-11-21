@@ -1,20 +1,20 @@
 package handler;
 
+import chess.ChessBoard;
 import com.google.gson.*;
-import org.eclipse.jetty.server.Authentication;
+import dataaccess.GameDAOI;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.*;
-import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
-import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 
 @WebSocket
-public class WebsocketHandler {
+public class WebsocketHandler() {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String userGameCommand) throws Exception {
@@ -24,7 +24,7 @@ public class WebsocketHandler {
 
         UserGameCommand gameCommand = gson.fromJson(userGameCommand, UserGameCommand.class);
         switch (gameCommand.getCommandType()){
-            case CONNECT -> connect();
+            case CONNECT -> connect(session);
             case MAKE_MOVE -> makeMove();
             case LEAVE -> leave();
             case RESIGN -> resign();
@@ -32,7 +32,17 @@ public class WebsocketHandler {
         //session.getRemote().sendString("WebSocket response: " + userGameCommand);
     }
 
-    public void connect() {}
+    public void connect(Session session) {
+        ChessBoard board =
+        LoadGameMessage loadGameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+        String load = new Gson().toJson(loadGameMessage);
+
+        try{
+            session.getRemote().sendString(load);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public void makeMove() {}
 

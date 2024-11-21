@@ -1,7 +1,5 @@
 package ui;
 
-import chess.ChessGame;
-import chess.ChessPiece;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
