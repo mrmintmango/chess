@@ -2,12 +2,12 @@ package handler;
 
 import chess.ChessBoard;
 import com.google.gson.*;
-import dataaccess.GameDAOI;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.*;
 import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -35,10 +35,14 @@ public class WebsocketHandler() {
     public void connect(Session session) {
         ChessBoard board =
         LoadGameMessage loadGameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+        NotificationMessage notificationMessage = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+
         String load = new Gson().toJson(loadGameMessage);
+        String notification = new Gson().toJson(notificationMessage);
 
         try{
             session.getRemote().sendString(load);
+            session.getRemote().sendString(notification);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
