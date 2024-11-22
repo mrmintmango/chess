@@ -88,7 +88,7 @@ public class WebsocketHandler {
 
         try{
             sendEveryone(gameID, auth, load);
-            sendAllButMe(notification);
+            sendAllButMe(gameID, auth, notification);
 
             session.getRemote().sendString(load);
             session.getRemote().sendString(notification);
@@ -111,14 +111,13 @@ public class WebsocketHandler {
 
     public void sendMe(String auth, String message) {}
 
-    public void sendAllButMe(int gameID, String auth, String message) {
+    public void sendAllButMe(int gameID, String auth, String message) throws IOException {
         Map<String, Session> authMap = gameMap.get(gameID);
         int mapSize = authMap.size();
-        for (int i = 0; i < mapSize; i++){
-            auths.
-
-            //auths.
-            //if (gameMap.get(gameID).get(auth))
+        for (String authToken : authMap.keySet()){
+            if (!authToken.equals(auth)){
+                authMap.get(authToken).getRemote().sendString(message);
+            }
         }
     }
 
