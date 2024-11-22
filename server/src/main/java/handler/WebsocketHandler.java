@@ -87,6 +87,9 @@ public class WebsocketHandler {
         String notification = new Gson().toJson(notificationMessage);
 
         try{
+            sendEveryone(gameID, auth, load);
+            sendAllButMe(notification);
+
             session.getRemote().sendString(load);
             session.getRemote().sendString(notification);
         } catch (IOException e) {
@@ -101,11 +104,14 @@ public class WebsocketHandler {
     public void resign() {}
 
     //helpful methods
-    public void sendEveryone() {}
+    public void sendEveryone(int gameID, String auth, String message) throws IOException {
+        Session everyone = gameMap.get(gameID).get(auth);
+        everyone.getRemote().sendString(message);
+    }
 
-    public void sendMe() {}
+    public void sendMe(String auth, String message) {}
 
-    public void sendAllButMe() {}
+    public void sendAllButMe(String auth, String message) {}
 
     @OnWebSocketError
     public void webSocketError(Throwable message){
