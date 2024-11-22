@@ -2,6 +2,7 @@ package ui;
 
 import chess.ChessBoard;
 import com.google.gson.*;
+import model.GameData;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
@@ -13,9 +14,10 @@ import java.net.URI;
 
 public class WebsocketCommunicator extends Endpoint {
     private final Session session;
+    ServerMessageObserver smo;
 
     public WebsocketCommunicator(ServerMessageObserver serverMessageObserver) throws Exception {
-
+        smo = serverMessageObserver;
         URI uri = new URI("ws://localhost:8080/ws");
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         this.session = container.connectToServer(this, uri);
@@ -27,27 +29,13 @@ public class WebsocketCommunicator extends Endpoint {
                 Gson gson = builder.create();
 
                 ServerMessage serverMessage = gson.fromJson(message, ServerMessage.class);
-                switch (serverMessage.getServerMessageType()){
-                    case LOAD_GAME -> loadGame(session, ((LoadGameMessage) serverMessage).getBoard());
-                    case ERROR -> error();
-                    case NOTIFICATION -> notification();
-                }
+                smo.notify(serverMessage);
             }
         });
     }
 
     public void send(String msg) throws Exception {this.session.getBasicRemote().sendText(msg);}
     public void onOpen(Session session, EndpointConfig endpointConfig) {}
-
-    public void loadGame(Session session, ChessBoard board) {
-        //notify the client through Observer interface notify method.
-        System.out.println(board);
-    }
-
-    public void error() {}
-
-    public void notification() {}
-
 
     private static class MessageDeserializer implements JsonDeserializer<ServerMessage> {
         @Override

@@ -90,7 +90,6 @@ public class ServerFacade {
             } catch (Exception e) {
                 throw new RuntimeException(e); //update to correct error in the future.
             }
-
             return "GOOD";
         }
         else {

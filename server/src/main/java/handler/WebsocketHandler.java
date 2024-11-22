@@ -4,6 +4,7 @@ import chess.ChessBoard;
 import com.google.gson.*;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAOI;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
@@ -15,14 +16,15 @@ import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.Map;
 
 @WebSocket
 public class WebsocketHandler {
     GameDAOI games;
+    private Map<Integer, Map<String, Session>> gameMap; //map <game id, map <Auth token, sessions>>
 
     public WebsocketHandler(GameDAOI gameDAOI) {
         this.games = gameDAOI;
-        //map game id map authtoken sessions
     }
 
     @OnWebSocketMessage
@@ -33,26 +35,37 @@ public class WebsocketHandler {
 
         UserGameCommand gameCommand = gson.fromJson(userGameCommand, UserGameCommand.class);
         switch (gameCommand.getCommandType()){
-            case CONNECT -> connect(session, gameCommand.getGameID());
+            case CONNECT -> connect(session, gameCommand.getGameID(), gameCommand.getAuthToken());
             case MAKE_MOVE -> makeMove();
             case LEAVE -> leave();
             case RESIGN -> resign();
         }
     }
 
-    public void connect(Session session, int gameID) {
-        ChessBoard board;
+    public void connect(Session session, int gameID, String auth) {
+        GameData gameData;
         try{
-            board = games.getGame(gameID).game().getBoard();
+            gameData = games.getGame(gameID);
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
-        //helpful methods
-        //Send everyone
-        //Send me
-        //Send everyone but me
 
-        LoadGameMessage loadGameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, board);
+        String player;
+        try{
+            if(games.getGame(gameID).whiteUsername().equals(gameData.whiteUsername())){
+                player = "WHITE";
+            }
+            else if (gameData.blackUsername().equals(games.getGame(gameID).blackUsername())) {
+                player = "BLACK";
+            }
+            else {
+                player = "OBSERVER";
+            }
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+
+        LoadGameMessage loadGameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameData, player);
         NotificationMessage notificationMessage = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
 
         String load = new Gson().toJson(loadGameMessage);
@@ -71,6 +84,13 @@ public class WebsocketHandler {
     public void leave() {}
 
     public void resign() {}
+
+    //helpful methods
+    public void sendEveryone() {}
+
+    public void sendMe() {}
+
+    public void sendAllButMe() {}
 
     @OnWebSocketError
     public void webSocketError(Throwable message){

@@ -1,7 +1,10 @@
 package ui;
 
+import model.GameData;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
 
+import javax.websocket.Session;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -237,7 +240,7 @@ public class Client implements ServerMessageObserver {
                         out.println("Observing game: " + number);
                         //output the given chessboard.
                         int gameID=Integer.parseInt(gameList.get(((Integer.parseInt(number)-1)*4)));
-                        printChess(gameID);
+                        //printChess(gameID);
                     }
                 }
                 catch (NumberFormatException e) {
@@ -280,18 +283,6 @@ public class Client implements ServerMessageObserver {
         }
         out.println();
     }
-
-    public static void printChess(int gameID) {
-        //output the given chessboard.
-        //chess.ChessBoard board = get the board of the game from the server with the corresponding game ID
-
-        chess.ChessBoard testBoard = new chess.ChessBoard();
-        testBoard.resetBoard();
-        ChessBoard board = new ChessBoard(testBoard.getSquares());
-        board.createBoard("WHITE");
-        out.println();
-        out.println();
-    } //Phase 6
 
     public static void caseFour(Scanner scan) throws IOException {
         out.println("List of existing games: ");
@@ -358,7 +349,7 @@ public class Client implements ServerMessageObserver {
 
         if (response.equals("GOOD")){
             out.println("You've joined the game!");
-            printChess(gameID);
+            //printChess(gameID);
 
             inGameMenu();
             inGameMenuCalculator(scan);
@@ -371,5 +362,35 @@ public class Client implements ServerMessageObserver {
         menuCalculatorIn(scan);
     } //Phase 6
 
-    private void notify(ServerMessage message){}
+    public void notify(ServerMessage message){
+        ServerMessage.ServerMessageType type = message.getServerMessageType();
+        switch (type){
+            case LOAD_GAME -> loadGame(((LoadGameMessage) message).getGame(), ((LoadGameMessage) message).getPlayerType());
+            case ERROR -> error();
+            case NOTIFICATION -> notification();
+        }
+    }
+
+    public void loadGame(GameData game, String playerType) {
+        printChess(game.game().getBoard(), playerType);
+    }
+
+    public void error() {}
+
+    public void notification() {}
+
+    public static void printChess(chess.ChessBoard board, String player) {
+        ChessBoard chessBoard = new ChessBoard(board.getSquares());
+
+        switch (player) {
+            case "WHITE", "OBSERVER" -> {
+                chessBoard.createBoard("WHITE");
+                out.println();
+            }
+            case "BLACK" -> {
+                chessBoard.createBoard("BLACK");
+                out.println();
+            }
+        }
+    }
 }
