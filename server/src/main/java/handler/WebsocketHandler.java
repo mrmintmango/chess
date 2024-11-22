@@ -111,7 +111,12 @@ public class WebsocketHandler {
 
     public void sendMe(String auth, String message) {}
 
-    public void sendAllButMe(String auth, String message) {}
+    public void sendAllButMe(int gameID, String auth, String message) {
+        int mapSize = gameMap.get(gameID).size();
+        for (int i = 0; i < mapSize; i++){
+
+        }
+    }
 
     @OnWebSocketError
     public void webSocketError(Throwable message){
