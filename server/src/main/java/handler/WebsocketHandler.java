@@ -12,6 +12,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.*;
+import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
@@ -101,24 +102,34 @@ public class WebsocketHandler {
             throw new RuntimeException(e);
         }
 
+        String notif = username + " has joined the game as " + player;
+
         LoadGameMessage loadGameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameData, player);
-        NotificationMessage notificationMessage = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, username + " has joined the game!");
+        NotificationMessage notificationMessage = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, notif);
 
         String load = new Gson().toJson(loadGameMessage);
         String notification = new Gson().toJson(notificationMessage);
 
         try{
-            sendEveryone(gameID, auth, load);
-            sendAllButMe(gameID, auth, notification);
+            sendMe(gameID, auth, load);
 
-            session.getRemote().sendString(load);
-            session.getRemote().sendString(notification);
+            sendAllButMe(gameID, auth, notification);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void makeMove() {}
+    public void makeMove(int gameID, Session session, String move) {
+        //check the validity of the move.
+
+
+
+
+        //update the game
+        //send a load game message
+        //send a notification to all other clients
+        //send in check, checkmate, or stalemate notification to all clients if applicable
+    }
 
     public void leave() {}
 
@@ -126,15 +137,19 @@ public class WebsocketHandler {
 
     //helpful methods
     public void sendEveryone(int gameID, String auth, String message) throws IOException {
-        Session everyone = gameMap.get(gameID).get(auth);
-        everyone.getRemote().sendString(message);
+        Map<String, Session> authMap = gameMap.get(gameID);
+        for (String authToken : authMap.keySet()){
+            authMap.get(authToken).getRemote().sendString(message);
+        }
     }
 
-    public void sendMe(String auth, String message) {}
+    public void sendMe(int gameID, String auth, String message) throws IOException {
+        Session me = gameMap.get(gameID).get(auth);
+        me.getRemote().sendString(message);
+    }
 
     public void sendAllButMe(int gameID, String auth, String message) throws IOException {
         Map<String, Session> authMap = gameMap.get(gameID);
-        int mapSize = authMap.size();
         for (String authToken : authMap.keySet()){
             if (!authToken.equals(auth)){
                 authMap.get(authToken).getRemote().sendString(message);
@@ -143,8 +158,14 @@ public class WebsocketHandler {
     }
 
     @OnWebSocketError
-    public void webSocketError(Throwable message){
-        System.out.println("WebSocket Error: " + message.getMessage());
+    public void webSocketError(Session session, Throwable message){
+        ErrorMessage errorMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, message.getMessage());
+        String error = new Gson().toJson(errorMessage);
+        try {
+            session.getRemote().sendString(error);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static class CommandDeserializer implements JsonDeserializer<UserGameCommand> {
@@ -172,6 +193,9 @@ public class WebsocketHandler {
             games.clear();
             System.out.println(":::Server cleared:::");
             System.out.println(":Terminating System:");
+        }
+        else {
+            System.out.println("Wrong password");
         }
     }
 }

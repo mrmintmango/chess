@@ -1,6 +1,7 @@
 package ui;
 
 import model.GameData;
+import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
@@ -27,14 +28,6 @@ public class Client implements ServerMessageObserver {
         loggedOutMenu();
         menuCalculatorOut(scanner);
     }
-
-//    public static void websocketTester(Scanner scan) throws Exception {
-//        int counter = 4;
-//        while (counter > 0){
-//            serverFacade.webCom.send(scan.nextLine());
-//            counter--;
-//        }
-//    }
 
     public static void loggedOutMenu() {
         out.println("\n\n[LOGGED OUT]");
@@ -352,7 +345,6 @@ public class Client implements ServerMessageObserver {
 
         if (response.equals("GOOD")){
             out.println("You've joined the game!");
-            //printChess(gameID);
 
             inGameMenu();
             inGameMenuCalculator(scan);
@@ -369,7 +361,7 @@ public class Client implements ServerMessageObserver {
         ServerMessage.ServerMessageType type = message.getServerMessageType();
         switch (type){
             case LOAD_GAME -> loadGame(((LoadGameMessage) message).getGame(), ((LoadGameMessage) message).getPlayerType());
-            case ERROR -> error();
+            case ERROR -> error(((ErrorMessage) message).getError());
             case NOTIFICATION -> notification(((NotificationMessage) message).getNotification());
         }
     }
@@ -379,7 +371,9 @@ public class Client implements ServerMessageObserver {
         out.println();
     }
 
-    public void error() {}
+    public void error(String message) {
+        out.println("Websocket Error: " + message);
+    }
 
     public void notification(String message) {
         out.println(message);
@@ -397,6 +391,7 @@ public class Client implements ServerMessageObserver {
                 chessBoard.createBoard("BLACK");
                 out.println();
             }
+            case null, default -> out.println("Incorrect User Type");
         }
     }
 
