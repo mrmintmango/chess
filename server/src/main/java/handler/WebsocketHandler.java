@@ -18,6 +18,7 @@ import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.Map;
 
 @WebSocket
@@ -26,12 +27,13 @@ public class WebsocketHandler {
     AuthDAOI auths;
     UserDAOI users;
 
-    private Map<Integer, Map<String, Session>> gameMap; //map <game id, map <Auth token, sessions>>
+    private final Map<Integer, Map<String, Session>> gameMap; //map <game id, map <Auth token, sessions>>
 
     public WebsocketHandler(GameDAOI gameDAOI, AuthDAOI auths, UserDAOI users) {
         this.games = gameDAOI;
         this.auths = auths;
         this.users = users;
+        gameMap = new HashMap<>();
     }
 
     @OnWebSocketMessage
@@ -55,7 +57,26 @@ public class WebsocketHandler {
         }
     }
 
+    public void addGameToMap(int gameID, Session session, String auth){
+        Map<String, Session> sessionMap = new HashMap<>();
+        gameMap.put(gameID, sessionMap);
+        addSessionToGame(gameID, session, auth);
+    }
+
+    public void addSessionToGame(int gameID, Session session, String auth){
+        gameMap.get(gameID).put(auth, session);
+    }
+
+    public void removeSessionFromGame(){}
+
     public void connect(Session session, int gameID, String auth) {
+        if(!gameMap.containsKey(gameID)){
+            addGameToMap(gameID, session, auth);
+        }
+        else{
+            addSessionToGame(gameID, session, auth);
+        }
+
         GameData gameData;
         try{
             gameData = games.getGame(gameID);
@@ -131,7 +152,6 @@ public class WebsocketHandler {
         public UserGameCommand deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext context) throws JsonParseException {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
 
-            System.out.println(jsonObject.toString());
             String typeString = jsonObject.get("commandType").getAsString();
             UserGameCommand.CommandType commandType = UserGameCommand.CommandType.valueOf(typeString);
 
