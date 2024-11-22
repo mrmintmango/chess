@@ -55,8 +55,9 @@ public class WebsocketHandler {
         }
 
         String player;
+        String username;
         try{
-            String username = auths.getAuth(auth).username();
+            username = auths.getAuth(auth).username();
             if(games.getGame(gameID).whiteUsername().equals(username)){
                 player = "WHITE";
             }
@@ -71,14 +72,14 @@ public class WebsocketHandler {
         }
 
         LoadGameMessage loadGameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameData, player);
-        NotificationMessage notificationMessage = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+        NotificationMessage notificationMessage = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, username + " has joined the game!");
 
         String load = new Gson().toJson(loadGameMessage);
         String notification = new Gson().toJson(notificationMessage);
 
         try{
             session.getRemote().sendString(load);
-            //session.getRemote().sendString(notification);
+            session.getRemote().sendString(notification);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

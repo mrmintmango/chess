@@ -2,6 +2,7 @@ package ui;
 
 import model.GameData;
 import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import javax.websocket.Session;
@@ -367,17 +368,20 @@ public class Client implements ServerMessageObserver {
         switch (type){
             case LOAD_GAME -> loadGame(((LoadGameMessage) message).getGame(), ((LoadGameMessage) message).getPlayerType());
             case ERROR -> error();
-            case NOTIFICATION -> notification();
+            case NOTIFICATION -> notification(((NotificationMessage) message).getNotification());
         }
     }
 
     public void loadGame(GameData game, String playerType) {
         printChess(game.game().getBoard(), playerType);
+        out.println();
     }
 
     public void error() {}
 
-    public void notification() {}
+    public void notification(String message) {
+        out.println(message);
+    }
 
     public static void printChess(chess.ChessBoard board, String player) {
         ChessBoard chessBoard = new ChessBoard(board.getSquares());
