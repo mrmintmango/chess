@@ -15,6 +15,7 @@ public class WebsocketCommunicator extends Endpoint {
     private final Session session;
 
     public WebsocketCommunicator(ServerMessageObserver serverMessageObserver) throws Exception {
+
         URI uri = new URI("ws://localhost:8080/ws");
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         this.session = container.connectToServer(this, uri);
@@ -39,7 +40,8 @@ public class WebsocketCommunicator extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {}
 
     public void loadGame(Session session, ChessBoard board) {
-
+        //notify the client through Observer interface notify method.
+        System.out.println(board);
     }
 
     public void error() {}
