@@ -10,8 +10,8 @@ import static java.lang.System.out;
 
 public class Client implements ServerMessageObserver {
     static ServerFacade serverFacade;
-    String playerAuthToken = null;
-    ArrayList<String> gameList = null;
+    static String playerAuthToken = null;
+    static ArrayList<String> gameList = null;
 
     public static void main(String[] args) {
         var ws = new Client();
@@ -20,27 +20,19 @@ public class Client implements ServerMessageObserver {
         out.println();
         Scanner scanner = new Scanner(System.in);
 
-        //loggedOutMenu();
-        //menuCalculatorOut(scanner);
-
-        //websocket stuff
-        try{
-            websocketTester(scanner);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
+        loggedOutMenu();
+        menuCalculatorOut(scanner);
     }
 
-    public static void websocketTester(Scanner scan) throws Exception {
-        int counter = 4;
-        while (counter > 0){
-            serverFacade.webCom.send(scan.nextLine());
-            counter--;
-        }
-    }
+//    public static void websocketTester(Scanner scan) throws Exception {
+//        int counter = 4;
+//        while (counter > 0){
+//            serverFacade.webCom.send(scan.nextLine());
+//            counter--;
+//        }
+//    }
 
-    public void loggedOutMenu() {
+    public static void loggedOutMenu() {
         out.println("\n\n[LOGGED OUT]");
         out.println("1. Register");
         out.println("2. Login");
@@ -48,7 +40,7 @@ public class Client implements ServerMessageObserver {
         out.println("4. Help");
     }
 
-    public void loggedInMenu() {
+    public static void loggedInMenu() {
         out.println("[LOGGED IN]");
         out.println("1. Help");
         out.println("2. Logout");
@@ -58,7 +50,7 @@ public class Client implements ServerMessageObserver {
         out.println("6. Observe Game");
     }
 
-    public void inGameMenu() {
+    public static void inGameMenu() {
         out.println("[IN GAME]");
         out.println("1. Help");
         out.println("2. Redraw Board");
@@ -68,7 +60,7 @@ public class Client implements ServerMessageObserver {
         out.println("6. Highlight Legal Moves");
     }
 
-    public void inGameMenuCalculator(Scanner scan) {
+    public static void inGameMenuCalculator(Scanner scan) {
         String input = scan.nextLine();
         switch (input) {
             case "1" -> { //print help menu
@@ -108,7 +100,7 @@ public class Client implements ServerMessageObserver {
         }
     }
 
-    public void menuCalculatorOut(Scanner scan) {
+    public static void menuCalculatorOut(Scanner scan) {
         String input = scan.nextLine();
         switch (input) {
             case "1" -> { //Register Input
@@ -183,7 +175,7 @@ public class Client implements ServerMessageObserver {
 
     }
 
-    public void menuCalculatorIn(Scanner scan) throws IOException {
+    public static void menuCalculatorIn(Scanner scan) throws IOException {
         String input = scan.nextLine();
         switch (input) {
             case "1" -> { //Help menu
@@ -265,7 +257,7 @@ public class Client implements ServerMessageObserver {
         }
     }
 
-    public void listPrinter(ArrayList<String> list) {
+    public static void listPrinter(ArrayList<String> list) {
         out.println();
         int counter = 0;
         for (int i = 0; i < list.size()/4; i++){
@@ -289,7 +281,7 @@ public class Client implements ServerMessageObserver {
         out.println();
     }
 
-    public void printChess(int gameID) {
+    public static void printChess(int gameID) {
         //output the given chessboard.
         //chess.ChessBoard board = get the board of the game from the server with the corresponding game ID
 
@@ -301,7 +293,7 @@ public class Client implements ServerMessageObserver {
         out.println();
     } //Phase 6
 
-    public void caseFour(Scanner scan) throws IOException {
+    public static void caseFour(Scanner scan) throws IOException {
         out.println("List of existing games: ");
         //Server list game request and printing
         ArrayList<String> response = serverFacade.listGames(playerAuthToken);
@@ -320,7 +312,7 @@ public class Client implements ServerMessageObserver {
         menuCalculatorIn(scan);
     }
 
-    public void loggedIn(String regResponse, Scanner scan) throws IOException {
+    public static void loggedIn(String regResponse, Scanner scan) throws IOException {
         playerAuthToken = regResponse.substring(4);
         out.println("You've been logged in!");
         out.println("----------------");
@@ -328,7 +320,7 @@ public class Client implements ServerMessageObserver {
         menuCalculatorIn(scan);
     }
 
-    public void joinGame(Scanner scan) throws IOException {
+    public static void joinGame(Scanner scan) throws IOException {
         int gameID = 0;
         String response = "unreached server";
         out.println("Which game would you like to join?:");

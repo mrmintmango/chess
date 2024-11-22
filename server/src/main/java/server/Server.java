@@ -16,9 +16,6 @@ public class Server {
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
-        //creates a websocket handler class
-        WebsocketHandler wsHandler = new WebsocketHandler();
-
         try {
             userDAOI = new SQLUserDAO();
         } catch (DataAccessException e) {
@@ -26,6 +23,9 @@ public class Server {
         }
         authDAOI = new SQLAuthDAO();
         gameDAOI = new SQLGameDAO();
+
+        //creates a websocket handler class
+        WebsocketHandler wsHandler = new WebsocketHandler(gameDAOI);
 
         ParentService parentService = new ParentService(authDAOI, gameDAOI, userDAOI);
         GameService gameService = new GameService(authDAOI, gameDAOI, gameDAOI.getGameSize()+1);
@@ -36,7 +36,6 @@ public class Server {
 
         //websocket
         Spark.webSocket("/ws", wsHandler);
-        Spark.get("/:msg", (req, res) -> "HTTP response: " + req.params(":msg"));
 
         // Register your endpoints and handle exceptions here.
         Spark.delete("/db", (handler::clearApplication));

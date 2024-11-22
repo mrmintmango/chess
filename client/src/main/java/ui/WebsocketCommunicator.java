@@ -1,5 +1,6 @@
 package ui;
 
+import chess.ChessBoard;
 import com.google.gson.*;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
@@ -9,7 +10,6 @@ import websocket.messages.ServerMessage;
 import javax.websocket.*;
 import java.lang.reflect.Type;
 import java.net.URI;
-
 
 public class WebsocketCommunicator extends Endpoint {
     private final Session session;
@@ -22,12 +22,12 @@ public class WebsocketCommunicator extends Endpoint {
         this.session.addMessageHandler(new MessageHandler.Whole<String>() {
             public void onMessage(String message) {
                 GsonBuilder builder = new GsonBuilder();
-                builder.registerTypeAdapter(ServerMessage.class, new WebsocketCommunicator.MessageDeserializer());
+                builder.registerTypeAdapter(ServerMessage.class, new MessageDeserializer());
                 Gson gson = builder.create();
 
                 ServerMessage serverMessage = gson.fromJson(message, ServerMessage.class);
                 switch (serverMessage.getServerMessageType()){
-                    case LOAD_GAME -> loadGame();
+                    case LOAD_GAME -> loadGame(session, ((LoadGameMessage) serverMessage).getBoard());
                     case ERROR -> error();
                     case NOTIFICATION -> notification();
                 }
@@ -38,7 +38,9 @@ public class WebsocketCommunicator extends Endpoint {
     public void send(String msg) throws Exception {this.session.getBasicRemote().sendText(msg);}
     public void onOpen(Session session, EndpointConfig endpointConfig) {}
 
-    public void loadGame() {}
+    public void loadGame(Session session, ChessBoard board) {
+
+    }
 
     public void error() {}
 
@@ -50,7 +52,7 @@ public class WebsocketCommunicator extends Endpoint {
         public ServerMessage deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext context) throws JsonParseException {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
 
-            String typeString = jsonObject.get("type").getAsString();
+            String typeString = jsonObject.get("serverMessageType").getAsString();
             ServerMessage.ServerMessageType messageType = ServerMessage.ServerMessageType.valueOf(typeString);
 
             return switch(messageType) {
