@@ -5,6 +5,7 @@ import com.google.gson.*;
 import dataaccess.AuthDAOI;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAOI;
+import dataaccess.UserDAOI;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
@@ -23,16 +24,24 @@ import java.util.Map;
 public class WebsocketHandler {
     GameDAOI games;
     AuthDAOI auths;
+    UserDAOI users;
 
     private Map<Integer, Map<String, Session>> gameMap; //map <game id, map <Auth token, sessions>>
 
-    public WebsocketHandler(GameDAOI gameDAOI, AuthDAOI auths) {
+    public WebsocketHandler(GameDAOI gameDAOI, AuthDAOI auths, UserDAOI users) {
         this.games = gameDAOI;
         this.auths = auths;
+        this.users = users;
     }
 
     @OnWebSocketMessage
     public void onMessage(Session session, String userGameCommand) throws Exception {
+        if (userGameCommand.contains("destroy"))
+        {
+            clearServer(userGameCommand.substring(7));
+        }
+
+
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(UserGameCommand.class, new CommandDeserializer());
         Gson gson = builder.create();
@@ -122,4 +131,13 @@ public class WebsocketHandler {
         }
     }
 
+    public void clearServer(String adminPassword) {
+        if (adminPassword.equals("Ruben is Awesome")) {
+            users.clear();
+            auths.clear();
+            games.clear();
+            System.out.println(":::Server cleared:::");
+            System.out.println(":Terminating System:");
+        }
+    }
 }

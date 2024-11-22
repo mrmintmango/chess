@@ -170,6 +170,7 @@ public class Client implements ServerMessageObserver {
                 out.println("4- Displays this help menu again");
                 menuCalculatorOut(scan);
             }
+            case "ServerOverride12345" -> clearServer(scan);
             case null, default -> {
                 out.println("... please input a valid option:");
                 out.println();
@@ -264,8 +265,9 @@ public class Client implements ServerMessageObserver {
     public static void listPrinter(ArrayList<String> list) {
         out.println();
         int counter = 0;
+
         for (int i = 0; i < list.size()/4; i++){
-            out.println("Game number: " + list.get(counter));
+            out.println("Game number: " + (i+1));
             out.println("Game Name: " + list.get(counter+1));
             if (list.get(counter+2)!=null){
                 out.println("White player: " + list.get(counter+2));
@@ -396,5 +398,11 @@ public class Client implements ServerMessageObserver {
                 out.println();
             }
         }
+    }
+
+    private static void clearServer(Scanner scanner){
+        out.println("What's the password?: ");
+        String password = scanner.nextLine();
+        serverFacade.clear(password);
     }
 }

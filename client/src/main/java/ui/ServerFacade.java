@@ -24,7 +24,13 @@ public class ServerFacade {
         this.urlString = urlString;
     }
 
-    //public void clear() {}
+    public void clear(String destroy) {
+        try{
+            webCom.send(destroy);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public String register(String username, String password, String email) throws IOException {
         UserData newUser = new UserData(username, password, email);

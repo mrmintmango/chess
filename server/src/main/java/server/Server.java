@@ -25,7 +25,7 @@ public class Server {
         gameDAOI = new SQLGameDAO();
 
         //creates a websocket handler class
-        WebsocketHandler wsHandler = new WebsocketHandler(gameDAOI, authDAOI);
+        WebsocketHandler wsHandler = new WebsocketHandler(gameDAOI, authDAOI, userDAOI);
 
         ParentService parentService = new ParentService(authDAOI, gameDAOI, userDAOI);
         GameService gameService = new GameService(authDAOI, gameDAOI, gameDAOI.getGameSize()+1);
@@ -60,6 +60,8 @@ public class Server {
             userDAOI.clear();
             authDAOI.clear();
             gameDAOI.clear();
+            System.out.println(":::Server cleared:::");
+            System.out.println(":Terminating System:");
         }
     }
 }
