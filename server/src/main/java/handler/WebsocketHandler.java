@@ -2,6 +2,7 @@ package handler;
 
 import chess.ChessBoard;
 import com.google.gson.*;
+import dataaccess.AuthDAOI;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAOI;
 import model.GameData;
@@ -21,10 +22,13 @@ import java.util.Map;
 @WebSocket
 public class WebsocketHandler {
     GameDAOI games;
+    AuthDAOI auths;
+
     private Map<Integer, Map<String, Session>> gameMap; //map <game id, map <Auth token, sessions>>
 
-    public WebsocketHandler(GameDAOI gameDAOI) {
+    public WebsocketHandler(GameDAOI gameDAOI, AuthDAOI auths) {
         this.games = gameDAOI;
+        this.auths = auths;
     }
 
     @OnWebSocketMessage
@@ -52,10 +56,11 @@ public class WebsocketHandler {
 
         String player;
         try{
-            if(games.getGame(gameID).whiteUsername().equals(gameData.whiteUsername())){
+            String username = auths.getAuth(auth).username();
+            if(games.getGame(gameID).whiteUsername().equals(username)){
                 player = "WHITE";
             }
-            else if (gameData.blackUsername().equals(games.getGame(gameID).blackUsername())) {
+            else if (games.getGame(gameID).blackUsername().equals(username)) {
                 player = "BLACK";
             }
             else {
