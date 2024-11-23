@@ -22,6 +22,7 @@ public class Client implements ServerMessageObserver {
     static String playerColor;
     static Map<String, Integer> positionKey;
     static int currentGameID;
+    static boolean resigned = false;
 
     public static void main(String[] args) {
         var ws = new Client();
@@ -93,8 +94,19 @@ public class Client implements ServerMessageObserver {
             }
             case "3" -> {
                 //leave the match method here
+                try{
+                    serverFacade.leaveGame(currentGameID, playerAuthToken);
+                    menuCalculatorIn(scan);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
             case "4" -> {
+                if (resigned){
+                    out.println("You can't make a move after you've resigned");
+                    inGameMenuCalculator(scan);
+                }
+
                 out.println("Insert a valid move to make (in the form a2a4)");
                 out.println("name the promotion piece afterwards if your pawn is promoting (a7a8 QUEEN)");
                 String move = scan.nextLine();
@@ -127,7 +139,13 @@ public class Client implements ServerMessageObserver {
                 }
             } //Make move functionality
             case "5" -> {
-                //Resign from the game
+                resigned = true;
+                try{
+                    serverFacade.resign(currentGameID, playerAuthToken);
+                    inGameMenuCalculator(scan);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
             case "6" -> {
                 //highlightBoard();

@@ -47,7 +47,6 @@ public class WebsocketHandler {
             clearServer(userGameCommand.substring(7));
         }
 
-
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(UserGameCommand.class, new CommandDeserializer());
         Gson gson = builder.create();
@@ -57,8 +56,8 @@ public class WebsocketHandler {
             case CONNECT -> connect(session, gameCommand.getGameID(), gameCommand.getAuthToken());
             case MAKE_MOVE -> makeMove(gameCommand.getGameID(), session, ((MakeMoveCommand) gameCommand).getMove(),
                     gameCommand.getAuthToken(), ((MakeMoveCommand) gameCommand).getMoveText());
-            case LEAVE -> leave();
-            case RESIGN -> resign();
+            case LEAVE -> leave(gameCommand.getGameID(), session, gameCommand.getAuthToken());
+            case RESIGN -> resign(gameCommand.getGameID(), session, gameCommand.getAuthToken());
         }
     }
 
@@ -132,7 +131,7 @@ public class WebsocketHandler {
                 session.getRemote().sendString(message);
             }
             else if (games.getGame(gameID).game().validMoves(move.getStartPosition()).contains(move)){
-                games.getGame(gameID).game().makeMove(move);
+                updateGame(gameID, move);
 
                 String player = getPlayerType(auth, gameID);
 
@@ -184,9 +183,47 @@ public class WebsocketHandler {
         }
     }
 
-    public void leave() {}
+    public void leave(int gameID, Session session, String auth) {
+        try{
+            userRemoval(gameID, auth);
 
-    public void resign() {}
+            String goodbye = auths.getAuth(auth).username() + " has left the game.";
+            sendCheckMate(gameID, auth, goodbye);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void resign(int gameID, Session session, String auth) {
+        try{
+            userRemoval(gameID, auth);
+
+            String goodbye = auths.getAuth(auth).username() + " has resigned from the game.";
+            sendCheckMate(gameID, auth, goodbye);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void userRemoval(int gameID, String auth) throws DataAccessException {
+        gameMap.get(gameID).remove(auth);
+
+        if (auths.getAuth(auth).username().equals(games.getGame(gameID).whiteUsername())){
+            games.updateGame(gameID, null, true);
+        }
+        else if (auths.getAuth(auth).username().equals(games.getGame(gameID).blackUsername())){
+            games.updateGame(gameID, null, false);
+        }
+    }
+
+    public void updateGame(int gameID, ChessMove move){
+        try{
+            games.getGame(gameID).game().makeMove(move);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 
     public void sendCheckMate(int gameID, String auth, String checkMessage) throws IOException {
         NotificationMessage checkNotification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION,

@@ -3,9 +3,7 @@ package ui;
 import chess.ChessMove;
 import com.google.gson.Gson;
 import model.UserData;
-import websocket.commands.ConnectCommand;
-import websocket.commands.MakeMoveCommand;
-import websocket.commands.UserGameCommand;
+import websocket.commands.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -110,4 +108,17 @@ public class ServerFacade {
         String command = new Gson().toJson(moveCommand);
         webCom.send(command);
     }
+
+    public void leaveGame(int gameID, String auth) throws Exception {
+        LeaveCommand leaveCommand = new LeaveCommand(UserGameCommand.CommandType.LEAVE, auth, gameID);
+        String command = new Gson().toJson(leaveCommand);
+        webCom.send(command);
+    }
+
+    public void resign(int gameID, String auth) throws Exception {
+        ResignCommand resignCommand = new ResignCommand(UserGameCommand.CommandType.RESIGN, auth, gameID);
+        String command = new Gson().toJson(resignCommand);
+        webCom.send(command);
+    }
+
 }
