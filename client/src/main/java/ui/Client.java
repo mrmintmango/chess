@@ -22,7 +22,6 @@ public class Client implements ServerMessageObserver {
     static String playerColor;
     static Map<String, Integer> positionKey;
     static int currentGameID;
-    static boolean myTurn = false; //Fix to actually change to true when it's the players turn.
 
     public static void main(String[] args) {
         var ws = new Client();
@@ -96,16 +95,6 @@ public class Client implements ServerMessageObserver {
                 //leave the match method here
             }
             case "4" -> {
-                if(!myTurn && playerColor!=null){
-                    out.println("You can't make a move, it's not your turn");
-                    inGameMenuCalculator(scan);
-                }
-                if(playerColor==null){
-                    out.println("You can't make a move, you're just a silly observer");
-                    inGameMenuCalculator(scan);
-                }
-
-
                 out.println("Insert a valid move to make (in the form a2a4)");
                 out.println("name the promotion piece afterwards if your pawn is promoting (a7a8 QUEEN)");
                 String move = scan.nextLine();

@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @WebSocket
 public class WebsocketHandler {
@@ -116,7 +117,20 @@ public class WebsocketHandler {
     public void makeMove(int gameID, Session session, ChessMove move, String auth, String moveText) {
         //check the validity of the move.
         try{
-            if (games.getGame(gameID).game().validMoves(move.getStartPosition()).contains(move)){
+            if (!Objects.equals(games.getGame(gameID).game().getTeamTurn().toString(), getPlayerType(auth, gameID))){
+                String errorMessage = "You can't make a move when it's not your turn";
+                ErrorMessage error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, errorMessage);
+                String message = new Gson().toJson(error);
+                session.getRemote().sendString(message);
+            }
+            else if (!auths.getAuth(auth).username().equals(games.getGame(gameID).whiteUsername()) &&
+                    !auths.getAuth(auth).username().equals(games.getGame(gameID).blackUsername())) {
+                String errorMessage = "You can't make a move as an observer";
+                ErrorMessage error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, errorMessage);
+                String message = new Gson().toJson(error);
+                session.getRemote().sendString(message);
+            }
+            else if (games.getGame(gameID).game().validMoves(move.getStartPosition()).contains(move)){
                 games.getGame(gameID).game().makeMove(move);
 
                 String player = getPlayerType(auth, gameID);
