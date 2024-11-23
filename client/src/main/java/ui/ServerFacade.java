@@ -1,8 +1,10 @@
 package ui;
 
+import chess.ChessMove;
 import com.google.gson.Gson;
 import model.UserData;
 import websocket.commands.ConnectCommand;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 
 import java.io.IOException;
@@ -101,5 +103,11 @@ public class ServerFacade {
         else {
             return response;
         }
+    }
+
+    public void makeMove(ChessMove move, int gameID, String auth, String moveText, String playerType) throws Exception {
+        MakeMoveCommand moveCommand = new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE, auth, gameID, move, moveText);
+        String command = new Gson().toJson(moveCommand);
+        webCom.send(command);
     }
 }

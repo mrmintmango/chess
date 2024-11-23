@@ -1,22 +1,27 @@
 package ui;
 
+import chess.ChessMove;
+import chess.ChessPiece;
+import chess.ChessPosition;
 import model.GameData;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
-import javax.websocket.Session;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
+
 import static java.lang.System.out;
 
 public class Client implements ServerMessageObserver {
     static ServerFacade serverFacade;
     static String playerAuthToken = null;
     static ArrayList<String> gameList = null;
+    static chess.ChessBoard mainBoard;
+    static String playerColor;
+    static Map<String, Integer> positionKey;
+    static int currentGameID;
 
     public static void main(String[] args) {
         var ws = new Client();
@@ -24,6 +29,11 @@ public class Client implements ServerMessageObserver {
         out.print("Welcome to 240 Chess!");
         out.println();
         Scanner scanner = new Scanner(System.in);
+        mainBoard = new chess.ChessBoard(null);
+        playerColor = null;
+        positionKey = new HashMap<>();
+        currentGameID = 0;
+        setPositionKey();
 
         loggedOutMenu();
         menuCalculatorOut(scanner);
@@ -70,8 +80,16 @@ public class Client implements ServerMessageObserver {
                 out.println();
                 inGameMenuCalculator(scan);
             }
-            case "2" -> {
-                //redraw the board method here
+            case "2" -> { //redraw board
+                if (playerColor.equals("WHITE")){
+                    printChess(mainBoard, "WHITE");
+                }
+                else if (playerColor.equals("BLACK")) {
+                    printChess(mainBoard, "BLACK");
+                }
+                else {
+                    printChess(mainBoard, "WHITE");
+                }
             }
             case "3" -> {
                 //leave the match method here
@@ -80,8 +98,34 @@ public class Client implements ServerMessageObserver {
                 out.println("Insert a valid move to make (in the form a2a4)");
                 out.println("name the promotion piece afterwards if your pawn is promoting (a7a8 QUEEN)");
                 String move = scan.nextLine();
-                //then call the make move calculator
-            }
+                ChessPiece.PieceType upgrade = null;
+
+                //check the moves validity
+                if (move.length() == 4){
+                    if (moveFormatCheck(move)){
+                        moveConverter(move, null);
+                    }
+                }
+                else if (move.length() < 4){
+                    out.println("Invalid move format");
+                }
+                else if (move.length() > 5){
+                    switch (move.substring(5)) {
+                        case "QUEEN" -> { upgrade = ChessPiece.PieceType.QUEEN;
+                        }
+                        case "KNIGHT" -> { upgrade = ChessPiece.PieceType.KNIGHT;
+                        }
+                        case "BISHOP" -> { upgrade = ChessPiece.PieceType.BISHOP;
+                        }
+                        case "ROOK" -> { upgrade = ChessPiece.PieceType.ROOK;
+                        }
+                        default -> out.println("Invalid promotion piece");
+                    }
+                    if (upgrade != null){
+                        moveConverter(move, upgrade);
+                    }
+                }
+            } //Make move functionality
             case "5" -> {
                 //Resign from the game
             }
@@ -95,6 +139,56 @@ public class Client implements ServerMessageObserver {
                 inGameMenuCalculator(scan);
             }
         }
+    }
+
+    public static void moveConverter(String move, ChessPiece.PieceType upgrade){
+        String justTheMove = move.substring(0,3);
+
+        int row = positionKey.get(move.substring(0,1));
+        int col = Integer.parseInt(move.substring(1,2));
+        int endRow = positionKey.get(move.substring(2,3));
+        int endCol = Integer.parseInt(move.substring(3,4));
+
+        ChessPosition start = new ChessPosition(row, col);
+        ChessPosition end = new ChessPosition(endRow, endCol);
+
+        ChessMove chessMove = new ChessMove(start, end, upgrade);
+
+        //send that move to the server:
+        try{
+            serverFacade.makeMove(chessMove, currentGameID, playerAuthToken, justTheMove, Objects.requireNonNullElse(playerColor, "OBSERVER"));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static boolean moveFormatCheck(String move){
+        boolean check1 = false;
+        boolean check2 = false;
+        boolean check3 = false;
+        boolean check4 = false;
+
+        if (move.charAt(0) == 'a' || move.charAt(0) == 'b' || move.charAt(0) == 'c' ||
+                move.charAt(0) == 'd' || move.charAt(0) == 'e' || move.charAt(0) == 'f' ||
+                move.charAt(0) == 'g' || move.charAt(0) == 'h'){
+            check1 = true;
+        }
+        if (move.charAt(1) == '1' || move.charAt(1) == '2' || move.charAt(1) == '3' ||
+                move.charAt(1) == '4' || move.charAt(1) == '5' || move.charAt(1) == '6' ||
+                move.charAt(1) == '7' || move.charAt(1) == '8'){
+            check2 = true;
+        }
+        if (move.charAt(2) == 'a' || move.charAt(2) == 'b' || move.charAt(2) == 'c' ||
+                move.charAt(2) == 'd' || move.charAt(2) == 'e' || move.charAt(2) == 'f' ||
+                move.charAt(2) == 'g' || move.charAt(2) == 'h'){
+            check3 = true;
+        }
+        if (move.charAt(3) == '1' || move.charAt(3) == '2' || move.charAt(3) == '3' ||
+                move.charAt(3) == '4' || move.charAt(3) == '5' || move.charAt(3) == '6' ||
+                move.charAt(3) == '7' || move.charAt(3) == '8'){
+            check4 = true;
+        }
+        return (check1 && check2 && check3 && check4);
     }
 
     public static void menuCalculatorOut(Scanner scan) {
@@ -324,6 +418,7 @@ public class Client implements ServerMessageObserver {
             }
             else if (gameList!=null && Integer.parseInt(number) > 0 && Integer.parseInt(number) <= gameList.size()/4){
                 gameID=Integer.parseInt(gameList.get(((Integer.parseInt(number)-1)*4)));
+                currentGameID = gameID;
             }
             else if (gameList!=null && (Integer.parseInt(number) <= 0 || Integer.parseInt(number) > gameList.size()/4)){
                 out.println("Not a valid game number");
@@ -343,6 +438,7 @@ public class Client implements ServerMessageObserver {
             menuCalculatorIn(scan);
         }
 
+        playerColor = color;
         if (response.equals("GOOD")){
             out.println("You've joined the game!");
 
@@ -380,6 +476,7 @@ public class Client implements ServerMessageObserver {
     }
 
     public static void printChess(chess.ChessBoard board, String player) {
+        mainBoard = board;
         ChessBoard chessBoard = new ChessBoard(board.getSquares());
 
         switch (player) {
@@ -393,6 +490,17 @@ public class Client implements ServerMessageObserver {
             }
             case null, default -> out.println("Incorrect User Type");
         }
+    }
+
+    private static void setPositionKey(){
+        positionKey.put("a", 1);
+        positionKey.put("b", 2);
+        positionKey.put("c", 3);
+        positionKey.put("d", 4);
+        positionKey.put("e", 5);
+        positionKey.put("f", 6);
+        positionKey.put("g", 7);
+        positionKey.put("h", 8);
     }
 
     private static void clearServer(Scanner scanner){

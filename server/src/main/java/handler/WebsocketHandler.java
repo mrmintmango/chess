@@ -1,6 +1,7 @@
 package handler;
 
 import chess.ChessBoard;
+import chess.ChessMove;
 import com.google.gson.*;
 import dataaccess.AuthDAOI;
 import dataaccess.DataAccessException;
@@ -52,7 +53,8 @@ public class WebsocketHandler {
         UserGameCommand gameCommand = gson.fromJson(userGameCommand, UserGameCommand.class);
         switch (gameCommand.getCommandType()){
             case CONNECT -> connect(session, gameCommand.getGameID(), gameCommand.getAuthToken());
-            case MAKE_MOVE -> makeMove();
+            case MAKE_MOVE -> makeMove(gameCommand.getGameID(), session, ((MakeMoveCommand) gameCommand).getMove(),
+                    gameCommand.getAuthToken(), ((MakeMoveCommand) gameCommand).getMoveText());
             case LEAVE -> leave();
             case RESIGN -> resign();
         }
@@ -85,22 +87,14 @@ public class WebsocketHandler {
             throw new RuntimeException(e);
         }
 
-        String player;
-        String username;
+        String player = getPlayerType(auth, gameID);
+        String username = null;
         try{
             username = auths.getAuth(auth).username();
-            if(games.getGame(gameID).whiteUsername().equals(username)){
-                player = "WHITE";
-            }
-            else if (games.getGame(gameID).blackUsername().equals(username)) {
-                player = "BLACK";
-            }
-            else {
-                player = "OBSERVER";
-            }
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
+
 
         String notif = username + " has joined the game as " + player;
 
@@ -119,16 +113,36 @@ public class WebsocketHandler {
         }
     }
 
-    public void makeMove(int gameID, Session session, String move) {
+    public void makeMove(int gameID, Session session, ChessMove move, String auth, String moveText) {
         //check the validity of the move.
+        try{
+            if (games.getGame(gameID).game().validMoves(move.getStartPosition()).contains(move)){
+                games.getGame(gameID).game().makeMove(move);
 
+                String player = getPlayerType(auth, gameID);
 
+                LoadGameMessage loadGameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
+                        games.getGame(gameID), player);
+                String load = new Gson().toJson(loadGameMessage);
+                sendEveryone(gameID, auth, load);
 
+                String moveMessage = auths.getAuth(auth).username() + " made the move " + moveText;
+                NotificationMessage notificationMessage = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION,
+                        moveMessage);
+                String notification = new Gson().toJson(notificationMessage);
+                sendAllButMe(gameID, auth, notification);
 
-        //update the game
-        //send a load game message
-        //send a notification to all other clients
-        //send in check, checkmate, or stalemate notification to all clients if applicable
+                //send in check, checkmate, or stalemate notification to all clients if applicable
+            }
+            else {
+                ErrorMessage errorMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Invalid move");
+                String error = new Gson().toJson(errorMessage);
+                sendMe(gameID, auth, error);
+            }
+        }
+        catch (Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
     public void leave() {}
@@ -184,6 +198,24 @@ public class WebsocketHandler {
                 case null, default -> throw new JsonIOException("Invalid Command Type");
             };
         }
+    }
+
+    public String getPlayerType(String auth, int gameID){
+        String player;
+        String username;
+        try {
+            username = auths.getAuth(auth).username();
+            if (games.getGame(gameID).whiteUsername().equals(username)) {
+                player = "WHITE";
+            } else if (games.getGame(gameID).blackUsername().equals(username)) {
+                player = "BLACK";
+            } else {
+                player = "OBSERVER";
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return player;
     }
 
     public void clearServer(String adminPassword) {
