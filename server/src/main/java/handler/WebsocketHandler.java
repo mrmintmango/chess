@@ -156,18 +156,22 @@ public class WebsocketHandler {
                     sendCheckMate(gameID, auth, checkMessage);
                 }
                 else if (games.getGame(gameID).game().isInCheckmate(ChessGame.TeamColor.WHITE)){
+                    gameOver(gameID);
                     String checkMessage = auths.getAuth(auth).username() + "(WHITE) has been put in check mate!";
                     sendCheckMate(gameID, auth, checkMessage);
                 }
                 else if (games.getGame(gameID).game().isInCheckmate(ChessGame.TeamColor.BLACK)){
+                    gameOver(gameID);
                     String checkMessage = auths.getAuth(auth).username() + "(BLACK) has been put in check mate!";
                     sendCheckMate(gameID, auth, checkMessage);
                 }
                 else if (games.getGame(gameID).game().isInStalemate(ChessGame.TeamColor.WHITE)){
+                    gameOver(gameID);
                     String checkMessage = auths.getAuth(auth).username() + "(WHITE) has been put in stale mate!";
                     sendCheckMate(gameID, auth, checkMessage);
                 }
                 else if (games.getGame(gameID).game().isInStalemate(ChessGame.TeamColor.BLACK)){
+                    gameOver(gameID);
                     String checkMessage = auths.getAuth(auth).username() + "(BLACK) has been put in stale mate!";
                     sendCheckMate(gameID, auth, checkMessage);
                 }
@@ -195,6 +199,8 @@ public class WebsocketHandler {
     }
 
     public void resign(int gameID, Session session, String auth) {
+        gameOver(gameID);
+
         try{
             userRemoval(gameID, auth);
 
@@ -222,7 +228,14 @@ public class WebsocketHandler {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
 
+    public void gameOver(int gameID){
+        try{
+            games.getGame(gameID).game().setGameOver();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void sendCheckMate(int gameID, String auth, String checkMessage) throws IOException {
