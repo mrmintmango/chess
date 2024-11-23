@@ -22,7 +22,7 @@ public class Client implements ServerMessageObserver {
     static String playerColor;
     static Map<String, Integer> positionKey;
     static int currentGameID;
-    static boolean resigned = false;
+    static boolean resigned;
 
     public static void main(String[] args) {
         var ws = new Client();
@@ -32,6 +32,7 @@ public class Client implements ServerMessageObserver {
         Scanner scanner = new Scanner(System.in);
         mainBoard = new chess.ChessBoard(null);
         playerColor = null;
+        resigned = false;
         positionKey = new HashMap<>();
         currentGameID = 0;
         setPositionKey();
@@ -174,7 +175,8 @@ public class Client implements ServerMessageObserver {
 
         //send that move to the server:
         try{
-            serverFacade.makeMove(chessMove, currentGameID, playerAuthToken, justTheMove, Objects.requireNonNullElse(playerColor, "OBSERVER"));
+            serverFacade.makeMove(chessMove, currentGameID, playerAuthToken, justTheMove,
+                    Objects.requireNonNullElse(playerColor, "OBSERVER"), resigned);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -459,6 +461,7 @@ public class Client implements ServerMessageObserver {
         playerColor = color;
         if (response.equals("GOOD")){
             out.println("You've joined the game!");
+            resigned = false;
 
             inGameMenu();
             inGameMenuCalculator(scan);

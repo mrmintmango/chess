@@ -103,8 +103,8 @@ public class ServerFacade {
         }
     }
 
-    public void makeMove(ChessMove move, int gameID, String auth, String moveText, String playerType) throws Exception {
-        MakeMoveCommand moveCommand = new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE, auth, gameID, move, moveText);
+    public void makeMove(ChessMove move, int gameID, String auth, String moveText, String playerType, boolean resigned) throws Exception {
+        MakeMoveCommand moveCommand = new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE, auth, gameID, move, moveText, resigned);
         String command = new Gson().toJson(moveCommand);
         webCom.send(command);
     }

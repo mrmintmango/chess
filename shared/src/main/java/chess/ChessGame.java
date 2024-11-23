@@ -216,4 +216,8 @@ public class ChessGame {
     public void setGameOver(){
         gameOver = true;
     }
+
+    public boolean isGameOver(){
+        return gameOver;
+    }
 }

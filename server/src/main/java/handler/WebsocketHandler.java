@@ -55,7 +55,8 @@ public class WebsocketHandler {
         switch (gameCommand.getCommandType()){
             case CONNECT -> connect(session, gameCommand.getGameID(), gameCommand.getAuthToken());
             case MAKE_MOVE -> makeMove(gameCommand.getGameID(), session, ((MakeMoveCommand) gameCommand).getMove(),
-                    gameCommand.getAuthToken(), ((MakeMoveCommand) gameCommand).getMoveText());
+                    gameCommand.getAuthToken(), ((MakeMoveCommand) gameCommand).getMoveText(),
+                    ((MakeMoveCommand) gameCommand).getResigned()); //Find some other way to figure out if the player has already resigned or not.
             case LEAVE -> leave(gameCommand.getGameID(), session, gameCommand.getAuthToken());
             case RESIGN -> resign(gameCommand.getGameID(), session, gameCommand.getAuthToken());
         }
@@ -114,21 +115,28 @@ public class WebsocketHandler {
         }
     }
 
-    public void makeMove(int gameID, Session session, ChessMove move, String auth, String moveText) {
+    public void makeMove(int gameID, Session session, ChessMove move, String auth, String moveText, boolean resigned) {
         //check the validity of the move.
         try{
-            if (!Objects.equals(games.getGame(gameID).game().getTeamTurn().toString(), getPlayerType(auth, gameID))){
+            if (games.getGame(gameID).game().isGameOver()){
+                String errorMessage = "The game is already over";
+                sendError(session, errorMessage);
+            }
+            else if (resigned) { //the user can't make a move if they've already resigned
+                String errorMessage = "You can't make a move after resigning";
+                sendError(session, errorMessage);
+            }
+            else if (!Objects.equals(games.getGame(gameID).game().getTeamTurn().toString(), getPlayerType(auth, gameID))){
+
+                System.out.println(games.getGame(gameID).game().getTeamTurn().toString());
+
                 String errorMessage = "You can't make a move when it's not your turn";
-                ErrorMessage error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, errorMessage);
-                String message = new Gson().toJson(error);
-                session.getRemote().sendString(message);
+                sendError(session, errorMessage);
             }
             else if (!auths.getAuth(auth).username().equals(games.getGame(gameID).whiteUsername()) &&
                     !auths.getAuth(auth).username().equals(games.getGame(gameID).blackUsername())) {
                 String errorMessage = "You can't make a move as an observer";
-                ErrorMessage error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, errorMessage);
-                String message = new Gson().toJson(error);
-                session.getRemote().sendString(message);
+                sendError(session, errorMessage);
             }
             else if (games.getGame(gameID).game().validMoves(move.getStartPosition()).contains(move)){
                 updateGame(gameID, move);
@@ -187,12 +195,21 @@ public class WebsocketHandler {
         }
     }
 
+    public void sendError(Session session, String errorMessage){
+        ErrorMessage error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, errorMessage);
+        String message = new Gson().toJson(error);
+        try{
+            session.getRemote().sendString(message);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void leave(int gameID, Session session, String auth) {
         try{
-            userRemoval(gameID, auth);
-
             String goodbye = auths.getAuth(auth).username() + " has left the game.";
             sendCheckMate(gameID, auth, goodbye);
+            userRemoval(gameID, auth);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -200,12 +217,10 @@ public class WebsocketHandler {
 
     public void resign(int gameID, Session session, String auth) {
         gameOver(gameID);
-
         try{
-            userRemoval(gameID, auth);
-
             String goodbye = auths.getAuth(auth).username() + " has resigned from the game.";
             sendCheckMate(gameID, auth, goodbye);
+            userRemoval(gameID, auth);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
