@@ -1,6 +1,7 @@
 package handler;
 
 import chess.ChessBoard;
+import chess.ChessGame;
 import chess.ChessMove;
 import com.google.gson.*;
 import dataaccess.AuthDAOI;
@@ -147,6 +148,30 @@ public class WebsocketHandler {
                 sendAllButMe(gameID, auth, notification);
 
                 //send in check, checkmate, or stalemate notification to all clients if applicable
+                if (games.getGame(gameID).game().isInCheck(ChessGame.TeamColor.WHITE)){
+                    String checkMessage = auths.getAuth(auth).username() + "(WHITE) has been put in check!";
+                    sendCheckMate(gameID, auth, checkMessage);
+                }
+                else if (games.getGame(gameID).game().isInCheck(ChessGame.TeamColor.BLACK)){
+                    String checkMessage = auths.getAuth(auth).username() + "(BLACK) has been put in check!";
+                    sendCheckMate(gameID, auth, checkMessage);
+                }
+                else if (games.getGame(gameID).game().isInCheckmate(ChessGame.TeamColor.WHITE)){
+                    String checkMessage = auths.getAuth(auth).username() + "(WHITE) has been put in check mate!";
+                    sendCheckMate(gameID, auth, checkMessage);
+                }
+                else if (games.getGame(gameID).game().isInCheckmate(ChessGame.TeamColor.BLACK)){
+                    String checkMessage = auths.getAuth(auth).username() + "(BLACK) has been put in check mate!";
+                    sendCheckMate(gameID, auth, checkMessage);
+                }
+                else if (games.getGame(gameID).game().isInStalemate(ChessGame.TeamColor.WHITE)){
+                    String checkMessage = auths.getAuth(auth).username() + "(WHITE) has been put in stale mate!";
+                    sendCheckMate(gameID, auth, checkMessage);
+                }
+                else if (games.getGame(gameID).game().isInStalemate(ChessGame.TeamColor.BLACK)){
+                    String checkMessage = auths.getAuth(auth).username() + "(BLACK) has been put in stale mate!";
+                    sendCheckMate(gameID, auth, checkMessage);
+                }
             }
             else {
                 ErrorMessage errorMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Invalid move");
@@ -162,6 +187,13 @@ public class WebsocketHandler {
     public void leave() {}
 
     public void resign() {}
+
+    public void sendCheckMate(int gameID, String auth, String checkMessage) throws IOException {
+        NotificationMessage checkNotification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION,
+                checkMessage);
+        String checkNotif = new Gson().toJson(checkNotification);
+        sendEveryone(gameID, auth, checkNotif);
+    }
 
     //helpful methods
     public void sendEveryone(int gameID, String auth, String message) throws IOException {
