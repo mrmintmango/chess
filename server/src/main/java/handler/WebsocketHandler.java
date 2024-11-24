@@ -56,7 +56,7 @@ public class WebsocketHandler {
             case CONNECT -> connect(session, gameCommand.getGameID(), gameCommand.getAuthToken());
             case MAKE_MOVE -> makeMove(gameCommand.getGameID(), session, ((MakeMoveCommand) gameCommand).getMove(),
                     gameCommand.getAuthToken(), ((MakeMoveCommand) gameCommand).getMoveText()); //Find some other way to figure out if the player has already resigned or not.
-            case LEAVE -> leave(gameCommand.getGameID(), session, gameCommand.getAuthToken());
+            case LEAVE -> leave(gameCommand.getGameID(), gameCommand.getAuthToken());
             case RESIGN -> resign(gameCommand.getGameID(), session, gameCommand.getAuthToken());
         }
     }
@@ -119,19 +119,18 @@ public class WebsocketHandler {
         try{
             if (games.getGame(gameID).game().isGameOver()){
                 String errorMessage = "The game is already over";
-                sendError(session, errorMessage);
+                sendError(gameID, auth, session, errorMessage);
             }
             else if (!Objects.equals(games.getGame(gameID).game().getTeamTurn().toString(), getPlayerType(auth, gameID))){
 
-                System.out.println(games.getGame(gameID).game().getTeamTurn().toString());
+                //System.out.println(games.getGame(gameID).game().getTeamTurn().toString());
 
                 String errorMessage = "You can't make a move when it's not your turn";
-                sendError(session, errorMessage);
+                sendError(gameID, auth, session, errorMessage);
             }
-            else if (!auths.getAuth(auth).username().equals(games.getGame(gameID).whiteUsername()) &&
-                    !auths.getAuth(auth).username().equals(games.getGame(gameID).blackUsername())) {
+            else if (isObserver(gameID, auth)) {
                 String errorMessage = "You can't make a move as an observer";
-                sendError(session, errorMessage);
+                sendError(gameID, auth, session, errorMessage);
             }
             else if (games.getGame(gameID).game().validMoves(move.getStartPosition()).contains(move)){
                 updateGame(gameID, move);
@@ -159,24 +158,24 @@ public class WebsocketHandler {
                     sendCheckMate(gameID, auth, checkMessage);
                 }
                 else if (games.getGame(gameID).game().isInCheckmate(ChessGame.TeamColor.WHITE)){
-                    gameOver(gameID);
                     String checkMessage = auths.getAuth(auth).username() + "(WHITE) has been put in check mate!";
                     sendCheckMate(gameID, auth, checkMessage);
+                    gameOver(gameID);
                 }
                 else if (games.getGame(gameID).game().isInCheckmate(ChessGame.TeamColor.BLACK)){
-                    gameOver(gameID);
                     String checkMessage = auths.getAuth(auth).username() + "(BLACK) has been put in check mate!";
                     sendCheckMate(gameID, auth, checkMessage);
+                    gameOver(gameID);
                 }
                 else if (games.getGame(gameID).game().isInStalemate(ChessGame.TeamColor.WHITE)){
-                    gameOver(gameID);
                     String checkMessage = auths.getAuth(auth).username() + "(WHITE) has been put in stale mate!";
                     sendCheckMate(gameID, auth, checkMessage);
+                    gameOver(gameID);
                 }
                 else if (games.getGame(gameID).game().isInStalemate(ChessGame.TeamColor.BLACK)){
-                    gameOver(gameID);
                     String checkMessage = auths.getAuth(auth).username() + "(BLACK) has been put in stale mate!";
                     sendCheckMate(gameID, auth, checkMessage);
+                    gameOver(gameID);
                 }
             }
             else {
@@ -190,20 +189,22 @@ public class WebsocketHandler {
         }
     }
 
-    public void sendError(Session session, String errorMessage){
+    public void sendError(int gameID, String auth, Session session, String errorMessage){
         ErrorMessage error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, errorMessage);
         String message = new Gson().toJson(error);
         try{
-            session.getRemote().sendString(message);
+            sendMe(gameID, auth, message);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void leave(int gameID, Session session, String auth) {
+    public void leave(int gameID, String auth) {
         try{
             String goodbye = auths.getAuth(auth).username() + " has left the game.";
-            sendCheckMate(gameID, auth, goodbye);
+            NotificationMessage notificationMessage = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, goodbye);
+            String notification = new Gson().toJson(notificationMessage);
+            sendAllButMe(gameID, auth, notification);
             userRemoval(gameID, auth);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -211,14 +212,26 @@ public class WebsocketHandler {
     }
 
     public void resign(int gameID, Session session, String auth) {
-        gameOver(gameID);
-        try{
-            String goodbye = auths.getAuth(auth).username() + " has resigned from the game.";
-            sendCheckMate(gameID, auth, goodbye);
-            userRemoval(gameID, auth);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        if (isObserver(gameID, auth)) {
+            String errorMessage = "You can't resign as an observer";
+            sendError(gameID, auth, session, errorMessage);
         }
+        else {
+            try{
+                if (games.getGame(gameID).game().isGameOver()){
+                    String errorMessage = "You can't resign after game is over";
+                    sendError(gameID, auth, session, errorMessage);
+                }
+                else {
+                    String goodbye = auths.getAuth(auth).username() + " has resigned from the game.";
+                    sendCheckMate(gameID, auth, goodbye);
+                    userRemoval(gameID, auth);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        gameOver(gameID);
     }
 
     private void userRemoval(int gameID, String auth) throws DataAccessException {
@@ -274,6 +287,15 @@ public class WebsocketHandler {
             if (!authToken.equals(auth)){
                 authMap.get(authToken).getRemote().sendString(message);
             }
+        }
+    }
+
+    public boolean isObserver(int gameID, String auth){
+        try{
+            return (!auths.getAuth(auth).username().equals(games.getGame(gameID).whiteUsername()) &&
+                    !auths.getAuth(auth).username().equals(games.getGame(gameID).blackUsername()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
