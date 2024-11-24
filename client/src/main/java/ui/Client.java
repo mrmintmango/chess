@@ -22,7 +22,6 @@ public class Client implements ServerMessageObserver {
     static String playerColor;
     static Map<String, Integer> positionKey;
     static int currentGameID;
-    static boolean resigned;
 
     public static void main(String[] args) {
         var ws = new Client();
@@ -32,7 +31,6 @@ public class Client implements ServerMessageObserver {
         Scanner scanner = new Scanner(System.in);
         mainBoard = new chess.ChessBoard(null);
         playerColor = null;
-        resigned = false;
         positionKey = new HashMap<>();
         currentGameID = 0;
         setPositionKey();
@@ -103,11 +101,6 @@ public class Client implements ServerMessageObserver {
                 }
             }
             case "4" -> {
-                if (resigned){
-                    out.println("You can't make a move after you've resigned");
-                    inGameMenuCalculator(scan);
-                }
-
                 out.println("Insert a valid move to make (in the form a2a4)");
                 out.println("name the promotion piece afterwards if your pawn is promoting (a7a8 QUEEN)");
                 String move = scan.nextLine();
@@ -140,7 +133,6 @@ public class Client implements ServerMessageObserver {
                 }
             } //Make move functionality
             case "5" -> {
-                resigned = true;
                 try{
                     serverFacade.resign(currentGameID, playerAuthToken);
                     inGameMenuCalculator(scan);
@@ -176,7 +168,7 @@ public class Client implements ServerMessageObserver {
         //send that move to the server:
         try{
             serverFacade.makeMove(chessMove, currentGameID, playerAuthToken, justTheMove,
-                    Objects.requireNonNullElse(playerColor, "OBSERVER"), resigned);
+                    Objects.requireNonNullElse(playerColor, "OBSERVER"));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -461,7 +453,6 @@ public class Client implements ServerMessageObserver {
         playerColor = color;
         if (response.equals("GOOD")){
             out.println("You've joined the game!");
-            resigned = false;
 
             inGameMenu();
             inGameMenuCalculator(scan);

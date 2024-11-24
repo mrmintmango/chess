@@ -55,8 +55,7 @@ public class WebsocketHandler {
         switch (gameCommand.getCommandType()){
             case CONNECT -> connect(session, gameCommand.getGameID(), gameCommand.getAuthToken());
             case MAKE_MOVE -> makeMove(gameCommand.getGameID(), session, ((MakeMoveCommand) gameCommand).getMove(),
-                    gameCommand.getAuthToken(), ((MakeMoveCommand) gameCommand).getMoveText(),
-                    ((MakeMoveCommand) gameCommand).getResigned()); //Find some other way to figure out if the player has already resigned or not.
+                    gameCommand.getAuthToken(), ((MakeMoveCommand) gameCommand).getMoveText()); //Find some other way to figure out if the player has already resigned or not.
             case LEAVE -> leave(gameCommand.getGameID(), session, gameCommand.getAuthToken());
             case RESIGN -> resign(gameCommand.getGameID(), session, gameCommand.getAuthToken());
         }
@@ -115,15 +114,11 @@ public class WebsocketHandler {
         }
     }
 
-    public void makeMove(int gameID, Session session, ChessMove move, String auth, String moveText, boolean resigned) {
+    public void makeMove(int gameID, Session session, ChessMove move, String auth, String moveText) {
         //check the validity of the move.
         try{
             if (games.getGame(gameID).game().isGameOver()){
                 String errorMessage = "The game is already over";
-                sendError(session, errorMessage);
-            }
-            else if (resigned) { //the user can't make a move if they've already resigned
-                String errorMessage = "You can't make a move after resigning";
                 sendError(session, errorMessage);
             }
             else if (!Objects.equals(games.getGame(gameID).game().getTeamTurn().toString(), getPlayerType(auth, gameID))){
