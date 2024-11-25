@@ -226,12 +226,13 @@ public class WebsocketHandler {
                     String goodbye = auths.getAuth(auth).username() + " has resigned from the game.";
                     sendCheckMate(gameID, auth, goodbye);
                     userRemoval(gameID, auth);
+                    gameOver(gameID);
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
-        gameOver(gameID);
+        //gameOver(gameID);
     }
 
     private void userRemoval(int gameID, String auth) throws DataAccessException {
@@ -256,6 +257,7 @@ public class WebsocketHandler {
     public void gameOver(int gameID){
         try{
             games.getGame(gameID).game().setGameOver();
+            games.updateGameOver(gameID);
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
