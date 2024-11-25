@@ -11,9 +11,9 @@ import java.util.ArrayList;
 
 public class SQLGameDAOTests {
     GameDAOI gameDAO = new SQLGameDAO();
-    GameData game1 = new GameData(1, null,null, "game1", new ChessGame());
-    GameData game2 = new GameData(2, null,null, "game2", new ChessGame());
-    GameData game3 = new GameData(3, null,null, "game3", new ChessGame());
+    GameData game1 = new GameData(1, null,null, "game1", new ChessGame(), false);
+    GameData game2 = new GameData(2, null,null, "game2", new ChessGame(), false);
+    GameData game3 = new GameData(3, null,null, "game3", new ChessGame(), false);
 
     @BeforeEach
     void startup(){
@@ -32,14 +32,14 @@ public class SQLGameDAOTests {
 
     @Test
     void createGameTest() {
-        gameDAO.createGame(4, new GameData(4, null, null, "game4", new ChessGame()));
+        gameDAO.createGame(4, new GameData(4, null, null, "game4", new ChessGame(), false));
 
         Assertions.assertEquals(gameDAO.getGameSize(), 4);
     }
 
     @Test
     void createGameFailTest() {
-        gameDAO.createGame(4, new GameData(4, null, null, "game4", new ChessGame()));
+        gameDAO.createGame(4, new GameData(4, null, null, "game4", new ChessGame(), false));
 
         Assertions.assertNotEquals(gameDAO.getGameSize(), 3);
     }
@@ -102,14 +102,14 @@ public class SQLGameDAOTests {
 
     @Test
     void putGameTest() {
-        gameDAO.putGame(4, new GameData(4, null, null, "game4", new ChessGame()));
+        gameDAO.putGame(4, new GameData(4, null, null, "game4", new ChessGame(), false));
 
         Assertions.assertEquals(gameDAO.getGameSize(), 4);
     }
 
     @Test
     void putGameFailTest() {
-        gameDAO.putGame(4, new GameData(4, null, null, "game4", new ChessGame()));
+        gameDAO.putGame(4, new GameData(4, null, null, "game4", new ChessGame(), false));
 
         Assertions.assertNotEquals(gameDAO.getGameSize(), 3);
     }
@@ -123,7 +123,7 @@ public class SQLGameDAOTests {
 
     @Test
     void getGameSizeFailTest() {
-        gameDAO.putGame(4, new GameData(4, null, null, "game4", new ChessGame()));
+        gameDAO.putGame(4, new GameData(4, null, null, "game4", new ChessGame(), false));
         int size = gameDAO.getGameSize();
 
         Assertions.assertNotEquals(size, 3);

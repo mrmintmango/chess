@@ -28,7 +28,7 @@ public class GameServiceTests {
         gameService.createAuth("testToken", authData);
         gameService.createGame(request);
         ChessGame game = gameService.getGame(1).game();
-        GameData gameData = new GameData(1,null, null, "testName", game);
+        GameData gameData = new GameData(1,null, null, "testName", game, false);
 
         Assertions.assertEquals(gameData, gameService.getGame(1));
     }
@@ -101,9 +101,9 @@ public class GameServiceTests {
 
     @Test
     public void listGamesTest() throws DataAccessException {
-        GameData game1 = new GameData(1, null, null, "game1", new ChessGame());
-        GameData game2 = new GameData(2, null, null, "game2", new ChessGame());
-        GameData game3 = new GameData(3, null, null, "game3", new ChessGame());
+        GameData game1 = new GameData(1, null, null, "game1", new ChessGame(), false);
+        GameData game2 = new GameData(2, null, null, "game2", new ChessGame(), false);
+        GameData game3 = new GameData(3, null, null, "game3", new ChessGame(), false);
 
         gameService.putGame(1, game1);
         gameService.putGame(2, game2);

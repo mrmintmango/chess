@@ -37,7 +37,7 @@ public class GameService {
             if (authDAO.authFound(request.authToken())){
                 game = new ChessGame();
                 //the zeros used to be the increment value
-                GameData gameData = new GameData(increment, null, null, request.gameName(), game);
+                GameData gameData = new GameData(increment, null, null, request.gameName(), game, false);
                 gameDAO.createGame(increment, gameData);
                 increment++;
                 return gameData;

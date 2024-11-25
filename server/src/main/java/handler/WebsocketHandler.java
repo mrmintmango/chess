@@ -117,19 +117,16 @@ public class WebsocketHandler {
     public void makeMove(int gameID, Session session, ChessMove move, String auth, String moveText) {
         //check the validity of the move.
         try{
-            if (games.getGame(gameID).game().isGameOver()){
+            if (games.isGameOver(gameID)){
                 String errorMessage = "The game is already over";
-                sendError(gameID, auth, session, errorMessage);
-            }
-            else if (!Objects.equals(games.getGame(gameID).game().getTeamTurn().toString(), getPlayerType(auth, gameID))){
-
-                //System.out.println(games.getGame(gameID).game().getTeamTurn().toString());
-
-                String errorMessage = "You can't make a move when it's not your turn";
                 sendError(gameID, auth, session, errorMessage);
             }
             else if (isObserver(gameID, auth)) {
                 String errorMessage = "You can't make a move as an observer";
+                sendError(gameID, auth, session, errorMessage);
+            }
+            else if (!games.getTurn(gameID).equals(getPlayerType(auth, gameID))){
+                String errorMessage = "You can't make a move when it's not your turn";
                 sendError(gameID, auth, session, errorMessage);
             }
             else if (games.getGame(gameID).game().validMoves(move.getStartPosition()).contains(move)){
@@ -217,8 +214,8 @@ public class WebsocketHandler {
             sendError(gameID, auth, session, errorMessage);
         }
         else {
-            try{
-                if (games.getGame(gameID).game().isGameOver()){
+            try{ //games.getGame(gameID).game().isGameOver()
+                if (games.isGameOver(gameID)){
                     String errorMessage = "You can't resign after game is over";
                     sendError(gameID, auth, session, errorMessage);
                 }
@@ -232,7 +229,6 @@ public class WebsocketHandler {
                 throw new RuntimeException(e);
             }
         }
-        //gameOver(gameID);
     }
 
     private void userRemoval(int gameID, String auth) throws DataAccessException {
@@ -248,19 +244,14 @@ public class WebsocketHandler {
 
     public void updateGame(int gameID, ChessMove move){
         try{
-            games.getGame(gameID).game().makeMove(move);
+            games.makeMove(gameID, move);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     public void gameOver(int gameID){
-        try{
-            games.getGame(gameID).game().setGameOver();
-            games.updateGameOver(gameID);
-        } catch (DataAccessException e) {
-            throw new RuntimeException(e);
-        }
+        games.updateGameOver(gameID);
     }
 
     public void sendCheckMate(int gameID, String auth, String checkMessage) throws IOException {

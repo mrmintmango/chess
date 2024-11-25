@@ -1,6 +1,7 @@
 package dataaccess;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import model.GameData;
 
@@ -47,7 +48,7 @@ public class SQLGameDAO implements GameDAOI{
                         //deserializes the game from json string stored in database
                         String jsonGame = rs.getString(5);
                         ChessGame game = new Gson().fromJson(jsonGame, ChessGame.class);
-                        return new GameData(gameID, whiteUsername, blackUsername, gameName, game);
+                        return new GameData(gameID, whiteUsername, blackUsername, gameName, game, false);
                     }
                 }
             }
@@ -71,7 +72,7 @@ public class SQLGameDAO implements GameDAOI{
                         String gameName = rs.getString(4);
                         String jsonGame = rs.getString(5);
                         ChessGame game = new Gson().fromJson(jsonGame, ChessGame.class);
-                        gameList.add(new GameData(gameID, whiteUsername, blackUsername, gameName, game));
+                        gameList.add(new GameData(gameID, whiteUsername, blackUsername, gameName, game, false));
                     }
                 }
             }
@@ -92,7 +93,6 @@ public class SQLGameDAO implements GameDAOI{
                 statement = "UPDATE game SET blackUsername=? WHERE gameID=?";
             }
             DatabaseManager.executeUpdate(statement, username, gameID);
-            //putGame(gameID, updatedGame);
         } catch (DataAccessException e) {
             throw new RuntimeException(e); //update later
         }
@@ -100,11 +100,43 @@ public class SQLGameDAO implements GameDAOI{
 
     public void updateGameOver(int gameID) {
         try {
-            String statement = "UPDATE game SET whiteUsername=? WHERE gameID=?";
-            DatabaseManager.executeUpdate(statement, username, gameID);
-            //putGame(gameID, updatedGame);
+            String statement = "UPDATE game SET gameOver=TRUE WHERE gameID=?";
+            DatabaseManager.executeUpdate(statement, gameID);
         } catch (DataAccessException e) {
             throw new RuntimeException(e); //update later
+        }
+    }
+
+    public boolean isGameOver(int gameID) {
+        var statement = "SELECT gameOver FROM game WHERE gameID=?";
+        return DatabaseManager.getValue(statement, gameID);
+    }
+
+    public String getTurn(int gameID) {
+        try{
+            GameData gameData = getGame(gameID);
+            if (gameData.game().getTeamTurn().equals(ChessGame.TeamColor.WHITE)){
+                return "WHITE";
+            }
+            else {
+                return "BLACK";
+            }
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void makeMove(int gameID, ChessMove move){
+        try{
+            ChessGame newGame = getGame(gameID).game();
+            newGame.makeMove(move);
+            String updatedGame = new Gson().toJson(newGame);
+
+            String statement = "UPDATE game SET game=? WHERE gameID=?";
+            DatabaseManager.executeUpdate(statement, updatedGame, gameID);
+        }
+        catch (Exception e){
+            throw new RuntimeException(e);
         }
     }
 

@@ -27,6 +27,7 @@ public class DatabaseManager {
                 `whiteUsername` varchar(256) DEFAULT NULL,
                 `blackUsername` varchar(256) DEFAULT NULL,
                 `gameName` varchar(256) DEFAULT NULL,
+                `gameOver` BOOL DEFAULT FALSE,
                 PRIMARY KEY (`gameID`),
                 `game` LONGTEXT DEFAULT NULL
                 )
@@ -169,6 +170,27 @@ public class DatabaseManager {
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         return true;
+                    }
+                }
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new RuntimeException(e); //update later
+        }
+        return false;
+    }
+
+    public static boolean getValue(String statement, Object param) {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                if (param instanceof String p) {
+                    ps.setString(1, p);
+                }
+                else if (param instanceof Integer p) {
+                    ps.setInt(1, p);
+                }
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getBoolean(1);
                     }
                 }
             }

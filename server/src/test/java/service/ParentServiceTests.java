@@ -24,7 +24,7 @@ public class ParentServiceTests {
     @Test
     public void testClear() {
         ChessGame game = new ChessGame();
-        GameData gameData = new GameData(5, "white", "black", "gameName", game);
+        GameData gameData = new GameData(5, "white", "black", "gameName", game, false);
         AuthData authData = new AuthData("authToken", "username");
         UserData userData = new UserData("username", "password", "email@gmail@yahoo");
         parentService.addUser("username", userData);
