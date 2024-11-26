@@ -9,14 +9,16 @@ import java.util.Map;
 
 public class MemoryGameDAO implements GameDAOI{
     public Map<Integer, GameData> gameDataMap = new HashMap<>();
+    private int gameID = 1;
 
     public void clear() {
         gameDataMap.clear();
     }
 
     // Game Data Methods:
-    public void createGame(int gameID, GameData gameData) {
-        gameDataMap.put(gameID, gameData);
+    public int createGame(GameData gameData) {
+        gameDataMap.put(gameID++, gameData);
+        return gameID;
     }
 
     public GameData getGame(int gameID) throws DataAccessException {

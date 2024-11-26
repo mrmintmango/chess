@@ -27,26 +27,26 @@ public class ChessBoard extends EscapeSequences {
     public void createBoard(String bw) {
         if(bw.equals("WHITE")){
             setBeige();
-            drawHeader(out, true);
+            drawHeader(out, false);
             out.println();
 
             setBeige();
             drawBoard(true);
 
             setBeige();
-            drawHeader(out, true);
+            drawHeader(out, false);
             out.println();
         }
         else if (bw.equals("BLACK")){
             setBeige();
-            drawHeader(out, false);
+            drawHeader(out, true);
             out.println();
 
             setBeige();
             drawBoard(false);
 
             setBeige();
-            drawHeader(out, false);
+            drawHeader(out, true);
             out.println();
         }
         out.print(RESET_BG_COLOR);
@@ -77,8 +77,8 @@ public class ChessBoard extends EscapeSequences {
     }
 
     public void drawBoard(boolean bw){
-        //white = true, black = false
-        if(bw) {
+        //white = false, black = true
+        if(!bw) {
             for(int i = 0; i <= 7; i++){
                 setBeige();
                 out.print(" " + numbers.get(i) + " ");
@@ -200,26 +200,26 @@ public class ChessBoard extends EscapeSequences {
     public void highlight(String bw, Collection<ChessMove> valid) {
         if(bw.equals("WHITE")){
             setBeige();
-            drawHeader(out, true);
+            drawHeader(out, false);
             out.println();
 
             setBeige();
             drawBoardHighlighted(true, valid);
 
             setBeige();
-            drawHeader(out, true);
+            drawHeader(out, false);
             out.println();
         }
         else if (bw.equals("BLACK")){
             setBeige();
-            drawHeader(out, false);
+            drawHeader(out, true);
             out.println();
 
             setBeige();
             drawBoardHighlighted(false, valid);
 
             setBeige();
-            drawHeader(out, false);
+            drawHeader(out, true);
             out.println();
         }
         out.print(RESET_BG_COLOR);
@@ -245,7 +245,7 @@ public class ChessBoard extends EscapeSequences {
     private void innerColorGrid(int i, Collection<ChessMove> valid, String setBgColorYellow, String setBgColorWhite, String setBgColorGreen, String setBgColorBlack, int j) {
         if(j%2!=0){
             for (ChessMove move : valid){
-                ChessPosition pos = new ChessPosition(i,j);
+                ChessPosition pos = new ChessPosition(j,i);
                 if (move.getEndPosition().equals(pos)){
                     out.print(setBgColorYellow);
                     break;
@@ -256,7 +256,7 @@ public class ChessBoard extends EscapeSequences {
         }
         else {
             for (ChessMove move : valid){
-                ChessPosition pos = new ChessPosition(i,j);
+                ChessPosition pos = new ChessPosition(j,i);
                 if (move.getEndPosition().equals(pos)){
                     out.print(setBgColorGreen);
                     break;
@@ -283,7 +283,7 @@ public class ChessBoard extends EscapeSequences {
 
     public void drawBoardHighlighted(boolean bw, Collection<ChessMove> valid){
         //white = true, black = false
-        if(bw) {
+        if(!bw) {
             for(int i = 0; i <= 7; i++){
                 setBeige();
                 out.print(" " + numbers.get(i) + " ");

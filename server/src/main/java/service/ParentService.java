@@ -28,8 +28,8 @@ public class ParentService {
      public void addAuth(String authToken, AuthData auth) {
         memoryAuthDAO.createAuth(authToken,auth);
      }
-     public void addGame(int gameID, GameData game) {
-        memoryGameDAO.putGame(gameID, game);
+     public void addGame(GameData game) {
+        memoryGameDAO.createGame(game);
      }
      public void addUser(String username, UserData user) {
         memoryUserDAO.putUser(username, user);

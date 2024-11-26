@@ -20,13 +20,13 @@ public class SQLGameDAO implements GameDAOI{
     }
 
     @Override
-    public void createGame(int gameID, GameData gameData) {
-        var statement = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?, ?)";
+    public int createGame(GameData gameData) {
+        var statement = "INSERT INTO game (whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?)";
         try {
             //Serialize the actual game object from the game data to store in database
             String jsonGame = new Gson().toJson(gameData.game());
             //String gameName = new Gson().fromJson(gameData.gameName(), String.class);
-            DatabaseManager.executeUpdate(statement, gameID, gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), jsonGame);
+            return DatabaseManager.executeUpdate(statement, gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), jsonGame);
         } catch (DataAccessException e) {
             throw new RuntimeException(e); //update later
         }
@@ -144,11 +144,6 @@ public class SQLGameDAO implements GameDAOI{
     public boolean findGame(int gameID) {
         var statement = "SELECT gameID FROM game WHERE gameID=?";
         return DatabaseManager.found(statement, gameID);
-    }
-
-    @Override
-    public void putGame(int gameID, GameData game) {
-        createGame(gameID, game);
     }
 
     @Override

@@ -96,6 +96,9 @@ public class Client implements ServerMessageObserver {
                     if (moveFormatCheck(move)){
                         moveConverter(move, null);
                     }
+                    else{
+                        out.println("wrong move format");
+                    }
                 }
                 else if (move.length() < 4){
                     out.println("Invalid move format");
@@ -132,10 +135,16 @@ public class Client implements ServerMessageObserver {
                 }
                 else {
                     int row = positionKey.get(location.substring(0,1));
-                    int col = ((int) location.charAt(1));
+                    int col = Integer.parseInt(location.substring(1,2));
                     ChessPosition start = new ChessPosition(row, col);
-                    Collection<ChessMove> valid = mainGame.game().validMoves(start);
-                    chessBoard.highlight(playerColor, valid);
+                    if(mainGame.game().getBoard().getPiece(start) != null){
+                        Collection<ChessMove> valid = mainGame.game().validMoves(start);
+                        chessBoard.highlight(playerColor, valid);
+                    }
+                    else {
+                        out.println("There is no piece there.");
+                    }
+                    inGameMenuCalculator(scan);
                 }
             }
             case null, default -> {
@@ -147,12 +156,12 @@ public class Client implements ServerMessageObserver {
     }
 
     public static void moveConverter(String move, ChessPiece.PieceType upgrade){
-        String justTheMove = move.substring(0,3);
+        String justTheMove = move.substring(0,4);
 
-        int row = positionKey.get(move.substring(0,1));
-        int col = Integer.parseInt(move.substring(1,2));
-        int endRow = positionKey.get(move.substring(2,3));
-        int endCol = Integer.parseInt(move.substring(3,4));
+        int col = positionKey.get(move.substring(0,1));
+        int row = Integer.parseInt(move.substring(1,2));
+        int endCol = positionKey.get(move.substring(2,3));
+        int endRow = Integer.parseInt(move.substring(3,4));
 
         ChessPosition start = new ChessPosition(row, col);
         ChessPosition end = new ChessPosition(endRow, endCol);
@@ -168,7 +177,7 @@ public class Client implements ServerMessageObserver {
     public static boolean moveFormatCheck(String move){
 //        boolean check1 = false;
 //        boolean check2 = false;
-        boolean check1 = new ChessBoard(mainBoard.getSquares()).locationChecker(move.substring(0,1));
+        boolean check1 = new ChessBoard(mainBoard.getSquares()).locationChecker(move.substring(0,2));
         boolean check3 = false;
         boolean check4 = false;
 
@@ -327,6 +336,8 @@ public class Client implements ServerMessageObserver {
                         //output the given chessboard.
                         int gameID=Integer.parseInt(gameList.get(((Integer.parseInt(number)-1)*4)));
                         serverFacade.observe("OBSERVER", gameID, playerAuthToken);
+                        inGameMenu();
+                        inGameMenuCalculator(scan);
                     }
                 }
                 catch (NumberFormatException e) {

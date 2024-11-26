@@ -23,7 +23,7 @@ public class DatabaseManager {
 """,
             """
             CREATE TABLE IF NOT EXISTS game (
-                `gameID` int NOT NULL,
+                `gameID` int NOT NULL AUTO_INCREMENT,
                 `whiteUsername` varchar(256) DEFAULT NULL,
                 `blackUsername` varchar(256) DEFAULT NULL,
                 `gameName` varchar(256) DEFAULT NULL,
@@ -101,7 +101,7 @@ public class DatabaseManager {
     }
 
     //Code to run updates as stated in the DAO classes. (found in pet shop code)
-    public static void executeUpdate(String statement, Object... params) throws DataAccessException {
+    public static int executeUpdate(String statement, Object... params) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 for (var i = 0; i < params.length; i++) {
@@ -118,12 +118,13 @@ public class DatabaseManager {
 
                 var rs = ps.getGeneratedKeys();
                 if (rs.next()) {
-                    rs.getInt(1);
+                    return rs.getInt(1);
                 }
             }
         } catch (SQLException e) {
             throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
         }
+        return -1;
     }
 
     /**

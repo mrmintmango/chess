@@ -28,7 +28,7 @@ public class ParentServiceTests {
         AuthData authData = new AuthData("authToken", "username");
         UserData userData = new UserData("username", "password", "email@gmail@yahoo");
         parentService.addUser("username", userData);
-        parentService.addGame(5, gameData);
+        parentService.addGame(gameData);
         parentService.addAuth("username", authData);
 
         parentService.clearApplication();

@@ -37,10 +37,10 @@ public class GameService {
             if (authDAO.authFound(request.authToken())){
                 game = new ChessGame();
                 //the zeros used to be the increment value
-                GameData gameData = new GameData(increment, null, null, request.gameName(), game, false);
-                gameDAO.createGame(increment, gameData);
-                increment++;
-                return gameData;
+                GameData gameData = new GameData(0,null, null, request.gameName(), game, false);
+                int gameID = gameDAO.createGame(gameData);
+                return new GameData(gameID, gameData.whiteUsername(), gameData.blackUsername(),
+                        gameData.gameName(), gameData.game(), gameData.gameOver());
             }
             else {
                 throw new DataAccessException("unauthorized");
@@ -92,7 +92,4 @@ public class GameService {
         return gameDAO.getGame(gameID);
     }
 
-    public void putGame(int gameID, GameData game) {
-        gameDAO.putGame(gameID, game);
-    }
 }

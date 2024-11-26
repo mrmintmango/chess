@@ -9,15 +9,13 @@ public interface GameDAOI {
 
     void clear();
 
-    void createGame(int gameID, GameData gameData);
+    int createGame(GameData gameData);
 
     GameData getGame(int gameID) throws DataAccessException;
 
     ArrayList<GameData> listGames();
 
     boolean findGame(int gameID);
-
-    void putGame(int gameID, GameData game);
 
     int getGameSize();
 
