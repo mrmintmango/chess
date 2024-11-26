@@ -217,8 +217,6 @@ public class ChessBoard extends EscapeSequences {
     }
 
     public void highlight(String bw, Collection<ChessMove> valid) {
-        //Testing -------------------------------------------------------------
-        System.out.println(valid);
         setBoolBoard(valid);
 
         if(bw.equals("WHITE") || bw.equals("OBSERVER")){

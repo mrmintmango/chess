@@ -235,15 +235,14 @@ public class WebsocketHandler {
 
     private void userRemoval(int gameID, String auth) throws DataAccessException {
         Map<String, Session> temp = gameMap.get(gameID);
-        Session sesh = temp.get(auth);
-        sesh.close();
-
+        //Session sesh = temp.get(auth);
+        //sesh.close();
         temp.remove(auth);
 
-        if (auths.getAuth(auth).username().equals(games.getGame(gameID).whiteUsername())){
+        if (games.getGame(gameID).whiteUsername() != null && auths.getAuth(auth).username().equals(games.getGame(gameID).whiteUsername())){
             games.updateGame(gameID, null, true);
         }
-        else if (auths.getAuth(auth).username().equals(games.getGame(gameID).blackUsername())){
+        else if (games.getGame(gameID).blackUsername() != null && auths.getAuth(auth).username().equals(games.getGame(gameID).blackUsername())){
             games.updateGame(gameID, null, false);
         }
     }
@@ -332,9 +331,9 @@ public class WebsocketHandler {
         String username;
         try {
             username = auths.getAuth(auth).username();
-            if (games.getGame(gameID).whiteUsername().equals(username)) {
+            if (games.getGame(gameID).whiteUsername() != null && games.getGame(gameID).whiteUsername().equals(username)) {
                 player = "WHITE";
-            } else if (games.getGame(gameID).blackUsername().equals(username)) {
+            } else if (games.getGame(gameID).blackUsername() != null && games.getGame(gameID).blackUsername().equals(username)) {
                 player = "BLACK";
             } else {
                 player = "OBSERVER";

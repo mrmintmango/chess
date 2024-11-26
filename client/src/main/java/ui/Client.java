@@ -136,8 +136,6 @@ public class Client implements ServerMessageObserver {
                 else {
                     int col = positionKey.get(location.substring(0,1));
                     int row = (Integer.parseInt(location.substring(1,2)));
-                    //Testing -------------------------------------------------------------
-                    out.println(col + " " + row);
 
                     ChessPosition start = new ChessPosition(row, col);
                     if(mainGame.game().getBoard().getPiece(start) != null){
