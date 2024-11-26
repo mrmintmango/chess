@@ -26,7 +26,7 @@ public class GameServiceTests {
     public void createGameTest() throws DataAccessException {
         AuthData authData = new AuthData("testToken", "authUsername");
         gameService.createAuth("testToken", authData);
-        GameData gameData1 = gameService.createGame(request);
+        gameService.createGame(request);
         //ChessGame game = gameService.getGame(gameData1.gameID()).game();
         //GameData gameData = new GameData(gameData1.gameID(),null, null, "testName", game, false);
 
@@ -117,9 +117,9 @@ public class GameServiceTests {
         gameService.createAuth("auth3", authData3);
 
 
-        GameData gameData1 = gameService.createGame(game1req);
-        GameData gameData2 = gameService.createGame(game2req);
-        GameData gameData3 = gameService.createGame(game3req);
+        gameService.createGame(game1req);
+        gameService.createGame(game2req);
+        gameService.createGame(game3req);
 
         ArrayList<GameData> expected = new ArrayList<>();
         expected.add(game1);

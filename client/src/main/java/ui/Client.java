@@ -118,7 +118,7 @@ public class Client implements ServerMessageObserver {
                 inGameMenuCalculator(scan);
             } //Make move functionality
             case "5" -> {
-                try{
+                try{ //check if the user really wants to resign
                     serverFacade.resign(currentGameID, playerAuthToken);
                     inGameMenuCalculator(scan);
                 } catch (Exception e) {
