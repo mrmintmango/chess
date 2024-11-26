@@ -27,7 +27,7 @@ public class ChessBoard extends EscapeSequences {
     }
 
     public void createBoard(String bw) {
-        if(bw.equals("WHITE")){
+        if(bw.equals("WHITE") || bw.equals("OBSERVER")){
             setBeige();
             drawHeader(out, false);
             out.println();
@@ -110,7 +110,6 @@ public class ChessBoard extends EscapeSequences {
         if(i%2 == 0){
             for(int j = 7; j >= 0; j--){
                 if(j%2!=0){
-
                     out.print(SET_BG_COLOR_WHITE);
                 }
                 else {
@@ -166,7 +165,7 @@ public class ChessBoard extends EscapeSequences {
                 out.print(SET_TEXT_COLOR_RED); // red = white
             }
             else {
-                out.print(SET_TEXT_COLOR_GREEN); // green = black
+                out.print(SET_TEXT_COLOR_BLUE); // green = black
             }
             out.print(" " + pieceIcon(board[i][j].getPieceType().toString()) + " ");
         }
@@ -204,8 +203,11 @@ public class ChessBoard extends EscapeSequences {
             for (int column = 0; column <= 7; column++) {
                 highlighted[row][column] = false;
                 for (ChessMove move : valid){
-                    ChessPosition pos = new ChessPosition(row, column);
-                    if (move.getEndPosition().equals(pos)) {
+                    if (move.getEndPosition().getRow()-1 == row && move.getEndPosition().getColumn()-1 == column) {
+                        highlighted[row][column] = true;
+                        break;
+                    }
+                    if (move.getStartPosition().getRow()-1 == row && move.getStartPosition().getColumn()-1 == column) {
                         highlighted[row][column] = true;
                         break;
                     }
@@ -215,15 +217,17 @@ public class ChessBoard extends EscapeSequences {
     }
 
     public void highlight(String bw, Collection<ChessMove> valid) {
+        //Testing -------------------------------------------------------------
+        System.out.println(valid);
         setBoolBoard(valid);
 
-        if(bw.equals("WHITE")){
+        if(bw.equals("WHITE") || bw.equals("OBSERVER")){
             setBeige();
             drawHeader(out, false);
             out.println();
 
             setBeige();
-            drawBoardHighlighted(true, valid);
+            drawBoardHighlighted(true);
 
             setBeige();
             drawHeader(out, false);
@@ -235,7 +239,7 @@ public class ChessBoard extends EscapeSequences {
             out.println();
 
             setBeige();
-            drawBoardHighlighted(false, valid);
+            drawBoardHighlighted(false);
 
             setBeige();
             drawHeader(out, true);
@@ -246,67 +250,77 @@ public class ChessBoard extends EscapeSequences {
     }
 
 
-    private void drawBoardLineTopHighlighted(int i, Collection<ChessMove> valid) {
+    private void drawBoardLineTopHighlighted(int i) {
         if(i%2 == 0){
-            colorGrid(i, valid, SET_BG_COLOR_YELLOW, SET_BG_COLOR_WHITE, SET_BG_COLOR_GREEN, SET_BG_COLOR_BLACK);
+            for(int j = 7; j >= 0; j--){
+                if(j%2!=0){
+                    out.print(SET_BG_COLOR_WHITE);
+                    if(highlighted[i][j]){
+                        out.print(SET_BG_COLOR_YELLOW);
+                    }
+                }
+                else {
+                    out.print(SET_BG_COLOR_BLACK);
+                    if(highlighted[i][j]){
+                        out.print(SET_BG_COLOR_GREEN);
+                    }
+                }
+                boardSquares(i,j);
+            }
         }
         else {
-            colorGrid(i, valid, SET_BG_COLOR_GREEN, SET_BG_COLOR_BLACK, SET_BG_COLOR_YELLOW, SET_BG_COLOR_WHITE);
-        }
-    }
-
-    private void colorGrid(int i, Collection<ChessMove> valid, String setBgColorYellow, String setBgColorWhite, String setBgColorGreen, String setBgColorBlack) {
-        for(int j = 7; j >= 0; j--){
-            innerColorGrid(i, valid, setBgColorYellow, setBgColorWhite, setBgColorGreen, setBgColorBlack, j);
-        }
-    }
-
-    private void innerColorGrid(int i, Collection<ChessMove> valid, String setBgColorYellow, String setBgColorWhite, String setBgColorGreen, String setBgColorBlack, int j) {
-        if(j%2!=0){
-            for (ChessMove move : valid){
-                ChessPosition pos = new ChessPosition(j,i);
-                if (move.getEndPosition().equals(pos)){
-                    out.print(setBgColorYellow);
-                    break;
+            for(int j = 7; j >= 0; j--){
+                if(j%2!=0){
+                    out.print(SET_BG_COLOR_BLACK);
+                    if(highlighted[i][j]){
+                        out.print(SET_BG_COLOR_GREEN);
+                    }
                 }
+                else {
+                    out.print(SET_BG_COLOR_WHITE);
+                    if(highlighted[i][j]){
+                        out.print(SET_BG_COLOR_YELLOW);
+                    }
+                }
+                boardSquares(i,j);
+            }
+        }
+    }
+
+    private void drawBoardLineBottomHighlighted(int i) {
+        if(i%2 == 0){
+            boardDrawing(i, SET_BG_COLOR_WHITE, SET_BG_COLOR_YELLOW, SET_BG_COLOR_BLACK, SET_BG_COLOR_GREEN);
+        }
+        else {
+            boardDrawing(i, SET_BG_COLOR_BLACK, SET_BG_COLOR_GREEN, SET_BG_COLOR_WHITE, SET_BG_COLOR_YELLOW);
+        }
+    }
+
+    private void boardDrawing(int i, String setBgColorWhite, String setBgColorYellow, String setBgColorBlack, String setBgColorGreen) {
+        for(int j = 0; j <= 7; j++){
+            if(j%2!=0){
                 out.print(setBgColorWhite);
-            }
-            //out.print(SET_BG_COLOR_WHITE);
-        }
-        else {
-            for (ChessMove move : valid){
-                ChessPosition pos = new ChessPosition(j,i);
-                if (move.getEndPosition().equals(pos)){
-                    out.print(setBgColorGreen);
-                    break;
+                if(highlighted[i][j]){
+                    out.print(setBgColorYellow);
                 }
+            }
+            else {
                 out.print(setBgColorBlack);
+                if(highlighted[i][j]){
+                    out.print(setBgColorGreen);
+                }
             }
-            //out.print(SET_BG_COLOR_BLACK);
-        }
-        boardSquares(i,j);
-    }
-
-    private void drawBoardLineBottomHighlighted(int i, Collection<ChessMove> valid) {
-        if(i%2 == 0){
-            for(int j = 0; j <= 7; j++){
-                innerColorGrid(i, valid, SET_BG_COLOR_YELLOW, SET_BG_COLOR_WHITE, SET_BG_COLOR_GREEN, SET_BG_COLOR_BLACK, j);
-            }
-        }
-        else {
-            for(int j = 0; j <= 7; j++){
-                innerColorGrid(i, valid, SET_BG_COLOR_GREEN, SET_BG_COLOR_BLACK, SET_BG_COLOR_YELLOW, SET_BG_COLOR_WHITE, j);
-            }
+            boardSquares(i,j);
         }
     }
 
-    public void drawBoardHighlighted(boolean bw, Collection<ChessMove> valid){
+    public void drawBoardHighlighted(boolean bw){
         //white = true, black = false
         if(!bw) {
-            for(int i = 0; i <= 7; i++){
+            for(int i = 0; i <= 7; i++){ //rows
                 setBeige();
                 out.print(" " + numbers.get(i) + " ");
-                drawBoardLineTopHighlighted(i,valid);
+                drawBoardLineTopHighlighted(i);
 
                 setBeige();
                 out.print(" " + numbers.get(i) + " ");
@@ -318,7 +332,7 @@ public class ChessBoard extends EscapeSequences {
             for(int i = 7; i >= 0; i--){
                 setBeige();
                 out.print(" " + numbers.get(i) + " ");
-                drawBoardLineBottomHighlighted(i, valid);
+                drawBoardLineBottomHighlighted(i);
 
                 setBeige();
                 out.print(" " + numbers.get(i) + " ");

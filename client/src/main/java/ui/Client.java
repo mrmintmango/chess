@@ -134,12 +134,15 @@ public class Client implements ServerMessageObserver {
                     inGameMenuCalculator(scan);
                 }
                 else {
-                    int row = positionKey.get(location.substring(0,1));
-                    int col = Integer.parseInt(location.substring(1,2));
+                    int col = positionKey.get(location.substring(0,1));
+                    int row = (Integer.parseInt(location.substring(1,2)));
+                    //Testing -------------------------------------------------------------
+                    out.println(col + " " + row);
+
                     ChessPosition start = new ChessPosition(row, col);
                     if(mainGame.game().getBoard().getPiece(start) != null){
                         Collection<ChessMove> valid = mainGame.game().validMoves(start);
-                        chessBoard.highlight(playerColor, valid);
+                        chessBoard.highlight(Objects.requireNonNullElse(playerColor, "OBSERVER"), valid);
                     }
                     else {
                         out.println("There is no piece there.");
@@ -167,30 +170,17 @@ public class Client implements ServerMessageObserver {
         ChessPosition end = new ChessPosition(endRow, endCol);
         ChessMove chessMove = new ChessMove(start, end, upgrade);
         try{
-            serverFacade.makeMove(chessMove, currentGameID, playerAuthToken, justTheMove,
-                    Objects.requireNonNullElse(playerColor, "OBSERVER"));
+            serverFacade.makeMove(chessMove, currentGameID, playerAuthToken, justTheMove);
         } catch (Exception e) {
+            out.println("Client 176 bug bug");
             throw new RuntimeException(e);
         }
     }
 
     public static boolean moveFormatCheck(String move){
-//        boolean check1 = false;
-//        boolean check2 = false;
         boolean check1 = new ChessBoard(mainBoard.getSquares()).locationChecker(move.substring(0,2));
         boolean check3 = false;
         boolean check4 = false;
-
-//        if (move.charAt(0) == 'a' || move.charAt(0) == 'b' || move.charAt(0) == 'c' ||
-//                move.charAt(0) == 'd' || move.charAt(0) == 'e' || move.charAt(0) == 'f' ||
-//                move.charAt(0) == 'g' || move.charAt(0) == 'h'){
-//            check1 = true;
-//        }
-//        if (move.charAt(1) == '1' || move.charAt(1) == '2' || move.charAt(1) == '3' ||
-//                move.charAt(1) == '4' || move.charAt(1) == '5' || move.charAt(1) == '6' ||
-//                move.charAt(1) == '7' || move.charAt(1) == '8'){
-//            check2 = true;
-//        }
         if (move.charAt(2) == 'a' || move.charAt(2) == 'b' || move.charAt(2) == 'c' ||
                 move.charAt(2) == 'd' || move.charAt(2) == 'e' || move.charAt(2) == 'f' ||
                 move.charAt(2) == 'g' || move.charAt(2) == 'h'){
@@ -333,9 +323,11 @@ public class Client implements ServerMessageObserver {
                         menuCalculatorIn(scan);
                     } else {
                         out.println("Observing game: " + number);
+                        playerColor = "OBSERVER";
                         //output the given chessboard.
                         int gameID=Integer.parseInt(gameList.get(((Integer.parseInt(number)-1)*4)));
-                        serverFacade.observe("OBSERVER", gameID, playerAuthToken);
+                        currentGameID = gameID;
+                        serverFacade.observe(gameID, playerAuthToken);
                         inGameMenu();
                         inGameMenuCalculator(scan);
                     }
@@ -345,9 +337,6 @@ public class Client implements ServerMessageObserver {
                 loggedInMenu();
                 menuCalculatorIn(scan);
             }
-
-
-                menuCalculatorIn(scan);
             }
             case null, default -> {
                 out.println("... please input a valid option:");
@@ -488,10 +477,11 @@ public class Client implements ServerMessageObserver {
         mainBoard = board;
         ChessBoard chessBoard = new ChessBoard(board.getSquares());
 
-        switch (player) {
+        switch (playerColor) {
             case "WHITE", "OBSERVER" -> {
                 chessBoard.createBoard("WHITE");
                 out.println();
+
             }
             case "BLACK" -> {
                 chessBoard.createBoard("BLACK");

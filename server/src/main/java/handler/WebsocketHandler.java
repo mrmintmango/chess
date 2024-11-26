@@ -54,10 +54,10 @@ public class WebsocketHandler {
         UserGameCommand gameCommand = gson.fromJson(userGameCommand, UserGameCommand.class);
         switch (gameCommand.getCommandType()){
             case CONNECT -> connect(session, gameCommand.getGameID(), gameCommand.getAuthToken());
-            case MAKE_MOVE -> makeMove(gameCommand.getGameID(), session, ((MakeMoveCommand) gameCommand).getMove(),
+            case MAKE_MOVE -> makeMove(gameCommand.getGameID(), ((MakeMoveCommand) gameCommand).getMove(),
                     gameCommand.getAuthToken(), ((MakeMoveCommand) gameCommand).getMoveText()); //Find some other way to figure out if the player has already resigned or not.
             case LEAVE -> leave(gameCommand.getGameID(), gameCommand.getAuthToken());
-            case RESIGN -> resign(gameCommand.getGameID(), session, gameCommand.getAuthToken());
+            case RESIGN -> resign(gameCommand.getGameID(), gameCommand.getAuthToken());
         }
     }
 
@@ -69,9 +69,8 @@ public class WebsocketHandler {
 
     public void addSessionToGame(int gameID, Session session, String auth){
         gameMap.get(gameID).put(auth, session);
+        System.out.println(gameMap);
     }
-
-    public void removeSessionFromGame(){}
 
     public void connect(Session session, int gameID, String auth) {
         if(!gameMap.containsKey(gameID)){
@@ -85,6 +84,7 @@ public class WebsocketHandler {
         try{
             gameData = games.getGame(gameID);
         } catch (DataAccessException e) {
+            System.out.println("88");
             throw new RuntimeException(e);
         }
 
@@ -93,6 +93,7 @@ public class WebsocketHandler {
         try{
             username = auths.getAuth(auth).username();
         } catch (DataAccessException e) {
+            System.out.println("97");
             throw new RuntimeException(e);
         }
 
@@ -110,24 +111,25 @@ public class WebsocketHandler {
 
             sendAllButMe(gameID, auth, notification);
         } catch (IOException e) {
+            System.out.println("115");
             throw new RuntimeException(e);
         }
     }
 
-    public void makeMove(int gameID, Session session, ChessMove move, String auth, String moveText) {
+    public void makeMove(int gameID, ChessMove move, String auth, String moveText) {
         //check the validity of the move.
         try{
             if (games.isGameOver(gameID)){
                 String errorMessage = "The game is already over";
-                sendError(gameID, auth, session, errorMessage);
+                sendError(gameID, auth, errorMessage);
             }
             else if (isObserver(gameID, auth)) {
                 String errorMessage = "You can't make a move as an observer";
-                sendError(gameID, auth, session, errorMessage);
+                sendError(gameID, auth, errorMessage);
             }
             else if (!games.getTurn(gameID).equals(getPlayerType(auth, gameID))){
                 String errorMessage = "You can't make a move when it's not your turn";
-                sendError(gameID, auth, session, errorMessage);
+                sendError(gameID, auth, errorMessage);
             }
             else if (games.getGame(gameID).game().validMoves(move.getStartPosition()).contains(move)){
                 updateGame(gameID, move);
@@ -186,7 +188,7 @@ public class WebsocketHandler {
         }
     }
 
-    public void sendError(int gameID, String auth, Session session, String errorMessage){
+    public void sendError(int gameID, String auth, String errorMessage){
         ErrorMessage error = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, errorMessage);
         String message = new Gson().toJson(error);
         try{
@@ -208,21 +210,21 @@ public class WebsocketHandler {
         }
     }
 
-    public void resign(int gameID, Session session, String auth) {
+    public void resign(int gameID, String auth) {
         if (isObserver(gameID, auth)) {
             String errorMessage = "You can't resign as an observer";
-            sendError(gameID, auth, session, errorMessage);
+            sendError(gameID, auth, errorMessage);
         }
         else {
             try{ //games.getGame(gameID).game().isGameOver()
                 if (games.isGameOver(gameID)){
                     String errorMessage = "You can't resign after game is over";
-                    sendError(gameID, auth, session, errorMessage);
+                    sendError(gameID, auth, errorMessage);
                 }
                 else {
                     String goodbye = auths.getAuth(auth).username() + " has resigned from the game.";
                     sendCheckMate(gameID, auth, goodbye);
-                    userRemoval(gameID, auth);
+                    //userRemoval(gameID, auth);
                     gameOver(gameID);
                 }
             } catch (Exception e) {
@@ -232,7 +234,11 @@ public class WebsocketHandler {
     }
 
     private void userRemoval(int gameID, String auth) throws DataAccessException {
-        gameMap.get(gameID).remove(auth);
+        Map<String, Session> temp = gameMap.get(gameID);
+        Session sesh = temp.get(auth);
+        sesh.close();
+
+        temp.remove(auth);
 
         if (auths.getAuth(auth).username().equals(games.getGame(gameID).whiteUsername())){
             games.updateGame(gameID, null, true);
@@ -288,7 +294,7 @@ public class WebsocketHandler {
             return (!auths.getAuth(auth).username().equals(games.getGame(gameID).whiteUsername()) &&
                     !auths.getAuth(auth).username().equals(games.getGame(gameID).blackUsername()));
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Can't make a move as an observer (ERROR)");
         }
     }
 

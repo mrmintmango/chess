@@ -25,7 +25,6 @@ public class SQLGameDAO implements GameDAOI{
         try {
             //Serialize the actual game object from the game data to store in database
             String jsonGame = new Gson().toJson(gameData.game());
-            //String gameName = new Gson().fromJson(gameData.gameName(), String.class);
             return DatabaseManager.executeUpdate(statement, gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), jsonGame);
         } catch (DataAccessException e) {
             throw new RuntimeException(e); //update later
@@ -94,6 +93,7 @@ public class SQLGameDAO implements GameDAOI{
             }
             DatabaseManager.executeUpdate(statement, username, gameID);
         } catch (DataAccessException e) {
+            System.out.print("I'm in the SQL game dao 96");
             throw new RuntimeException(e); //update later
         }
     }

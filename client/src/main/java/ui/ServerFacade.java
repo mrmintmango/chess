@@ -85,7 +85,13 @@ public class ServerFacade {
     }
 
     public String joinGame(String playerColor, int gameID, String authToken) throws IOException {
-        String response = clientCom.put((urlString + "/game"), playerColor, gameID, authToken);
+        String response;
+        if (Objects.equals(playerColor, "OBSERVER")){
+            response = clientCom.put((urlString + "/game"), "WHITE", gameID, authToken);
+        }
+        else{
+            response = clientCom.put((urlString + "/game"), playerColor, gameID, authToken);
+        }
 
         if (Objects.equals(response, "{}")) {
             //websocket
@@ -103,7 +109,7 @@ public class ServerFacade {
         }
     }
 
-    public void makeMove(ChessMove move, int gameID, String auth, String moveText, String playerType) throws Exception {
+    public void makeMove(ChessMove move, int gameID, String auth, String moveText) throws Exception {
         MakeMoveCommand moveCommand = new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE, auth, gameID, move, moveText);
         String command = new Gson().toJson(moveCommand);
         webCom.send(command);
@@ -121,12 +127,13 @@ public class ServerFacade {
         webCom.send(command);
     }
 
-    public void observe(String playerColor, int gameID, String authToken) {
+    public void observe(int gameID, String authToken) {
         ConnectCommand connectCommand = new ConnectCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
         String connect = new Gson().toJson(connectCommand);
         try{
             webCom.send(connect);
         } catch (Exception e) {
+            System.out.println("i'm in the server facade");
             throw new RuntimeException(e); //update to correct error in the future.
         }
     }
