@@ -15,6 +15,7 @@ public class ChessBoard extends EscapeSequences {
     ArrayList<Integer> numbers;
     private final ChessPiece[][] board;
     static Map<String, Integer> positionKey;
+    private final Boolean[][] highlighted;
 
     public ChessBoard(ChessPiece[][] pieces){
         letters = new ArrayList<>(Arrays.asList("a", "b", "c", "d", "e", "f", "g", "h"));
@@ -22,6 +23,7 @@ public class ChessBoard extends EscapeSequences {
         board = pieces;
         positionKey = new HashMap<>();
         setPositionKey();
+        highlighted = new Boolean[8][8];
     }
 
     public void createBoard(String bw) {
@@ -197,7 +199,24 @@ public class ChessBoard extends EscapeSequences {
         System.out.print(SET_TEXT_COLOR_BLACK);
     }
 
+    public void setBoolBoard(Collection<ChessMove> valid) {
+        for (int row = 0; row <= 7; row++) { //revert to 0 and 7
+            for (int column = 0; column <= 7; column++) {
+                highlighted[row][column] = false;
+                for (ChessMove move : valid){
+                    ChessPosition pos = new ChessPosition(row, column);
+                    if (move.getEndPosition().equals(pos)) {
+                        highlighted[row][column] = true;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
     public void highlight(String bw, Collection<ChessMove> valid) {
+        setBoolBoard(valid);
+
         if(bw.equals("WHITE")){
             setBeige();
             drawHeader(out, false);
