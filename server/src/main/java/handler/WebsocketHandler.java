@@ -55,7 +55,7 @@ public class WebsocketHandler {
         switch (gameCommand.getCommandType()){
             case CONNECT -> connect(session, gameCommand.getGameID(), gameCommand.getAuthToken());
             case MAKE_MOVE -> makeMove(gameCommand.getGameID(), ((MakeMoveCommand) gameCommand).getMove(),
-                    gameCommand.getAuthToken(), ((MakeMoveCommand) gameCommand).getMoveText()); //Find some other way to figure out if the player has already resigned or not.
+                    gameCommand.getAuthToken(), ((MakeMoveCommand) gameCommand).getMoveText(), session); //Find some other way to figure out if the player has already resigned or not.
             case LEAVE -> leave(gameCommand.getGameID(), gameCommand.getAuthToken());
             case RESIGN -> resign(gameCommand.getGameID(), gameCommand.getAuthToken());
         }
@@ -69,7 +69,7 @@ public class WebsocketHandler {
 
     public void addSessionToGame(int gameID, Session session, String auth){
         gameMap.get(gameID).put(auth, session);
-        System.out.println(gameMap);
+        //System.out.println(gameMap);
     }
 
     public void connect(Session session, int gameID, String auth) {
@@ -116,8 +116,15 @@ public class WebsocketHandler {
         }
     }
 
-    public void makeMove(int gameID, ChessMove move, String auth, String moveText) {
+    public void makeMove(int gameID, ChessMove move, String auth, String moveText, Session session) {
         //check the validity of the move.
+        if(!gameMap.containsKey(gameID)){
+            addGameToMap(gameID, session, auth);
+        }
+        else{
+            addSessionToGame(gameID, session, auth);
+        }
+
         try{
             if (games.isGameOver(gameID)){
                 String errorMessage = "The game is already over";

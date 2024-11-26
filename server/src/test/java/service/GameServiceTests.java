@@ -30,7 +30,7 @@ public class GameServiceTests {
         ChessGame game = gameService.getGame(1).game();
         GameData gameData = new GameData(1,null, null, "testName", game, false);
 
-        Assertions.assertEquals(gameData, gameService.getGame(1));
+        Assertions.assertEquals(gameData, gameService.getGame(0));
     }
 
     @Test
@@ -105,9 +105,14 @@ public class GameServiceTests {
         GameData game2 = new GameData(2, null, null, "game2", new ChessGame(), false);
         GameData game3 = new GameData(3, null, null, "game3", new ChessGame(), false);
 
-        gameService.putGame(1, game1);
-        gameService.putGame(2, game2);
-        gameService.putGame(3, game3);
+        CreateGameRequest game1req = new CreateGameRequest("auth1", "game1");
+        CreateGameRequest game2req = new CreateGameRequest("auth2", "game2");
+        CreateGameRequest game3req = new CreateGameRequest("auth3", "game3");
+
+
+        GameData gameData1 = gameService.createGame(game1req);
+        GameData gameData2 = gameService.createGame(game2req);
+        GameData gameData3 = gameService.createGame(game3req);
 
         ArrayList<GameData> expected = new ArrayList<>();
         expected.add(game1);
