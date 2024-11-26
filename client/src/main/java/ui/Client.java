@@ -22,6 +22,7 @@ public class Client implements ServerMessageObserver {
     static String playerColor;
     static Map<String, Integer> positionKey;
     static int currentGameID;
+    static GameData mainGame;
 
     public static void main(String[] args) {
         var ws = new Client();
@@ -29,7 +30,7 @@ public class Client implements ServerMessageObserver {
         out.print("Welcome to 240 Chess!");
         out.println();
         Scanner scanner = new Scanner(System.in);
-        mainBoard = new chess.ChessBoard(null);
+        mainBoard = new chess.ChessBoard();
         playerColor = null;
         positionKey = new HashMap<>();
         currentGameID = 0;
@@ -40,31 +41,14 @@ public class Client implements ServerMessageObserver {
     }
 
     public static void loggedOutMenu() {
-        out.println("\n\n[LOGGED OUT]");
-        out.println("1. Register");
-        out.println("2. Login");
-        out.println("3. Quit");
-        out.println("4. Help");
+        out.println("\n\n[LOGGED OUT] \n1. Register \n2. Login \n3. Quit \n4. Help \n");
     }
-
     public static void loggedInMenu() {
-        out.println("[LOGGED IN]");
-        out.println("1. Help");
-        out.println("2. Logout");
-        out.println("3. Create Game");
-        out.println("4. List Games");
-        out.println("5. Play Game");
-        out.println("6. Observe Game");
+        out.println("[LOGGED IN] \n1. Help \n2. Logout \n3. Create Game");
+        out.println("4. List Games \n5. Play Game \n6. Observe Game");
     }
-
     public static void inGameMenu() {
-        out.println("[IN GAME]");
-        out.println("1. Help");
-        out.println("2. Redraw Board");
-        out.println("3. Leave");
-        out.println("4. Make Move");
-        out.println("5. Resign");
-        out.println("6. Highlight Legal Moves");
+        out.println("[IN GAME] \n1. Help \n2. Redraw Board \n3. Leave \n4. Make Move \n5. Resign \n6. Highlight Legal Moves");
     }
 
     public static void inGameMenuCalculator(Scanner scan) {
@@ -90,11 +74,12 @@ public class Client implements ServerMessageObserver {
                 else {
                     printChess(mainBoard, "WHITE");
                 }
+                inGameMenuCalculator(scan);
             }
             case "3" -> {
-                //leave the match method here
                 try{
                     serverFacade.leaveGame(currentGameID, playerAuthToken);
+                    loggedInMenu();
                     menuCalculatorIn(scan);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
@@ -117,20 +102,17 @@ public class Client implements ServerMessageObserver {
                 }
                 else if (move.length() > 5){
                     switch (move.substring(5)) {
-                        case "QUEEN" -> { upgrade = ChessPiece.PieceType.QUEEN;
-                        }
-                        case "KNIGHT" -> { upgrade = ChessPiece.PieceType.KNIGHT;
-                        }
-                        case "BISHOP" -> { upgrade = ChessPiece.PieceType.BISHOP;
-                        }
-                        case "ROOK" -> { upgrade = ChessPiece.PieceType.ROOK;
-                        }
+                        case "QUEEN" -> { upgrade = ChessPiece.PieceType.QUEEN; }
+                        case "KNIGHT" -> { upgrade = ChessPiece.PieceType.KNIGHT; }
+                        case "BISHOP" -> { upgrade = ChessPiece.PieceType.BISHOP; }
+                        case "ROOK" -> { upgrade = ChessPiece.PieceType.ROOK; }
                         default -> out.println("Invalid promotion piece");
                     }
                     if (upgrade != null){
                         moveConverter(move, upgrade);
                     }
                 }
+                inGameMenuCalculator(scan);
             } //Make move functionality
             case "5" -> {
                 try{
@@ -141,11 +123,23 @@ public class Client implements ServerMessageObserver {
                 }
             }
             case "6" -> {
-                //highlightBoard();
+                ChessBoard chessBoard = new ChessBoard(mainBoard.getSquares());
+                out.println("input the location of the piece (in the form a2):");
+                String location = scan.nextLine();
+                if(!chessBoard.locationChecker(location)){
+                    out.println("That's not a valid piece location");
+                    inGameMenuCalculator(scan);
+                }
+                else {
+                    int row = positionKey.get(location.substring(0,1));
+                    int col = ((int) location.charAt(1));
+                    ChessPosition start = new ChessPosition(row, col);
+                    Collection<ChessMove> valid = mainGame.game().validMoves(start);
+                    chessBoard.highlight(playerColor, valid);
+                }
             }
             case null, default -> {
-                out.println("... please input a valid option:");
-                out.println();
+                out.println("... please input a valid option: \n");
                 inGameMenu();
                 inGameMenuCalculator(scan);
             }
@@ -162,10 +156,7 @@ public class Client implements ServerMessageObserver {
 
         ChessPosition start = new ChessPosition(row, col);
         ChessPosition end = new ChessPosition(endRow, endCol);
-
         ChessMove chessMove = new ChessMove(start, end, upgrade);
-
-        //send that move to the server:
         try{
             serverFacade.makeMove(chessMove, currentGameID, playerAuthToken, justTheMove,
                     Objects.requireNonNullElse(playerColor, "OBSERVER"));
@@ -175,21 +166,22 @@ public class Client implements ServerMessageObserver {
     }
 
     public static boolean moveFormatCheck(String move){
-        boolean check1 = false;
-        boolean check2 = false;
+//        boolean check1 = false;
+//        boolean check2 = false;
+        boolean check1 = new ChessBoard(mainBoard.getSquares()).locationChecker(move.substring(0,1));
         boolean check3 = false;
         boolean check4 = false;
 
-        if (move.charAt(0) == 'a' || move.charAt(0) == 'b' || move.charAt(0) == 'c' ||
-                move.charAt(0) == 'd' || move.charAt(0) == 'e' || move.charAt(0) == 'f' ||
-                move.charAt(0) == 'g' || move.charAt(0) == 'h'){
-            check1 = true;
-        }
-        if (move.charAt(1) == '1' || move.charAt(1) == '2' || move.charAt(1) == '3' ||
-                move.charAt(1) == '4' || move.charAt(1) == '5' || move.charAt(1) == '6' ||
-                move.charAt(1) == '7' || move.charAt(1) == '8'){
-            check2 = true;
-        }
+//        if (move.charAt(0) == 'a' || move.charAt(0) == 'b' || move.charAt(0) == 'c' ||
+//                move.charAt(0) == 'd' || move.charAt(0) == 'e' || move.charAt(0) == 'f' ||
+//                move.charAt(0) == 'g' || move.charAt(0) == 'h'){
+//            check1 = true;
+//        }
+//        if (move.charAt(1) == '1' || move.charAt(1) == '2' || move.charAt(1) == '3' ||
+//                move.charAt(1) == '4' || move.charAt(1) == '5' || move.charAt(1) == '6' ||
+//                move.charAt(1) == '7' || move.charAt(1) == '8'){
+//            check2 = true;
+//        }
         if (move.charAt(2) == 'a' || move.charAt(2) == 'b' || move.charAt(2) == 'c' ||
                 move.charAt(2) == 'd' || move.charAt(2) == 'e' || move.charAt(2) == 'f' ||
                 move.charAt(2) == 'g' || move.charAt(2) == 'h'){
@@ -200,7 +192,7 @@ public class Client implements ServerMessageObserver {
                 move.charAt(3) == '7' || move.charAt(3) == '8'){
             check4 = true;
         }
-        return (check1 && check2 && check3 && check4);
+        return (check1 && check3 && check4);
     }
 
     public static void menuCalculatorOut(Scanner scan) {
@@ -213,8 +205,6 @@ public class Client implements ServerMessageObserver {
                 String password = scan.nextLine();
                 out.println("EMAIL: ");
                 String email = scan.nextLine();
-
-                // create a register request thing for the server facade I think
                 try {
                     String regResponse = serverFacade.register(username, password, email);
 
@@ -223,14 +213,12 @@ public class Client implements ServerMessageObserver {
                         loggedIn(regResponse, scan);
                     }
                     else  {
-                        out.println("woopsie, there was a problem");
-                        out.println(regResponse);
+                        out.println("woopsie, there was a problem \n" + regResponse);
                     }
                 } catch (IOException e) {
                     out.println("woopsie, there was a problem");
                     out.println("!!! " + e.getMessage() + " !!!");
                 }
-
                 menuCalculatorOut(scan);
             }
             case "2" -> { //Login Input
@@ -238,8 +226,6 @@ public class Client implements ServerMessageObserver {
                 String username = scan.nextLine();
                 out.println("PASSWORD: ");
                 String password = scan.nextLine();
-
-                //First check if that players username and password is correct
                 try {
                     String regResponse = serverFacade.login(username, password);
 
@@ -276,7 +262,6 @@ public class Client implements ServerMessageObserver {
                 menuCalculatorOut(scan);
             }
         }
-
     }
 
     public static void menuCalculatorIn(Scanner scan) throws IOException {
@@ -341,7 +326,7 @@ public class Client implements ServerMessageObserver {
                         out.println("Observing game: " + number);
                         //output the given chessboard.
                         int gameID=Integer.parseInt(gameList.get(((Integer.parseInt(number)-1)*4)));
-                        //printChess(gameID);
+                        serverFacade.observe("OBSERVER", gameID, playerAuthToken);
                     }
                 }
                 catch (NumberFormatException e) {
@@ -476,6 +461,7 @@ public class Client implements ServerMessageObserver {
 
     public void loadGame(GameData game, String playerType) {
         printChess(game.game().getBoard(), playerType);
+        mainGame = game;
         out.println();
     }
 
@@ -505,6 +491,10 @@ public class Client implements ServerMessageObserver {
     }
 
     private static void setPositionKey(){
+        posKeySet(positionKey);
+    }
+
+    static void posKeySet(Map<String, Integer> positionKey) {
         positionKey.put("a", 1);
         positionKey.put("b", 2);
         positionKey.put("c", 3);

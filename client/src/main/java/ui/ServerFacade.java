@@ -121,4 +121,14 @@ public class ServerFacade {
         webCom.send(command);
     }
 
+    public void observe(String playerColor, int gameID, String authToken) {
+        ConnectCommand connectCommand = new ConnectCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
+        String connect = new Gson().toJson(connectCommand);
+        try{
+            webCom.send(connect);
+        } catch (Exception e) {
+            throw new RuntimeException(e); //update to correct error in the future.
+        }
+    }
+
 }
