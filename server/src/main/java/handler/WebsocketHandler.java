@@ -277,20 +277,29 @@ public class WebsocketHandler {
     public void sendEveryone(int gameID, String auth, String message) throws IOException {
         Map<String, Session> authMap = gameMap.get(gameID);
         for (String authToken : authMap.keySet()){
-            authMap.get(authToken).getRemote().sendString(message);
+
+            Session temp = authMap.get(authToken);
+            if(temp.isOpen()) {
+                temp.getRemote().sendString(message);
+            }
         }
     }
 
     public void sendMe(int gameID, String auth, String message) throws IOException {
         Session me = gameMap.get(gameID).get(auth);
-        me.getRemote().sendString(message);
+        if (me.isOpen()) {
+            me.getRemote().sendString(message);
+        }
     }
 
     public void sendAllButMe(int gameID, String auth, String message) throws IOException {
         Map<String, Session> authMap = gameMap.get(gameID);
         for (String authToken : authMap.keySet()){
             if (!authToken.equals(auth)){
-                authMap.get(authToken).getRemote().sendString(message);
+                Session temp = authMap.get(authToken);
+                if (temp.isOpen()) {
+                    temp.getRemote().sendString(message);
+                }
             }
         }
     }
@@ -356,6 +365,7 @@ public class WebsocketHandler {
             users.clear();
             auths.clear();
             games.clear();
+            gameMap.clear();
             System.out.println(":::Server cleared:::");
             System.out.println(":Terminating System:");
         }
