@@ -76,6 +76,7 @@ public class Client implements ServerMessageObserver {
                 else {
                     printChess(mainBoard, "WHITE");
                 }
+                inGameMenu();
                 inGameMenuCalculator(scan);
             }
             case "3" -> {
