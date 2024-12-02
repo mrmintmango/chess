@@ -74,17 +74,6 @@ public class MemoryGameDAO implements GameDAOI{
 
     public String getTurn(int gameID) {
         return sqlGameDAO.getTurn(gameID);
-//        try{
-//            GameData gameData = getGame(gameID);
-//            if (gameData.game().getTeamTurn().equals(ChessGame.TeamColor.WHITE)){
-//                return "WHITE";
-//            }
-//            else {
-//                return "BLACK";
-//            }
-//        } catch (DataAccessException e) {
-//            throw new RuntimeException(e);
-//        }
     }
 
     public void makeMove(int gameID, ChessMove move){
