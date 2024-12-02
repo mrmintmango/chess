@@ -91,7 +91,6 @@ public class Client implements ServerMessageObserver {
                 out.println("Insert a valid move to make (in the form a2a4)");
                 out.println("name the promotion piece afterwards if your pawn is promoting (a7a8 QUEEN)");
                 String move = scan.nextLine();
-                ChessPiece.PieceType upgrade = null;
 
                 //check the moves validity
                 if (move.length() == 4){
@@ -106,39 +105,12 @@ public class Client implements ServerMessageObserver {
                     out.println("Invalid move format");
                 }
                 else if (move.length() > 5){
-                    switch (move.substring(5)) {
-                        case "QUEEN" -> { upgrade = ChessPiece.PieceType.QUEEN; }
-                        case "KNIGHT" -> { upgrade = ChessPiece.PieceType.KNIGHT; }
-                        case "BISHOP" -> { upgrade = ChessPiece.PieceType.BISHOP; }
-                        case "ROOK" -> { upgrade = ChessPiece.PieceType.ROOK; }
-                        default -> out.println("Invalid promotion piece");
-                    }
-                    if (upgrade != null){
-                        moveConverter(move, upgrade);
-                    }
+                   upgradePawn(move);
                 }
                 inGameMenuCalculator(scan);
             } //Make move functionality
             case "5" -> {
-                out.print("Are you sure you want to resign? (yes/no)");
-                String resign = scan.nextLine();
-                if (resign.equals("yes") || resign.equals("YES")){
-                    try{ //check if the user really wants to resign
-                        serverFacade.resign(currentGameID, playerAuthToken);
-                        inGameMenuCalculator(scan);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                else if (resign.equals("no") || resign.equals("NO")){
-                    inGameMenu();
-                    inGameMenuCalculator(scan);
-                }
-                else {
-                    out.print("That wasn't a valid option");
-                    inGameMenuCalculator(scan);
-                }
-
+                resignCalc(scan);
             }
             case "6" -> {
                 ChessBoard chessBoard = new ChessBoard(mainBoard.getSquares());
@@ -187,6 +159,42 @@ public class Client implements ServerMessageObserver {
         } catch (Exception e) {
             out.println("Client 176 bug bug");
             throw new RuntimeException(e);
+        }
+    }
+
+    public static void upgradePawn(String move){
+        ChessPiece.PieceType upgrade = null;
+
+        switch (move.substring(5)) {
+            case "QUEEN" -> { upgrade = ChessPiece.PieceType.QUEEN; }
+            case "KNIGHT" -> { upgrade = ChessPiece.PieceType.KNIGHT; }
+            case "BISHOP" -> { upgrade = ChessPiece.PieceType.BISHOP; }
+            case "ROOK" -> { upgrade = ChessPiece.PieceType.ROOK; }
+            default -> out.println("Invalid promotion piece");
+        }
+        if (upgrade != null){
+            moveConverter(move, upgrade);
+        }
+    }
+
+    public static void resignCalc(Scanner scan){
+        out.print("Are you sure you want to resign? (yes/no)");
+        String resign = scan.nextLine();
+        if (resign.equals("yes") || resign.equals("YES")){
+            try{ //check if the user really wants to resign
+                serverFacade.resign(currentGameID, playerAuthToken);
+                inGameMenuCalculator(scan);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else if (resign.equals("no") || resign.equals("NO")){
+            inGameMenu();
+            inGameMenuCalculator(scan);
+        }
+        else {
+            out.print("That wasn't a valid option");
+            inGameMenuCalculator(scan);
         }
     }
 

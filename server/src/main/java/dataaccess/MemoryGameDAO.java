@@ -10,6 +10,7 @@ import java.util.Map;
 public class MemoryGameDAO implements GameDAOI{
     public Map<Integer, GameData> gameDataMap = new HashMap<>();
     private int gameID = 1;
+    SQLGameDAO sqlGameDAO = new SQLGameDAO();
 
     public void clear() {
         gameDataMap.clear();
@@ -42,10 +43,12 @@ public class MemoryGameDAO implements GameDAOI{
         GameData original = gameDataMap.get(gameID);
         GameData updatedGame;
         if (bw) { //white is true black is false
-            updatedGame = new GameData(original.gameID(), username, original.blackUsername(), original.gameName(), original.game(), false);
+            updatedGame = new GameData(original.gameID(), username, original.blackUsername(),
+                    original.gameName(), original.game(), false);
         }
         else {
-            updatedGame = new GameData(original.gameID(), original.whiteUsername(), username, original.gameName(), original.game(), false);
+            updatedGame = new GameData(original.gameID(), original.whiteUsername(), username,
+                    original.gameName(), original.game(), false);
         }
         gameDataMap.put(gameID, updatedGame);
     }
@@ -54,17 +57,14 @@ public class MemoryGameDAO implements GameDAOI{
         return gameDataMap.containsKey(gameID);
     }
 
-    public void putGame(int gameID, GameData game) {
-        gameDataMap.put(gameID, game);
-    }
-
     public int getGameSize() {
         return gameDataMap.size();
     }
 
     public void updateGameOver(int gameID) {
         GameData original = gameDataMap.get(gameID);
-        GameData updatedGame = new GameData(original.gameID(), original.whiteUsername(), original.blackUsername(), original.gameName(), original.game(), true);
+        GameData updatedGame = new GameData(original.gameID(), original.whiteUsername(),
+                original.blackUsername(), original.gameName(), original.game(), true);
         gameDataMap.put(gameID, updatedGame);
     }
 
@@ -73,17 +73,18 @@ public class MemoryGameDAO implements GameDAOI{
     }
 
     public String getTurn(int gameID) {
-        try{
-            GameData gameData = getGame(gameID);
-            if (gameData.game().getTeamTurn().equals(ChessGame.TeamColor.WHITE)){
-                return "WHITE";
-            }
-            else {
-                return "BLACK";
-            }
-        } catch (DataAccessException e) {
-            throw new RuntimeException(e);
-        }
+        return sqlGameDAO.getTurn(gameID);
+//        try{
+//            GameData gameData = getGame(gameID);
+//            if (gameData.game().getTeamTurn().equals(ChessGame.TeamColor.WHITE)){
+//                return "WHITE";
+//            }
+//            else {
+//                return "BLACK";
+//            }
+//        } catch (DataAccessException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
     public void makeMove(int gameID, ChessMove move){

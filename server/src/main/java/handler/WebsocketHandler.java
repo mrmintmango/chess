@@ -1,6 +1,5 @@
 package handler;
 
-import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessMove;
 import com.google.gson.*;
@@ -23,7 +22,6 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 @WebSocket
 public class WebsocketHandler {
@@ -55,7 +53,7 @@ public class WebsocketHandler {
         switch (gameCommand.getCommandType()){
             case CONNECT -> connect(session, gameCommand.getGameID(), gameCommand.getAuthToken());
             case MAKE_MOVE -> makeMove(gameCommand.getGameID(), ((MakeMoveCommand) gameCommand).getMove(),
-                    gameCommand.getAuthToken(), ((MakeMoveCommand) gameCommand).getMoveText(), session); //Find some other way to figure out if the player has already resigned or not.
+                    gameCommand.getAuthToken(), ((MakeMoveCommand) gameCommand).getMoveText(), session);
             case LEAVE -> leave(gameCommand.getGameID(), gameCommand.getAuthToken());
             case RESIGN -> resign(gameCommand.getGameID(), gameCommand.getAuthToken());
         }
@@ -89,7 +87,7 @@ public class WebsocketHandler {
         }
 
         String player = getPlayerType(auth, gameID);
-        String username = null;
+        String username;
         try{
             username = auths.getAuth(auth).username();
         } catch (DataAccessException e) {
@@ -146,7 +144,7 @@ public class WebsocketHandler {
                 LoadGameMessage loadGameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME,
                         games.getGame(gameID), player);
                 String load = new Gson().toJson(loadGameMessage);
-                sendEveryone(gameID, auth, load);
+                sendEveryone(gameID, load);
 
                 String moveMessage = auths.getAuth(auth).username() + " made the move " + moveText;
                 NotificationMessage notificationMessage = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION,
@@ -157,30 +155,30 @@ public class WebsocketHandler {
                 //send in check, checkmate, or stalemate notification to all clients if applicable
                 if (games.getGame(gameID).game().isInCheck(ChessGame.TeamColor.WHITE)){
                     String checkMessage = auths.getAuth(auth).username() + "(WHITE) has been put in check!";
-                    sendCheckMate(gameID, auth, checkMessage);
+                    sendCheckMate(gameID, checkMessage);
                 }
                 else if (games.getGame(gameID).game().isInCheck(ChessGame.TeamColor.BLACK)){
                     String checkMessage = auths.getAuth(auth).username() + "(BLACK) has been put in check!";
-                    sendCheckMate(gameID, auth, checkMessage);
+                    sendCheckMate(gameID, checkMessage);
                 }
                 else if (games.getGame(gameID).game().isInCheckmate(ChessGame.TeamColor.WHITE)){
                     String checkMessage = auths.getAuth(auth).username() + "(WHITE) has been put in check mate!";
-                    sendCheckMate(gameID, auth, checkMessage);
+                    sendCheckMate(gameID, checkMessage);
                     gameOver(gameID);
                 }
                 else if (games.getGame(gameID).game().isInCheckmate(ChessGame.TeamColor.BLACK)){
                     String checkMessage = auths.getAuth(auth).username() + "(BLACK) has been put in check mate!";
-                    sendCheckMate(gameID, auth, checkMessage);
+                    sendCheckMate(gameID, checkMessage);
                     gameOver(gameID);
                 }
                 else if (games.getGame(gameID).game().isInStalemate(ChessGame.TeamColor.WHITE)){
                     String checkMessage = auths.getAuth(auth).username() + "(WHITE) has been put in stale mate!";
-                    sendCheckMate(gameID, auth, checkMessage);
+                    sendCheckMate(gameID, checkMessage);
                     gameOver(gameID);
                 }
                 else if (games.getGame(gameID).game().isInStalemate(ChessGame.TeamColor.BLACK)){
                     String checkMessage = auths.getAuth(auth).username() + "(BLACK) has been put in stale mate!";
-                    sendCheckMate(gameID, auth, checkMessage);
+                    sendCheckMate(gameID, checkMessage);
                     gameOver(gameID);
                 }
             }
@@ -230,7 +228,7 @@ public class WebsocketHandler {
                 }
                 else {
                     String goodbye = auths.getAuth(auth).username() + " has resigned from the game.";
-                    sendCheckMate(gameID, auth, goodbye);
+                    sendCheckMate(gameID, goodbye);
                     //userRemoval(gameID, auth);
                     gameOver(gameID);
                 }
@@ -242,8 +240,6 @@ public class WebsocketHandler {
 
     private void userRemoval(int gameID, String auth) throws DataAccessException {
         Map<String, Session> temp = gameMap.get(gameID);
-        //Session sesh = temp.get(auth);
-        //sesh.close();
         temp.remove(auth);
 
         if (games.getGame(gameID).whiteUsername() != null && auths.getAuth(auth).username().equals(games.getGame(gameID).whiteUsername())){
@@ -266,15 +262,15 @@ public class WebsocketHandler {
         games.updateGameOver(gameID);
     }
 
-    public void sendCheckMate(int gameID, String auth, String checkMessage) throws IOException {
+    public void sendCheckMate(int gameID, String checkMessage) throws IOException {
         NotificationMessage checkNotification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION,
                 checkMessage);
         String checkNotif = new Gson().toJson(checkNotification);
-        sendEveryone(gameID, auth, checkNotif);
+        sendEveryone(gameID, checkNotif);
     }
 
     //helpful methods
-    public void sendEveryone(int gameID, String auth, String message) throws IOException {
+    public void sendEveryone(int gameID, String message) throws IOException {
         Map<String, Session> authMap = gameMap.get(gameID);
         for (String authToken : authMap.keySet()){
 
@@ -337,7 +333,7 @@ public class WebsocketHandler {
                 case MAKE_MOVE -> context.deserialize(jsonElement, MakeMoveCommand.class);
                 case LEAVE -> context.deserialize(jsonElement, LeaveCommand.class);
                 case RESIGN -> context.deserialize(jsonElement, ResignCommand.class);
-                case null, default -> throw new JsonIOException("Invalid Command Type");
+                case null -> throw new JsonIOException("Invalid Command Type");
             };
         }
     }

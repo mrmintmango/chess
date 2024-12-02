@@ -12,13 +12,11 @@ import java.util.Collection;
 public class ChessGame {
     private TeamColor teamColor;
     private ChessBoard theBoard;
-    //private boolean gameOver;
 
     public ChessGame() {
         teamColor = TeamColor.WHITE;
         theBoard = new ChessBoard();
         theBoard.resetBoard();
-        //gameOver = false;
     }
 
     /**
@@ -212,12 +210,4 @@ public class ChessGame {
     public ChessBoard getBoard() {
         return theBoard;
     }
-
-//    public void setGameOver(){
-//        gameOver = true;
-//    }
-//
-//    public boolean isGameOver(){
-//        return gameOver;
-//    }
 }
