@@ -23,6 +23,7 @@ public class Client implements ServerMessageObserver {
     static Map<String, Integer> positionKey;
     static int currentGameID;
     static GameData mainGame;
+    static MenuCalculatorIn menuCalculatorIn;
 
     public static void main(String[] args) {
         var ws = new Client();
@@ -35,6 +36,7 @@ public class Client implements ServerMessageObserver {
         positionKey = new HashMap<>();
         currentGameID = 0;
         setPositionKey();
+        menuCalculatorIn = new MenuCalculatorIn();
 
         loggedOutMenu();
         menuCalculatorOut(scanner);
@@ -80,7 +82,7 @@ public class Client implements ServerMessageObserver {
                 try{
                     serverFacade.leaveGame(currentGameID, playerAuthToken);
                     loggedInMenu();
-                    menuCalculatorIn(scan);
+                    menuCalculatorLoggedIn(scan);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -118,12 +120,25 @@ public class Client implements ServerMessageObserver {
                 inGameMenuCalculator(scan);
             } //Make move functionality
             case "5" -> {
-                try{ //check if the user really wants to resign
-                    serverFacade.resign(currentGameID, playerAuthToken);
-                    inGameMenuCalculator(scan);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
+                out.print("Are you sure you want to resign? (yes/no)");
+                String resign = scan.nextLine();
+                if (resign.equals("yes") || resign.equals("YES")){
+                    try{ //check if the user really wants to resign
+                        serverFacade.resign(currentGameID, playerAuthToken);
+                        inGameMenuCalculator(scan);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                 }
+                else if (resign.equals("no") || resign.equals("NO")){
+                    inGameMenu();
+                    inGameMenuCalculator(scan);
+                }
+                else {
+                    out.print("That wasn't a valid option");
+                    inGameMenuCalculator(scan);
+                }
+
             }
             case "6" -> {
                 ChessBoard chessBoard = new ChessBoard(mainBoard.getSquares());
@@ -261,87 +276,8 @@ public class Client implements ServerMessageObserver {
         }
     }
 
-    public static void menuCalculatorIn(Scanner scan) throws IOException {
-        String input = scan.nextLine();
-        switch (input) {
-            case "1" -> { //Help menu
-                out.println("1- Displays this help menu again");
-                out.println("2- Logout current user");
-                out.println("3- Create a new chess game");
-                out.println("4- List all of the existing games");
-                out.println("5- Play one of the existing games");
-                out.println("6- Spectate a game that is being played");
-                menuCalculatorIn(scan);
-            }
-            case "2" -> {
-                //logout request for server goes here
-                String response = serverFacade.logout(playerAuthToken);
-
-                if (response.equals("GOOD")){
-                    out.println("You've been logged out!");
-                    playerAuthToken = null;
-                    loggedOutMenu();
-                    menuCalculatorOut(scan);
-                }
-                else  {
-                    out.println("woopsie, there was a problem");
-                    out.println(response);
-                }
-            }
-            case "3" -> {
-                out.println("Please name the new game: ");
-                String gameName = scan.nextLine(); //make sure name isn't null
-                // create game code goes here
-                String response = serverFacade.createGame(gameName, playerAuthToken);
-
-                if (response.equals("GOOD")){
-                    out.println("Game has been created");
-                    menuCalculatorIn(scan);
-                }
-                else  {
-                    out.println("woopsie, there was a problem");
-                    out.println(response);
-                }
-            }
-            case "4" -> caseFour(scan); //list game
-            case "5" -> joinGame(scan); //join game method below
-            case "6" -> {
-                out.println("Which game would you like to observe?");
-                String number = scan.nextLine();
-
-                try {
-                    gameList = serverFacade.listGames(playerAuthToken);
-                    if (gameList == null) {
-                        out.println("No games to observe");
-                        loggedInMenu();
-                        menuCalculatorIn(scan);
-                    } else if (Integer.parseInt(number) < 0 || Integer.parseInt(number) > gameList.size() / 4) {
-                        out.println("Not a valid game number");
-                        loggedInMenu();
-                        menuCalculatorIn(scan);
-                    } else {
-                        out.println("Observing game: " + number);
-                        playerColor = "OBSERVER";
-                        //output the given chessboard.
-                        int gameID=Integer.parseInt(gameList.get(((Integer.parseInt(number)-1)*4)));
-                        currentGameID = gameID;
-                        serverFacade.observe(gameID, playerAuthToken);
-                        inGameMenu();
-                        inGameMenuCalculator(scan);
-                    }
-                }
-                catch (NumberFormatException e) {
-                out.println("Please input a valid game number.");
-                loggedInMenu();
-                menuCalculatorIn(scan);
-            }
-            }
-            case null, default -> {
-                out.println("... please input a valid option:");
-                out.println();
-                menuCalculatorIn(scan);
-            }
-        }
+    public static void menuCalculatorLoggedIn(Scanner scan) throws IOException {
+        menuCalculatorIn.menuCalculatorInside(scan);
     }
 
     public static void listPrinter(ArrayList<String> list) {
@@ -376,7 +312,7 @@ public class Client implements ServerMessageObserver {
 
         if (response.isEmpty()){
             out.println("No games created yet");
-            menuCalculatorIn(scan);
+            menuCalculatorLoggedIn(scan);
         }
         else if (Objects.equals(response.getFirst(), "error")) {
             out.println("woopsie, there was a problem");
@@ -385,7 +321,7 @@ public class Client implements ServerMessageObserver {
         else  {
             listPrinter(response);
         }
-        menuCalculatorIn(scan);
+        menuCalculatorLoggedIn(scan);
     }
 
     public static void loggedIn(String regResponse, Scanner scan) throws IOException {
@@ -393,7 +329,7 @@ public class Client implements ServerMessageObserver {
         out.println("You've been logged in!");
         out.println("----------------");
         loggedInMenu();
-        menuCalculatorIn(scan);
+        menuCalculatorLoggedIn(scan);
     }
 
     public static void joinGame(Scanner scan) throws IOException {
@@ -409,7 +345,7 @@ public class Client implements ServerMessageObserver {
             if(!Objects.equals(color, "WHITE") && !Objects.equals(color, "BLACK")) {
                 out.println("Error: Invalid player color.");
                 loggedInMenu();
-                menuCalculatorIn(scan);
+                menuCalculatorLoggedIn(scan);
             }
             else if (gameList!=null && Integer.parseInt(number) > 0 && Integer.parseInt(number) <= gameList.size()/4){
                 gameID=Integer.parseInt(gameList.get(((Integer.parseInt(number)-1)*4)));
@@ -418,19 +354,19 @@ public class Client implements ServerMessageObserver {
             else if (gameList!=null && (Integer.parseInt(number) <= 0 || Integer.parseInt(number) > gameList.size()/4)){
                 out.println("Not a valid game number");
                 loggedInMenu();
-                menuCalculatorIn(scan);
+                menuCalculatorLoggedIn(scan);
             }
             else {
                 out.println("There are no games to join.");
                 loggedInMenu();
-                menuCalculatorIn(scan);
+                menuCalculatorLoggedIn(scan);
             }
 
             response = serverFacade.joinGame(color, gameID, playerAuthToken);
         } catch (NumberFormatException | IOException e) {
             out.println("invalid game number.");
             loggedInMenu();
-            menuCalculatorIn(scan);
+            menuCalculatorLoggedIn(scan);
         }
 
         playerColor = color;
@@ -445,7 +381,7 @@ public class Client implements ServerMessageObserver {
             out.println(response);
         }
 
-        menuCalculatorIn(scan);
+        menuCalculatorLoggedIn(scan);
     } //Phase 6
 
     public void notify(ServerMessage message){
